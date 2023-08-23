@@ -1,0 +1,10 @@
+{
+    "resourceName": "healthScribeDemoStorage",
+    "policyUUID": "b7ee1e0f",
+    "bucketName": "healthscribe-demo-storage",
+    "storageAccess": "auth",
+    "guestAccess": [],
+    "authAccess": ["CREATE_AND_UPDATE", "READ", "DELETE"],
+    "triggerFunction": "NONE",
+    "groupAccess": {}
+}

@@ -1,0 +1,72 @@
+{
+    "auth": {
+        "healthScribeDemoAuth": {
+            "customAuth": false,
+            "dependsOn": [],
+            "frontendAuthConfig": {
+                "mfaConfiguration": "OFF",
+                "mfaTypes": ["SMS"],
+                "passwordProtectionSettings": {
+                    "passwordPolicyCharacters": [],
+                    "passwordPolicyMinLength": 8
+                },
+                "signupAttributes": ["EMAIL"],
+                "socialProviders": [],
+                "usernameAttributes": ["EMAIL"],
+                "verificationMechanisms": ["EMAIL"]
+            },
+            "providerPlugin": "awscloudformation",
+            "service": "Cognito"
+        }
+    },
+    "storage": {
+        "healthScribeDemoStorage": {
+            "dependsOn": [],
+            "providerPlugin": "awscloudformation",
+            "service": "S3"
+        }
+    },
+    "function": {
+        "addBucketLogging": {
+            "build": true,
+            "providerPlugin": "awscloudformation",
+            "service": "Lambda"
+        }
+    },
+    "parameters": {
+        "AMPLIFY_function_addBucketLogging_deploymentBucketName": {
+            "usedBy": [
+                {
+                    "category": "function",
+                    "resourceName": "addBucketLogging"
+                }
+            ]
+        },
+        "AMPLIFY_function_addBucketLogging_s3Key": {
+            "usedBy": [
+                {
+                    "category": "function",
+                    "resourceName": "addBucketLogging"
+                }
+            ]
+        }
+    },
+    "custom": {
+        "addBucketLogging": {
+            "dependsOn": [
+                {
+                    "attributes": ["BucketName", "Region", "HealthScribeServiceRoleArn"],
+                    "category": "storage",
+                    "resourceName": "healthScribeDemoStorage"
+                },
+                {
+                    "attributes": ["Name", "Arn", "Region", "LambdaExecutionRole", "LambdaExecutionRoleArn"],
+                    "category": "function",
+                    "resourceName": "addBucketLogging"
+                }
+            ],
+            "providerPlugin": "awscloudformation",
+            "service": "customCDK"
+        }
+    }
+}

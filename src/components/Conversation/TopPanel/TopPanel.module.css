@@ -1,0 +1,14 @@
+.alignment {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+}
+
+.minWidthDropdown > div {
+    min-width: 110px;
+}
+
+.ctrlHeading {
+    padding: 0 !important;
+    margin-bottom: 15px !important;
+}

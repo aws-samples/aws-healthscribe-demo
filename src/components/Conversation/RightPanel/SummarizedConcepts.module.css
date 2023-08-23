@@ -1,0 +1,35 @@
+.badge {
+    background-color: rgb(240, 240, 240) !important;
+    color: rgb(98, 98, 98) !important;
+    font-style: italic !important;
+    padding: 0 6px !important;
+    line-height: 120% !important;
+    font-size: 10px !important;
+}
+
+.summaryList {
+    list-style-type: none;
+}
+
+ul {
+    padding-left: 2px;
+}
+
+li {
+    list-style-type: disc;
+    position: relative;
+    margin: 0;
+    padding-bottom: 3px;
+    display: block;
+}
+
+button {
+    border: none;
+    background-color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #d1d1d1;
+}

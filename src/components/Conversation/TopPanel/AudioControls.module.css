@@ -1,0 +1,17 @@
+.ctrlHeading {
+    padding: 0 !important;
+    margin-bottom: 15px !important;
+}
+
+.playerControl {
+    position: fixed;
+    bottom: 1%;
+    right: 1%;
+    z-index: 100;
+}
+
+.closeButton {
+    position: absolute !important;
+    top: 5px;
+    right: 5px;
+}

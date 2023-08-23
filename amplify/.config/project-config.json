@@ -1,0 +1,15 @@
+{
+    "providers": ["awscloudformation"],
+    "projectName": "awshealthscribedemo",
+    "version": "3.1",
+    "frontend": "javascript",
+    "javascript": {
+        "framework": "react",
+        "config": {
+            "SourceDir": "src",
+            "DistributionDir": "build",
+            "BuildCommand": "yarn run build",
+            "StartCommand": "yarn run dev"
+        }
+    }
+}

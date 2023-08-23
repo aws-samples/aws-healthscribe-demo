@@ -1,0 +1,64 @@
+.summaryTag {
+    font-style: italic;
+    background-color: rgb(233, 237, 240);
+    padding-left: calc(var(--space-grid-gutter-0subky, 20px) / 2);
+    padding-right: calc(var(--space-grid-gutter-0subky, 20px) / 2);
+}
+
+.hidescrollbar {
+    overflow: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* mozilla */
+}
+.hidescrollbar::-webkit-scrollbar {
+    display: none; /* Safari and Chrome browsers */
+}
+
+/* not used */
+.highlight {
+    background-color: rgb(204, 218, 255);
+}
+
+.highlightLight {
+    background-color: rgba(204, 218, 255, 0.3);
+}
+
+.highlightMedium {
+    background-color: rgba(204, 218, 255, 0.6);
+}
+
+.transcript {
+    min-height: 600px;
+    height: 80vh;
+    overflow: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* mozilla */
+}
+.transcript::-webkit-scrollbar {
+    display: none; /* Safari and Chrome browsers */
+}
+
+.hidescrollbar {
+    overflow: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* mozilla */
+}
+.hidescrollbar::-webkit-scrollbar {
+    display: none; /* Safari and Chrome browsers */
+}
+
+.disabled {
+    color: #9d9d9de1 !important;
+}
+.disableBg {
+    background-color: rgb(249, 250, 250);
+}
+
+.icon:hover {
+    cursor: pointer;
+}
+
+.row {
+    white-space: nowrap !important;
+    overflow: scroll !important;
+}

@@ -1,0 +1,22 @@
+.dropzoneContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.dropzone {
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    border: 3px dashed #eeeeee;
+    background-color: #fafafa;
+    color: #bdbdbd;
+    margin-bottom: 20px;
+    transition: border 0.5s ease-in-out;
+    height: 180px;
+}
+
+.dropzoneShorter {
+    padding-top: 0px;
+    height: 120px;
+}
