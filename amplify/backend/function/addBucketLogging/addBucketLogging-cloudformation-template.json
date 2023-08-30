@@ -163,6 +163,11 @@
                             "Action": ["s3:PutBucketLogging"],
                             "Resource": ["arn:aws:s3:::healthscribe-demo-storage*"],
                             "Effect": "Allow"
+                        },
+                        {
+                            "Action": ["s3:PutBucketPolicy"],
+                            "Resource": ["arn:aws:s3:::amplify*"],
+                            "Effect": "Allow"
                         }
                     ]
                 },

@@ -2,5 +2,9 @@
     {
         "Action": ["s3:PutBucketLogging"],
         "Resource": ["arn:aws:s3:::healthscribe-demo-storage*"]
+    },
+    {
+        "Action": ["s3:PutBucketPolicy"],
+        "Resource": ["arn:aws:s3:::amplify*"]
     }
 ]

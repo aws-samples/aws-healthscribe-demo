@@ -10,11 +10,14 @@ export type AmplifyDependentResourcesAttributes = {
             UserPoolName: 'string';
         };
     };
-    custom: {
-        addBucketLogging: {
-            LoggingBucketName: 'string';
+    storage: {
+        healthScribeDemoStorage: {
+            BucketName: 'string';
+            HealthScribeServiceRoleArn: 'string';
+            Region: 'string';
         };
     };
+
     function: {
         addBucketLogging: {
             Arn: 'string';
@@ -24,11 +27,9 @@ export type AmplifyDependentResourcesAttributes = {
             Region: 'string';
         };
     };
-    storage: {
-        healthScribeDemoStorage: {
-            BucketName: 'string';
-            HealthScribeServiceRoleArn: 'string';
-            Region: 'string';
+    custom: {
+        addBucketLogging: {
+            LoggingBucketName: 'string';
         };
     };
 };
