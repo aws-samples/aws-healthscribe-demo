@@ -41,7 +41,7 @@ exports.handler = async (event, context) => {
                 {
                     Sid: 'S3ServerAccessLogsPolicy',
                     Action: 's3:PutObject',
-                    Effect: 'Deny',
+                    Effect: 'Allow',
                     Principal: {
                         Service: 'logging.s3.amazonaws.com',
                     },

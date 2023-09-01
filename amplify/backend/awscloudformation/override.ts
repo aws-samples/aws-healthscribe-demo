@@ -29,5 +29,18 @@ export function override(resources: AmplifyRootStackTemplate, amplifyProjectInfo
                 ],
             },
         },
+        {
+            policyName: 'polly-synthesize',
+            policyDocument: {
+                Version: '2012-10-17',
+                Statement: [
+                    {
+                        Resource: '*',
+                        Action: ['polly:SynthesizeSpeech'],
+                        Effect: 'Allow',
+                    },
+                ],
+            },
+        },
     ];
 }

@@ -8,7 +8,7 @@ import { AmplifyUser } from '@aws-amplify/ui';
 
 // Types
 import { AppSettings } from '../Settings/Settings';
-import { AddFlashMessageProps } from '../../hooks/useNotification';
+import { AddFlashMessageProps, UpdateProgressBarProps } from '../../hooks/useNotification';
 
 // Settings
 import { DEFAULT_SETTINGS } from '../Settings/defaultSettings';
@@ -45,11 +45,12 @@ export function useAppContext() {
 
 // Notification Context
 type NotificationContextType = {
-    // eslint-disable-next-line no-unused-vars
     addFlashMessage: (props: AddFlashMessageProps) => void;
+    updateProgressBar: (props: UpdateProgressBarProps) => void;
 };
 export const NotificationContext = createContext<NotificationContextType>({
     addFlashMessage: () => {},
+    updateProgressBar: () => {},
 });
 export function useNotificationContext() {
     const context = useContext(NotificationContext);

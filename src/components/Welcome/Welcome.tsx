@@ -9,7 +9,6 @@ import Box from '@cloudscape-design/components/box';
 import Container from '@cloudscape-design/components/container';
 import ContentLayout from '@cloudscape-design/components/content-layout';
 import Header from '@cloudscape-design/components/header';
-import Icon from '@cloudscape-design/components/icon';
 import Link from '@cloudscape-design/components/link';
 import TextContent from '@cloudscape-design/components/text-content';
 
@@ -53,10 +52,13 @@ function Welcome() {
                             </Link>
                         </li>
                     </ul>
-                    <p>
-                        At any point, select the information icon <Icon name="status-info" /> on the top right of this
-                        page for more information.
-                    </p>
+                    <li>
+                        <Link onFollow={() => navigate('/generate')}>Generate a multi-speaker audio file</Link> using{' '}
+                        <Link external href="https://aws.amazon.com/polly/">
+                            Amazon Polly
+                        </Link>
+                        .
+                    </li>
                 </TextContent>
             );
         } else {

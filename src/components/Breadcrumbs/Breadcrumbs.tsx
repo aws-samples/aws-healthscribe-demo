@@ -58,6 +58,14 @@ export default function Breadcrumbs() {
                 href: '/new',
             },
         ];
+    } else if (pathName === '/generate') {
+        items = [
+            ...baseBreadcrumb,
+            {
+                text: 'Generate Audio',
+                href: '/generate',
+            },
+        ];
     }
 
     return (

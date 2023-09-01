@@ -64,13 +64,13 @@ export default function LeftPanel({
     setAudioTime,
     audioReady,
 }: LeftPanelProps) {
-    const [multiSpeakers, setMultiSpeakers] = useState<boolean>(false); // whether there are multiple speakers
+    const [multiSpeakers, setMultiSpeakers] = useState<string[]>([]); // whether there are multiple speakers
     const [transcript, setTranscript] = useState<ITranscript[]>([]); // transcript (and useless comment)
 
     useEffect(() => {
         if (jobLoading || transcriptFile == null) return;
 
-        setMultiSpeakers(false);
+        setMultiSpeakers([]);
 
         const transcriptItems: ITranscriptItems[] = transcriptFile!.Conversation?.TranscriptItems;
         const transcriptSegments: ITranscriptSegments[] = transcriptFile!.Conversation?.TranscriptSegments;
@@ -89,6 +89,19 @@ export default function LeftPanel({
         }
 
         const segmentDict = keyBy(transcriptMod, 'SegmentId');
+
+        // Determine if there's multiple speakers (>2)
+        const transcriptSpeakers = [...new Set(transcriptSegments.map((s) => s.ParticipantDetails.ParticipantRole))];
+        if (transcriptSpeakers.length > 2) {
+            const speakerList = [...new Set(transcriptSpeakers.map((s) => s.split('_')[0]))];
+            const speakerCount = speakerList.map((sl) => {
+                return { speaker: sl, count: transcriptSpeakers.filter((ts) => ts.split('_')[0] === sl).length };
+            });
+            const transcriptMultiSpeakers = speakerCount.filter((sc) => sc.count > 1).map((sc) => sc.speaker);
+            if (transcriptMultiSpeakers.length > 0) {
+                setMultiSpeakers(transcriptMultiSpeakers);
+            }
+        }
 
         // Iterate through transcript insights, and update segmentDict with the relevant insight.
         // This is used for highlighting the transcript
@@ -225,6 +238,13 @@ export default function LeftPanel({
                         const newSpeaker =
                             script.ParticipantDetails.ParticipantRole !==
                             transcript[key - 1]?.ParticipantDetails.ParticipantRole;
+                        const speakerName = script.ParticipantDetails.ParticipantRole.split('_')[0];
+                        const speakerNameFormatted = multiSpeakers.includes(speakerName)
+                            ? `${toTitleCase(speakerName)} ${
+                                  parseInt(script.ParticipantDetails.ParticipantRole.split('_')[1]) + 1
+                              }`
+                            : toTitleCase(speakerName);
+
                         // Highlight both the same for uniformity highlightLight/highlightMedium
                         const highlightSegmentStyle =
                             script.SegmentId === highlightId.selectedSegmentId
@@ -236,7 +256,11 @@ export default function LeftPanel({
                             <div key={key} style={{ paddingTop: !key ? '15px' : '' }}>
                                 <Grid disableGutters gridDefinition={[{ colspan: 2 }, { colspan: 10 }]}>
                                     <div
-                                        style={{ paddingTop: newSpeaker && key > 0 ? TRANSCRIPT_SPACING : '' }}
+                                        style={{
+                                            paddingTop: newSpeaker && key > 0 ? TRANSCRIPT_SPACING : '',
+                                            fontWeight: 'bold',
+                                            fontSize: multiSpeakers ? '14px' : '16px',
+                                        }}
                                         className={
                                             ['OTHER', 'SMALL_TALK'].includes(script.SectionDetails.SectionName) &&
                                             smallTalkCheck
@@ -244,19 +268,11 @@ export default function LeftPanel({
                                                 : ''
                                         }
                                     >
-                                        <Box fontSize="heading-s" variant="strong">
-                                            {newSpeaker && (
-                                                <div className={`${styles.row} ${styles.hidescrollbar}`}>
-                                                    {toTitleCase(
-                                                        script.ParticipantDetails.ParticipantRole.split('_')[0]
-                                                    )}
-                                                    {multiSpeakers &&
-                                                        ` ${
-                                                            +script.ParticipantDetails.ParticipantRole.split('_')[1] + 1
-                                                        }`}
-                                                </div>
-                                            )}
-                                        </Box>
+                                        {newSpeaker && (
+                                            <div className={`${styles.row} ${styles.hidescrollbar}`}>
+                                                {speakerNameFormatted}
+                                            </div>
+                                        )}
                                     </div>
                                     <div
                                         style={{

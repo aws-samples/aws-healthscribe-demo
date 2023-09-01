@@ -10,7 +10,6 @@ import ContentLayout from '@cloudscape-design/components/content-layout';
 import Form from '@cloudscape-design/components/form';
 import FormField from '@cloudscape-design/components/form-field';
 import Header from '@cloudscape-design/components/header';
-import ProgressBar from '@cloudscape-design/components/progress-bar';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 import TokenGroup from '@cloudscape-design/components/token-group';
@@ -38,7 +37,7 @@ import { Progress } from '@aws-sdk/lib-storage';
 import amplifyCustom from '../../aws-custom.json';
 
 export default function NewConversation() {
-    const { addFlashMessage } = useContext(NotificationContext);
+    const { updateProgressBar } = useContext(NotificationContext);
     const navigate = useNavigate();
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // is job submitting
@@ -69,41 +68,6 @@ export default function NewConversation() {
         }
     }, [filePath]);
 
-    type UpdateProgressBarProps = {
-        type?: 'info' | 'success' | 'error';
-        jobName: string;
-        value: number;
-        description: string;
-        additionalInfo?: string;
-    };
-    /**
-     * @description Function used to update the lifecycle of creating a new HealthScribe job
-     *              0% initially, 0-95% from the S3 upload, 5% submitting the HealthScribe API
-     * @param {string} type - type of flash message (info, success, error)
-     * @param {string} jobName - name of the job. used in constructing the unique ID for the job
-     * @param {number} value - value of the progress bar (1-100)
-     * @param {string} description - description of the progress bar
-     * @param {string} additionalInfo - (optional) additional info to be displayed in the progress bar
-     */
-    function updateProgressBar({
-        type = 'info',
-        jobName,
-        value,
-        description,
-        additionalInfo = '',
-    }: UpdateProgressBarProps) {
-        const id = `New HealthScribe Job: ${jobName}`;
-        addFlashMessage({
-            id: id,
-            dismissible: ['success', 'error'].includes(type) ? true : false,
-            header: id,
-            type: type,
-            content: (
-                <ProgressBar value={value} variant="flash" description={description} additionalInfo={additionalInfo} />
-            ),
-        });
-    }
-
     /**
      * @description Callback function used by the lib-storage SDK Upload function. Updates the progress bar
      *              with the status of the upload
@@ -112,12 +76,12 @@ export default function NewConversation() {
      * @param {number} total - total number of bytes to be uploaded
      */
     function s3UploadCallback({ loaded, part, total }: Progress) {
-        // Last 5% is for submitting to the HealthScribe API
-        const value = Math.round(((loaded || 1) / (total || 100)) * 95);
+        // Last 1% is for submitting to the HealthScribe API
+        const value = Math.round(((loaded || 1) / (total || 100)) * 99);
         const loadedMb = Math.round((loaded || 1) / 1024 / 1024);
         const totalMb = Math.round((total || 1) / 1024 / 1024);
         updateProgressBar({
-            jobName: jobName,
+            id: `New HealthScribe Job: ${jobName}`,
             value: value,
             description: `Uploaded part ${part}, ${loadedMb}MB / ${totalMb}MB`,
         });
@@ -185,7 +149,7 @@ export default function NewConversation() {
 
         // Add initial progress flash message
         updateProgressBar({
-            jobName: jobName,
+            id: `New HealthScribe Job: ${jobName}`,
             value: 0,
             description: 'Upload to S3 in progress...',
         });
@@ -198,7 +162,7 @@ export default function NewConversation() {
             });
         } catch (e) {
             updateProgressBar({
-                jobName: jobName,
+                id: `New HealthScribe Job: ${jobName}`,
                 type: 'error',
                 value: 0,
                 description: 'Uploading files to S3 failed',
@@ -212,7 +176,7 @@ export default function NewConversation() {
             const startJob = await startMedicalScribeJob(jobParams);
             if (startJob?.data?.MedicalScribeJob?.MedicalScribeJobStatus) {
                 updateProgressBar({
-                    jobName: jobName,
+                    id: `New HealthScribe Job: ${jobName}`,
                     type: 'success',
                     value: 100,
                     description: 'HealthScribe job submitted',
@@ -224,7 +188,7 @@ export default function NewConversation() {
                 navigate('/conversations');
             } else {
                 updateProgressBar({
-                    jobName: jobName,
+                    id: `New HealthScribe Job: ${jobName}`,
                     type: 'info',
                     value: 100,
                     description: 'Unable to confirm HealthScribe job submission',
@@ -233,7 +197,7 @@ export default function NewConversation() {
             }
         } catch (e) {
             updateProgressBar({
-                jobName: jobName,
+                id: `New HealthScribe Job: ${jobName}`,
                 type: 'error',
                 value: 0,
                 description: 'Submitting job to HealthScribe failed',

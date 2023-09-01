@@ -269,7 +269,11 @@ export default function TopPanel({
                                 </Checkbox>
                             </div>
                             <div className={styles.alignment}>
-                                <Checkbox checked={silenceChecked} onChange={() => setSilenceChecked(!silenceChecked)}>
+                                <Checkbox
+                                    checked={false}
+                                    disabled={true}
+                                    onChange={() => setSilenceChecked(!silenceChecked)}
+                                >
                                     Silences (<i>{Math.ceil(silencePercent * 100)}%</i>)
                                 </Checkbox>
                             </div>

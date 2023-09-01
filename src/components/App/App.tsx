@@ -46,12 +46,13 @@ const Settings = lazy(() => import('../Settings'));
 const Conversations = lazy(() => import('../Conversations'));
 const Conversation = lazy(() => import('../Conversation'));
 const NewConversation = lazy(() => import('../NewConversation'));
+const GenerateAudio = lazy(() => import('../GenerateAudio'));
 
 export default function App() {
     const [appTheme, setAppTheme] = useLocalStorage<string>('App-Theme', 'theme.light'); // App theme
     const [appSettings, setAppSettings] = useLocalStorage<AppSettings>('App-Settings', DEFAULT_SETTINGS); // App settings
     const { user, signOut } = useAuthenticator((context) => [context.user]); // Cognito user context and signOut from AWS Amplify
-    const { flashbarItems, addFlashMessage } = useNotification(); // Flashbar
+    const { flashbarItems, addFlashMessage, updateProgressBar } = useNotification(); // Flashbar
 
     // Update API settings when appSettings is changed
     useEffect(() => {
@@ -70,6 +71,7 @@ export default function App() {
                     <Route path="/conversations" element={<Conversations />} />
                     <Route path="/conversation/:conversationName" element={<Conversation />} />
                     <Route path="/new" element={<NewConversation />} />
+                    <Route path="/generate" element={<GenerateAudio />} />
                     <Route path="/settings" element={<Settings setAppSettings={setAppSettings} />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
@@ -91,6 +93,7 @@ export default function App() {
     };
     const notificationContextValue = {
         addFlashMessage: addFlashMessage,
+        updateProgressBar: updateProgressBar,
     };
 
     return (

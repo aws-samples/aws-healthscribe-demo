@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 // Cloudscape
 import Alert from '@cloudscape-design/components/alert';
@@ -17,13 +17,11 @@ import Select from '@cloudscape-design/components/select';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 
-// Router
-import { useNavigate } from 'react-router-dom';
-
 // App
 import { deleteHealthScribeJob, ListHealthScribeJobsProps } from '../../utils/HealthScribeApi';
 import { collectionPreferencesProps, TablePreferencesDef } from './tablePrefs';
 import { HealthScribeJob } from './Conversations';
+import { NotificationContext } from '../App/contexts';
 
 // Debouncer
 import { useDebounce } from 'use-debounce';
@@ -40,6 +38,7 @@ function DeleteModal({
     setDeleteModalActive,
     refreshTable,
 }: DeleteModalProps) {
+    const { addFlashMessage } = useContext(NotificationContext);
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
     async function doDelete(medicalScribeJobName: string) {
@@ -48,7 +47,12 @@ function DeleteModal({
             await deleteHealthScribeJob({ MedicalScribeJobName: medicalScribeJobName });
             refreshTable();
         } catch (err) {
-            console.error(err);
+            addFlashMessage({
+                id: err?.toString() || 'Error deleting HealthScribe job',
+                header: 'Error deleting HealthScribe job',
+                content: err?.toString() || 'Error deleting HealthScribe job',
+                type: 'error',
+            });
         }
         setDeleteModalActive(false);
         setIsDeleting(false);
@@ -100,30 +104,20 @@ function TableHeaderActions({
     setDeleteModalActive,
     refreshTable,
 }: TableHeaderActionsProps) {
-    const navigate = useNavigate();
-
     // Disable HealthScribeJob action buttons (view metadata, view images) if nothing is selected
     const actionButtonDisabled = useMemo(
-        () => selectedHealthScribeJob.length === 0 || selectedHealthScribeJob[0].MedicalScribeJobStatus !== 'COMPLETED',
+        () =>
+            selectedHealthScribeJob.length === 0 ||
+            !['COMPLETED', 'FAILED'].includes(selectedHealthScribeJob[0].MedicalScribeJobStatus),
         [selectedHealthScribeJob]
     );
 
-    function handleViewConversation() {
-        // The view conversation buton shouldn't be active if there's nothing selected
-        if (selectedHealthScribeJob.length === 0) return;
-        const url = `/conversation/${encodeURI(selectedHealthScribeJob[0]?.MedicalScribeJobName)}`;
-        navigate(url);
-    }
-
     return (
         <SpaceBetween direction="horizontal" size="s">
-            <Button onClick={() => refreshTable()} iconName="refresh" variant="icon" />
+            <Button onClick={() => refreshTable()} iconName="refresh" />
             <Button onClick={() => setSearchParams({})}>Clear</Button>
             <Button onClick={() => setDeleteModalActive(true)} disabled={actionButtonDisabled}>
                 Delete
-            </Button>
-            <Button onClick={() => handleViewConversation()} disabled={actionButtonDisabled} variant="primary">
-                View Conversation
             </Button>
         </SpaceBetween>
     );
