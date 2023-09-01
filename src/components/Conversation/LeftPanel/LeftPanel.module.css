@@ -38,15 +38,6 @@
     display: none; /* Safari and Chrome browsers */
 }
 
-.hidescrollbar {
-    overflow: scroll;
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* mozilla */
-}
-.hidescrollbar::-webkit-scrollbar {
-    display: none; /* Safari and Chrome browsers */
-}
-
 .disabled {
     color: #9d9d9de1 !important;
 }

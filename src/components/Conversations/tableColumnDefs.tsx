@@ -2,12 +2,32 @@
 // SPDX-License-Identifier: MIT-0
 
 // Cloudscape
+import Link from '@cloudscape-design/components/link';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
+
+// Router
+import { useNavigate } from 'react-router';
 
 // App
 import toTitleCase from '../../utils/toTitleCase';
 import { HealthScribeJob } from './Conversations';
+
+// Dayjs
 import dayjs from 'dayjs';
+
+function JobName(healthScribeJob: HealthScribeJob) {
+    const navigate = useNavigate();
+
+    if (healthScribeJob.MedicalScribeJobStatus === 'COMPLETED') {
+        return (
+            <Link onFollow={() => navigate(`/conversation/${healthScribeJob.MedicalScribeJobName}`)}>
+                {healthScribeJob.MedicalScribeJobName}
+            </Link>
+        );
+    } else {
+        return healthScribeJob.MedicalScribeJobName;
+    }
+}
 
 function JobStatus(status: string) {
     switch (status) {
@@ -28,7 +48,7 @@ export const columnDefs = [
     {
         id: 'MedicalScribeJobName',
         header: 'Name',
-        cell: (e: HealthScribeJob) => e.MedicalScribeJobName,
+        cell: (e: HealthScribeJob) => JobName(e),
         sortingField: 'MedicalScribeJobName',
     },
     {
@@ -42,6 +62,7 @@ export const columnDefs = [
         header: 'Language',
         cell: (e: HealthScribeJob) => e.LanguageCode,
         sortingField: 'LanguageCode',
+        width: 135,
     },
     {
         id: 'CreationTime',
