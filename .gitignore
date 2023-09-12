@@ -41,6 +41,9 @@ amplify.backup
 amplify/team-provider-info.json
 src/aws-custom.json
 
+# Webstorm
+.idea
+
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
 amplify/.config/local-*

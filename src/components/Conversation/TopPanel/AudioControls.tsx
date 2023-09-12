@@ -1,6 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
+import React from 'react';
+
 // Cloudscape
 import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
@@ -17,6 +19,7 @@ const PLAYBACK_SPEEDS: number[] = [0.5, 1, 1.2, 1.5, 2];
 type AudioControlsProps = {
     wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
     showControls: boolean;
+    audioLoading: boolean;
     setShowControls: React.Dispatch<React.SetStateAction<boolean>>;
     playingAudio: boolean;
     setPlayingAudio: React.Dispatch<React.SetStateAction<boolean>>;
@@ -27,12 +30,14 @@ type AudioControlsProps = {
 export default function AudioControls({
     wavesurfer,
     showControls,
+    audioLoading,
     setShowControls,
     playingAudio,
     setPlayingAudio,
     playBackSpeed,
     setPlayBackSpeed,
 }: AudioControlsProps) {
+    if (audioLoading) return;
     if (showControls) {
         return (
             <div className={styles.playerControl}>
@@ -63,7 +68,7 @@ export default function AudioControls({
                             <Button
                                 onClick={() => {
                                     wavesurfer.current?.pause();
-                                    setPlayingAudio(!!wavesurfer.current?.isPlaying());
+                                    setPlayingAudio(!playingAudio);
                                 }}
                             >
                                 <Icon name="view-full" />
@@ -72,7 +77,7 @@ export default function AudioControls({
                             <Button
                                 onClick={() => {
                                     wavesurfer.current?.play();
-                                    setPlayingAudio(!!wavesurfer.current?.isPlaying());
+                                    setPlayingAudio(!playingAudio);
                                 }}
                             >
                                 <Icon name="caret-right-filled" />

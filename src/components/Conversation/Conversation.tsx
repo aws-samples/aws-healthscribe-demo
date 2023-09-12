@@ -22,6 +22,7 @@ import { getObject, getS3Object } from '../../utils/S3Api';
 import TopPanel from './TopPanel';
 import RightPanel from './RightPanel';
 import LeftPanel from './LeftPanel';
+import ViewResults from './ViewResults';
 
 export default function Conversation() {
     const { conversationName } = useParams();
@@ -29,6 +30,7 @@ export default function Conversation() {
 
     const [jobLoading, setJobLoading] = useState(true); // Is getHealthScribeJob in progress
     const [jobDetails, setJobDetails] = useState<HealthScribeJob | null>(null); // HealthScribe job details
+    const [viewResultsModal, setViewResultsModal] = useState<boolean>(false); // Is view results modal open
 
     const [clinicalDocument, setClinicalDocument] = useState<IAuraClinicalDocOutput | null>(null);
     const [transcriptFile, setTranscriptFile] = useState<IAuraTranscriptOutput | null>(null);
@@ -87,6 +89,12 @@ export default function Conversation() {
 
     return (
         <ContentLayout>
+            <ViewResults
+                visible={viewResultsModal}
+                setVisible={setViewResultsModal}
+                transcriptString={JSON.stringify(transcriptFile || 'Loading...', null, 2)}
+                clinicalDocumentString={JSON.stringify(clinicalDocument || 'Loading...', null, 2)}
+            />
             <Grid
                 gridDefinition={[
                     { colspan: { default: 12 } },
@@ -103,6 +111,7 @@ export default function Conversation() {
                     setSmallTalkCheck={setSmallTalkCheck}
                     setAudioTime={setAudioTime}
                     setAudioReady={setAudioReady}
+                    setViewResultsModal={setViewResultsModal}
                 />
                 <LeftPanel
                     jobLoading={jobLoading}
