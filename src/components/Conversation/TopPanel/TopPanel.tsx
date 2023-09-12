@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 
 // Cloudscape
 import Box from '@cloudscape-design/components/box';
@@ -39,6 +39,7 @@ type TopPanelProps = {
     setSmallTalkCheck: React.Dispatch<React.SetStateAction<boolean>>;
     setAudioTime: React.Dispatch<React.SetStateAction<number>>;
     setAudioReady: React.Dispatch<React.SetStateAction<boolean>>;
+    setViewResultsModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export default function TopPanel({
     jobLoading,
@@ -49,6 +50,7 @@ export default function TopPanel({
     setSmallTalkCheck,
     setAudioTime,
     setAudioReady,
+    setViewResultsModal,
 }: TopPanelProps) {
     const navigate = useNavigate();
     const { addFlashMessage } = useContext(NotificationContext);
@@ -156,6 +158,7 @@ export default function TopPanel({
                 });
             }
         }
+
         if (!jobLoading && waveformElement) getAudio();
     }, [jobLoading, waveformElement]);
 
@@ -182,10 +185,18 @@ export default function TopPanel({
                     start: start,
                     end: end,
                     drag: false,
+                    resize: false,
                     color: 'rgba(255, 153, 0, 0.5)',
                 });
             }
         }
+
+        // Skip to the end of the region when playing. I.e. skip small talk and silences
+        wavesurferRegions!.on('region-in', ({ end }) => {
+            if (wavesurfer.current!.getCurrentTime() < end) {
+                wavesurfer.current?.seekTo(end / wavesurfer.current?.getDuration());
+            }
+        });
     }, [wavesurfer, smallTalkCheck, smallTalkList, silenceChecked, silencePeaks]);
 
     function AudioHeader() {
@@ -204,36 +215,33 @@ export default function TopPanel({
             }
         }
 
-        if (audioLoading) {
-            return null;
-        } else {
-            return (
-                <Box>
-                    <Header
-                        variant="h3"
-                        actions={
-                            <SpaceBetween direction="horizontal" size="xs">
-                                <ButtonDropdown
-                                    items={[
-                                        { text: 'Audio', id: 'audio' },
-                                        { text: 'Transcript', id: 'transcript' },
-                                        { text: 'Summary', id: 'summary' },
-                                    ]}
-                                    onItemClick={({ detail }) => openUrl(detail)}
-                                >
-                                    Download
-                                </ButtonDropdown>
-                                <Button variant="primary" onClick={() => navigate('/conversations')}>
-                                    Exit Conversation
-                                </Button>
-                            </SpaceBetween>
-                        }
-                    >
-                        {jobDetails?.MedicalScribeJobName}
-                    </Header>
-                </Box>
-            );
-        }
+        return (
+            <Box>
+                <Header
+                    variant="h3"
+                    actions={
+                        <SpaceBetween direction="horizontal" size="xs">
+                            <ButtonDropdown
+                                items={[
+                                    { text: 'Audio', id: 'audio' },
+                                    { text: 'Transcript', id: 'transcript' },
+                                    { text: 'Summary', id: 'summary' },
+                                ]}
+                                onItemClick={({ detail }) => openUrl(detail)}
+                            >
+                                Download
+                            </ButtonDropdown>
+                            <Button onClick={() => setViewResultsModal(true)}>View Output JSON</Button>
+                            <Button variant="primary" onClick={() => navigate('/conversations')}>
+                                Exit Conversation
+                            </Button>
+                        </SpaceBetween>
+                    }
+                >
+                    {jobDetails?.MedicalScribeJobName}
+                </Header>
+            </Box>
+        );
     }
 
     function Loading() {
@@ -269,11 +277,7 @@ export default function TopPanel({
                                 </Checkbox>
                             </div>
                             <div className={styles.alignment}>
-                                <Checkbox
-                                    checked={false}
-                                    disabled={true}
-                                    onChange={() => setSilenceChecked(!silenceChecked)}
-                                >
+                                <Checkbox checked={silenceChecked} onChange={() => setSilenceChecked(!silenceChecked)}>
                                     Silences (<i>{Math.ceil(silencePercent * 100)}%</i>)
                                 </Checkbox>
                             </div>
@@ -288,6 +292,7 @@ export default function TopPanel({
         <>
             <AudioControls
                 wavesurfer={wavesurfer}
+                audioLoading={audioLoading}
                 showControls={showControls}
                 setShowControls={setShowControls}
                 playingAudio={playingAudio}
@@ -295,7 +300,6 @@ export default function TopPanel({
                 playBackSpeed={playBackSpeed}
                 setPlayBackSpeed={setPlayBackSpeed}
             />
-
             <Container header={<AudioHeader />}>
                 {(jobLoading || audioLoading) && <Loading />}
                 <SegmentControls />
