@@ -23,7 +23,8 @@ export const extractRegions = (peaks: Peaks, duration: number) => {
     // Cluster silence values
     const clusters: number[][] = [];
     silences.forEach(function (val, index) {
-        if (clusters.length && val === silences[index - 1] + 1) {
+        // Add ID to silence cluster if the current value is less than the previous value + minimum length
+        if (clusters.length && val <= silences[index - 1] + minLen) {
             clusters[clusters.length - 1].push(val);
         } else {
             clusters.push([val]);
