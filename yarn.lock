@@ -887,10 +887,10 @@
     "@aws-sdk/util-waiter" "3.6.1"
     tslib "^2.0.0"
 
-"@aws-sdk/client-s3@^3.410.0":
-  version "3.410.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.410.0.tgz#f1423919449b814460855eb304163027b93d1c72"
-  integrity sha512-9pInvFl3xgk+CnbHFZVk0wAicZUiokIGQ05e/ZDBHjiWK5ph/XeQ4CCTuh7JxT0yABNhua8/6txsyq/uNXOzoA==
+"@aws-sdk/client-s3@^3.412.0":
+  version "3.412.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/client-s3/-/client-s3-3.412.0.tgz#f03c577456951e0e476b2d8ab079b01b2b6a8c93"
+  integrity sha512-sNrlx9sSBmFUCqMgTznwk9Fee3PJat0nZ3RIDR5Crhsld/eexxrqb6TYKsxzFfBfXTL/oPh+/S5driRV2xsB8A==
   dependencies:
     "@aws-crypto/sha1-browser" "3.0.0"
     "@aws-crypto/sha256-browser" "3.0.0"
@@ -908,7 +908,7 @@
     "@aws-sdk/middleware-signing" "3.410.0"
     "@aws-sdk/middleware-ssec" "3.410.0"
     "@aws-sdk/middleware-user-agent" "3.410.0"
-    "@aws-sdk/signature-v4-multi-region" "3.410.0"
+    "@aws-sdk/signature-v4-multi-region" "3.412.0"
     "@aws-sdk/types" "3.410.0"
     "@aws-sdk/util-endpoints" "3.410.0"
     "@aws-sdk/util-user-agent-browser" "3.410.0"
@@ -1584,10 +1584,10 @@
   dependencies:
     tslib "^1.8.0"
 
-"@aws-sdk/lib-storage@^3.410.0":
-  version "3.410.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.410.0.tgz#0c8c61c42307a22f1e340d63c9a8624158a12812"
-  integrity sha512-oRaTkCYJ9hcO1kutDJ8p4tKclu679BFWo+7e8uxcmg6crZaRJQqX7q3uFai9yUtg5fbtLMZXdQviqkaKNVdJdA==
+"@aws-sdk/lib-storage@^3.412.0":
+  version "3.412.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/lib-storage/-/lib-storage-3.412.0.tgz#96dafdb1193d1b9fec050cef78dfe8e4b3dcc1d2"
+  integrity sha512-uAdVtNuip06rJOs28zVrYXLNeHfKraxvJRTzTA+DW1dXkzh70GTKqDKHWH9IJkW/xMTE6wGSM+fDs8jsMOn/yA==
   dependencies:
     "@smithy/abort-controller" "^2.0.1"
     "@smithy/middleware-endpoint" "^2.0.6"
@@ -2019,12 +2019,12 @@
     "@aws-sdk/types" "3.6.1"
     tslib "^1.8.0"
 
-"@aws-sdk/s3-request-presigner@^3.410.0":
-  version "3.410.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/s3-request-presigner/-/s3-request-presigner-3.410.0.tgz#296e134dbf2663d98262fd93847f40ace32eeb16"
-  integrity sha512-In2/XPdPA874XH0MdhLJ7tG74Yay/ATCMpMQcy+summlPhmO1G3BiKMoaDPRks+zJNhgiy6++PlcP93fwDSxcA==
+"@aws-sdk/s3-request-presigner@^3.412.0":
+  version "3.412.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/s3-request-presigner/-/s3-request-presigner-3.412.0.tgz#f14eeefe1a43cba0d9a89fa188d178e78d7fab4e"
+  integrity sha512-P51VoH2wC6dPfDnDyUUvrNHM8BOQHjLO1rAK88njCvQjsSCKA/E57jk31pOAzMQb3Sauw0qHL8Y+RbFT9YmIJw==
   dependencies:
-    "@aws-sdk/signature-v4-multi-region" "3.410.0"
+    "@aws-sdk/signature-v4-multi-region" "3.412.0"
     "@aws-sdk/types" "3.410.0"
     "@aws-sdk/util-format-url" "3.410.0"
     "@smithy/middleware-endpoint" "^2.0.6"
@@ -2058,10 +2058,10 @@
   dependencies:
     tslib "^1.8.0"
 
-"@aws-sdk/signature-v4-multi-region@3.410.0":
-  version "3.410.0"
-  resolved "https://registry.yarnpkg.com/@aws-sdk/signature-v4-multi-region/-/signature-v4-multi-region-3.410.0.tgz#a817ec05c2d4b7c2df0a46a6f95dd6876f6e8bef"
-  integrity sha512-abgcl9/i9frxGUVAfHHWj49UMCFEmzkYwKmV/4kw9MYn6BZ3HKb5M00tBLn9/PcAKfANS7O+qJRiEQT66rmfhg==
+"@aws-sdk/signature-v4-multi-region@3.412.0":
+  version "3.412.0"
+  resolved "https://registry.yarnpkg.com/@aws-sdk/signature-v4-multi-region/-/signature-v4-multi-region-3.412.0.tgz#417cdddd9d345e0a18cb29b282af33dd8ce0c1f2"
+  integrity sha512-ijxOeYpNDuk2T940S9HYcZ1C+wTP9vqp1Cw37zw9whVY2mKV3Vr7i+44D4FQ5HhWULgdwhjD7IctbNxPIPzUZQ==
   dependencies:
     "@aws-sdk/types" "3.410.0"
     "@smithy/protocol-http" "^3.0.2"
@@ -2702,10 +2702,10 @@
     "@juggle/resize-observer" "^3.3.1"
     tslib "^2.3.1"
 
-"@cloudscape-design/components@^3.0.385":
-  version "3.0.385"
-  resolved "https://registry.yarnpkg.com/@cloudscape-design/components/-/components-3.0.385.tgz#d05450b1f27a7e472d5519b6aad55f00b2374979"
-  integrity sha512-ZGr1vzmy0EEac2D/OzK/eil/htERRqUlCte23CnHJizzj/rx0go8p816sOD0WAHfm/y4osP10weN8KuiVFhy2A==
+"@cloudscape-design/components@^3.0.386":
+  version "3.0.386"
+  resolved "https://registry.yarnpkg.com/@cloudscape-design/components/-/components-3.0.386.tgz#8e73546e3cf724dedf47bff1c579c20fdba02032"
+  integrity sha512-1F0c02AfzpCDXxOAFSaW35zZ6b3PD2kvkuKv816Wwc1eHt1e6U1HTgtoc5giNmJC9FlYsW/fauvCOs0xduQWpw==
   dependencies:
     "@cloudscape-design/collection-hooks" "^1.0.0"
     "@cloudscape-design/component-toolkit" "^1.0.0-beta"
@@ -3404,10 +3404,10 @@
   resolved "https://registry.yarnpkg.com/@reach/observe-rect/-/observe-rect-1.2.0.tgz#d7a6013b8aafcc64c778a0ccb83355a11204d3b2"
   integrity sha512-Ba7HmkFgfQxZqqaeIWWkNK0rEhpxVQHIoVyW1YDSkGsGIXzcaW4deC8B0pZrNSSyLTdIk7y+5olKt5+g0GmFIQ==
 
-"@remix-run/router@1.8.0":
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.8.0.tgz#e848d2f669f601544df15ce2a313955e4bf0bafc"
-  integrity sha512-mrfKqIHnSZRyIzBcanNJmVQELTnX+qagEDlcKO90RgRBVOZGSGvZKeDihTRfWcqoDn5N/NkUcwWTccnpN18Tfg==
+"@remix-run/router@1.9.0":
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.9.0.tgz#9033238b41c4cbe1e961eccb3f79e2c588328cf6"
+  integrity sha512-bV63itrKBC0zdT27qYm6SDZHlkXwFL1xMBuhkn+X7l0+IIhNaH5wuuvZKp6eKhCD4KFhujhfhCT1YxXW6esUIA==
 
 "@smithy/abort-controller@^2.0.1":
   version "2.0.4"
@@ -6586,20 +6586,20 @@ react-remove-scroll@2.5.4:
     use-callback-ref "^1.3.0"
     use-sidecar "^1.1.2"
 
-react-router-dom@^6.15.0:
-  version "6.15.0"
-  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.15.0.tgz#6da7db61e56797266fbbef0d5e324d6ac443ee40"
-  integrity sha512-aR42t0fs7brintwBGAv2+mGlCtgtFQeOzK0BM1/OiqEzRejOZtpMZepvgkscpMUnKb8YO84G7s3LsHnnDNonbQ==
+react-router-dom@^6.16.0:
+  version "6.16.0"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.16.0.tgz#86f24658da35eb66727e75ecbb1a029e33ee39d9"
+  integrity sha512-aTfBLv3mk/gaKLxgRDUPbPw+s4Y/O+ma3rEN1u8EgEpLpPe6gNjIsWt9rxushMHHMb7mSwxRGdGlGdvmFsyPIg==
   dependencies:
-    "@remix-run/router" "1.8.0"
-    react-router "6.15.0"
+    "@remix-run/router" "1.9.0"
+    react-router "6.16.0"
 
-react-router@6.15.0:
-  version "6.15.0"
-  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.15.0.tgz#bf2cb5a4a7ed57f074d4ea88db0d95033f39cac8"
-  integrity sha512-NIytlzvzLwJkCQj2HLefmeakxxWHWAP+02EGqWEZy+DgfHHKQMUoBBjUQLOtFInBMhWtb3hiUy6MfFgwLjXhqg==
+react-router@6.16.0:
+  version "6.16.0"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.16.0.tgz#abbf3d5bdc9c108c9b822a18be10ee004096fb81"
+  integrity sha512-VT4Mmc4jj5YyjpOi5jOf0I+TYzGpvzERy4ckNSvSh2RArv8LLoCxlsZ2D+tc7zgjxcY34oTz2hZaeX5RVprKqA==
   dependencies:
-    "@remix-run/router" "1.8.0"
+    "@remix-run/router" "1.9.0"
 
 react-style-singleton@^2.2.1:
   version "2.2.1"
