@@ -51,14 +51,15 @@ function Welcome() {
                                 Submit your own audio file to AWS HealthScribe.
                             </Link>
                         </li>
+                        <li>
+                            <Link onFollow={() => navigate('/generate')}>Generate a multi-speaker audio file</Link>{' '}
+                            using{' '}
+                            <Link external href="https://aws.amazon.com/polly/">
+                                Amazon Polly
+                            </Link>
+                            .
+                        </li>
                     </ul>
-                    <li>
-                        <Link onFollow={() => navigate('/generate')}>Generate a multi-speaker audio file</Link> using{' '}
-                        <Link external href="https://aws.amazon.com/polly/">
-                            Amazon Polly
-                        </Link>
-                        .
-                    </li>
                 </TextContent>
             );
         } else {

@@ -33,10 +33,10 @@ module.exports = {
     plugins: ['prettier'],
     rules: {
         'prettier/prettier': ['warn', {}, { usePrettierrc: true }],
-        'react/react-in-jsx-scope': 'off',
-        'react/prop-types': 'off',
+        'react/react-in-jsx-scope': 'warn',
+        'react/prop-types': 'warn',
         '@typescript-eslint/explicit-function-return-type': 'off',
-        'no-unused-vars': 'warn',
+        'no-unused-vars': 'off', // use @typescript-eslint/no-unused-vars, not base rule
         '@typescript-eslint/no-unused-vars': 'warn',
     },
 };

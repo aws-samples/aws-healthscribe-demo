@@ -6,18 +6,24 @@ import { MutableRefObject, useMemo } from 'react';
 // Cloudscape
 import Container from '@cloudscape-design/components/container';
 import Header from '@cloudscape-design/components/header';
-import Tabs from '@cloudscape-design/components/tabs';
 
 // App
-import { IAuraClinicalDocOutput, IAuraTranscriptOutput, ITranscriptSegments } from '../../../types/HealthScribe';
+import {
+    IAuraClinicalDocOutput,
+    IAuraClinicalDocOutputSection,
+    IAuraClinicalDocOutputSectionOld,
+    IAuraTranscriptOutput,
+    ITranscriptSegments,
+} from '../../../types/HealthScribe';
 import { HighlightId } from '../types';
 import { Loading } from '../Common/Loading';
-import SummarizedConcepts from './SummarizedConcepts';
+import SummarizedConceptsOld from './SummarizedConceptsOld';
 
 // Audio
 import WaveSurfer from 'wavesurfer.js';
 
 import styles from './RightPanel.module.css';
+import SummarizedConcepts from './SummarizedConcepts';
 
 type RightPanelProps = {
     jobLoading: boolean;
@@ -43,6 +49,16 @@ export default function RightPanel({
         }, {});
     }, [transcriptFile]);
 
+    // Changes in November 2023 - ClinicalDocumentation.Sections contains an array of SectionName and Summary
+    // The previous style had "SUBJECTIVE" and "ASSESSMENT_AND_PLAN" subsections
+    // Return true if clinicalDocument uses the new format
+    const isNewSummarizationFormation = useMemo(() => {
+        return (
+            typeof clinicalDocument?.ClinicalDocumentation?.Sections?.[0] !== 'undefined' &&
+            'Summary' in clinicalDocument.ClinicalDocumentation.Sections[0]
+        );
+    }, [clinicalDocument]);
+
     if (jobLoading || clinicalDocument == null) {
         return (
             <Container header={<Header variant="h2">Insights</Header>}>
@@ -53,23 +69,27 @@ export default function RightPanel({
         return (
             <Container header={<Header variant="h2">Insights</Header>}>
                 <div className={styles.insights}>
-                    <Tabs
-                        tabs={[
-                            {
-                                label: 'Summarizations',
-                                id: '1',
-                                content: (
-                                    <SummarizedConcepts
-                                        sections={clinicalDocument.ClinicalDocumentation.Sections}
-                                        highlightId={highlightId}
-                                        setHighlightId={setHighlightId}
-                                        segmentById={segmentById}
-                                        wavesurfer={wavesurfer}
-                                    />
-                                ),
-                            },
-                        ]}
-                    />
+                    {isNewSummarizationFormation ? (
+                        <SummarizedConcepts
+                            sections={
+                                clinicalDocument.ClinicalDocumentation.Sections as IAuraClinicalDocOutputSection[]
+                            }
+                            highlightId={highlightId}
+                            setHighlightId={setHighlightId}
+                            segmentById={segmentById}
+                            wavesurfer={wavesurfer}
+                        />
+                    ) : (
+                        <SummarizedConceptsOld
+                            sections={
+                                clinicalDocument.ClinicalDocumentation.Sections as IAuraClinicalDocOutputSectionOld[]
+                            }
+                            highlightId={highlightId}
+                            setHighlightId={setHighlightId}
+                            segmentById={segmentById}
+                            wavesurfer={wavesurfer}
+                        />
+                    )}
                 </div>
             </Container>
         );
