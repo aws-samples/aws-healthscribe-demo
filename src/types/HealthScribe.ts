@@ -2,24 +2,38 @@
 // SPDX-License-Identifier: MIT-0
 
 export interface IAuraClinicalDocOutput {
-    ClinicalDocumentation: { Sections: IAuraClinicalDocOutputSection[] };
+    ClinicalDocumentation: { Sections: IAuraClinicalDocOutputSection[] | IAuraClinicalDocOutputSectionOld[] };
 }
 
 export interface IAuraClinicalDocOutputSection {
     SectionName: string;
-    Subsections: {
-        SubsectionName: string;
-        Summary: IEvidence[];
-    }[];
+    Summary: IEvidence[];
 }
 
 export interface IEvidence {
+    EvidenceLinks: {
+        SegmentId: string;
+    }[];
+
+    SummarizedSegment: string;
+}
+
+export interface IAuraClinicalDocOutputSectionOld {
+    SectionName: string;
+    Subsections: {
+        SubsectionName: string;
+        Summary: IEvidenceOld[];
+    }[];
+}
+
+export interface IEvidenceOld {
     EvidenceMap: {
         SegmentId: string;
     }[];
 
     SummarizedSegment: string;
 }
+
 export interface IClinicalFields {
     Attributes: {
         AttributeId: string;

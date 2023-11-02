@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 // Polly SDK
-import { PollyClient, SynthesizeSpeechCommand } from '@aws-sdk/client-polly';
+import { PollyClient, SynthesizeSpeechCommand, SynthesizeSpeechCommandInput } from '@aws-sdk/client-polly';
 
 // Amplify-generated
 import awsExports from '../../aws-exports';
@@ -32,7 +32,7 @@ type GetAudioFromPollyProps = PollyPhrase;
  */
 export async function getAudioBlobFromPolly({ voiceId, text }: GetAudioFromPollyProps) {
     const pollyClient = await getPollyClient();
-    const pollySynthesizeSpeechInput = {
+    const pollySynthesizeSpeechInput: SynthesizeSpeechCommandInput = {
         Engine: 'neural',
         LanguageCode: 'en-US',
         OutputFormat: 'mp3',
