@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useMemo, useState } from 'react';
 
-import { useContext, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// CloudScape
 import Button from '@cloudscape-design/components/button';
 import Container from '@cloudscape-design/components/container';
 import ContentLayout from '@cloudscape-design/components/content-layout';
@@ -14,30 +14,23 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 import TokenGroup from '@cloudscape-design/components/token-group';
 
-// App
-import { AudioDetails, AudioSelection } from './types';
+import { Progress } from '@aws-sdk/lib-storage';
+import dayjs from 'dayjs';
+
+import { useS3 } from '@/hooks/useS3';
+import { useNotificationsContext } from '@/store/notifications';
+import { startMedicalScribeJob } from '@/utils/HealthScribeApi';
+import { multipartUpload } from '@/utils/S3Api';
+import sleep from '@/utils/sleep';
+
+import amplifyCustom from '../../aws-custom.json';
 import { AudioDropzone } from './Dropzone';
 import { AudioDetailSettings, AudioIdentificationType, InputName } from './FormComponents';
-import { NotificationContext } from '../App/contexts';
-import { useS3 } from '../../hooks/useS3';
-import { multipartUpload } from '../../utils/S3Api';
 import { verifyJobParams } from './formUtils';
-import { startMedicalScribeJob } from '../../utils/HealthScribeApi';
-import dayjs from 'dayjs';
-import sleep from '../../utils/sleep';
-
-// Router
-import { useNavigate } from 'react-router-dom';
-
-// SDK
-import { Progress } from '@aws-sdk/lib-storage';
-
-// Service role, from Amplify custom resource and post-push hook
-// TODO: make this configurable in settings
-import amplifyCustom from '../../aws-custom.json';
+import { AudioDetails, AudioSelection } from './types';
 
 export default function NewConversation() {
-    const { updateProgressBar } = useContext(NotificationContext);
+    const { updateProgressBar } = useNotificationsContext();
     const navigate = useNavigate();
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // is job submitting
@@ -54,7 +47,7 @@ export default function NewConversation() {
         },
     });
     const [filePath, setFilePath] = useState<File>(); // only one file is allowd from react-dropzone. NOT an array
-    const [outputBucket, getUploadMetadata] = useS3(); // outputBucket is the Amplify bucket, and uploadMetadata contains a uuid4
+    const [outputBucket, getUploadMetadata] = useS3(); // outputBucket is the Amplify bucket, and uploadMetadata contains uuid4
 
     // Set array for TokenGroup items
     const fileToken = useMemo(() => {

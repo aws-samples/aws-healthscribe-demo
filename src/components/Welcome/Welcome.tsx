@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { memo } from 'react';
 
-import { memo } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// Cloudscape
 import Alert from '@cloudscape-design/components/alert';
 import Box from '@cloudscape-design/components/box';
 import Container from '@cloudscape-design/components/container';
@@ -12,19 +12,14 @@ import Header from '@cloudscape-design/components/header';
 import Link from '@cloudscape-design/components/link';
 import TextContent from '@cloudscape-design/components/text-content';
 
-// App
-import { useAuthContext } from '../App/contexts';
-import { isUserAuth } from '../../utils/Auth';
-
-// Router
-import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@/store/auth';
 
 function Welcome() {
     const navigate = useNavigate();
     const { user } = useAuthContext();
 
     function Content() {
-        if (isUserAuth(user)) {
+        if (user) {
             return (
                 <TextContent>
                     <p>This sample ReactJS-based web app shows the art of the possible in using AWS HealthScribe.</p>
@@ -46,6 +41,13 @@ function Welcome() {
                             <li>Evidence mapping</li>
                             <li>Structured medical terms</li>
                         </ul>
+                        <li>
+                            Link the above medical terms to concepts in RxNorm, ICD-10-CM, and SNOMED CT using{' '}
+                            <Link external href="https://aws.amazon.com/comprehend/medical/">
+                                Amazon Comprehend Medical
+                            </Link>
+                            .
+                        </li>
                         <li>
                             <Link onFollow={() => navigate('/new')}>
                                 Submit your own audio file to AWS HealthScribe.

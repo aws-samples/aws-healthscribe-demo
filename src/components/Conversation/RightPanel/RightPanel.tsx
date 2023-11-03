@@ -1,29 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useMemo } from 'react';
 
-import { MutableRefObject, useMemo } from 'react';
+import WaveSurfer from 'wavesurfer.js';
 
-// Cloudscape
-import Container from '@cloudscape-design/components/container';
-import Header from '@cloudscape-design/components/header';
-
-// App
+import LoadingContainer from '@/components/Conversation/Common/LoadingContainer';
+import ScrollingContainer from '@/components/Conversation/Common/ScrollingContainer';
 import {
     IAuraClinicalDocOutput,
     IAuraClinicalDocOutputSection,
-    IAuraClinicalDocOutputSectionOld,
+    IAuraClinicalDocOutputSectionNew,
     IAuraTranscriptOutput,
     ITranscriptSegments,
-} from '../../../types/HealthScribe';
+} from '@/types/HealthScribe';
+
 import { HighlightId } from '../types';
-import { Loading } from '../Common/Loading';
-import SummarizedConceptsOld from './SummarizedConceptsOld';
-
-// Audio
-import WaveSurfer from 'wavesurfer.js';
-
-import styles from './RightPanel.module.css';
 import SummarizedConcepts from './SummarizedConcepts';
+import SummarizedConceptsNew from './SummarizedConceptsNew';
 
 type RightPanelProps = {
     jobLoading: boolean;
@@ -31,7 +24,7 @@ type RightPanelProps = {
     transcriptFile: IAuraTranscriptOutput | null;
     highlightId: HighlightId;
     setHighlightId: React.Dispatch<React.SetStateAction<HighlightId>>;
-    wavesurfer: MutableRefObject<WaveSurfer | undefined>;
+    wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
 };
 
 export default function RightPanel({
@@ -60,38 +53,28 @@ export default function RightPanel({
     }, [clinicalDocument]);
 
     if (jobLoading || clinicalDocument == null) {
-        return (
-            <Container header={<Header variant="h2">Insights</Header>}>
-                <Loading loading={jobLoading} text="Loading Insights" />
-            </Container>
-        );
+        return <LoadingContainer containerTitle="Insights" text="Loading Insights" />;
     } else {
         return (
-            <Container header={<Header variant="h2">Insights</Header>}>
-                <div className={styles.insights}>
-                    {isNewSummarizationFormation ? (
-                        <SummarizedConcepts
-                            sections={
-                                clinicalDocument.ClinicalDocumentation.Sections as IAuraClinicalDocOutputSection[]
-                            }
-                            highlightId={highlightId}
-                            setHighlightId={setHighlightId}
-                            segmentById={segmentById}
-                            wavesurfer={wavesurfer}
-                        />
-                    ) : (
-                        <SummarizedConceptsOld
-                            sections={
-                                clinicalDocument.ClinicalDocumentation.Sections as IAuraClinicalDocOutputSectionOld[]
-                            }
-                            highlightId={highlightId}
-                            setHighlightId={setHighlightId}
-                            segmentById={segmentById}
-                            wavesurfer={wavesurfer}
-                        />
-                    )}
-                </div>
-            </Container>
+            <ScrollingContainer containerTitle="Insights">
+                {isNewSummarizationFormation ? (
+                    <SummarizedConceptsNew
+                        sections={clinicalDocument.ClinicalDocumentation.Sections as IAuraClinicalDocOutputSectionNew[]}
+                        highlightId={highlightId}
+                        setHighlightId={setHighlightId}
+                        segmentById={segmentById}
+                        wavesurfer={wavesurfer}
+                    />
+                ) : (
+                    <SummarizedConcepts
+                        sections={clinicalDocument.ClinicalDocumentation.Sections as IAuraClinicalDocOutputSection[]}
+                        highlightId={highlightId}
+                        setHighlightId={setHighlightId}
+                        segmentById={segmentById}
+                        wavesurfer={wavesurfer}
+                    />
+                )}
+            </ScrollingContainer>
         );
     }
 }

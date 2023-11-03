@@ -1,6 +1,5 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-
 import { columnDefs } from './tableColumnDefs';
 
 export const collectionPreferencesProps = {
@@ -54,5 +53,5 @@ export const DEFAULT_PREFERENCES: TablePreferencesDef = {
     pageSize: 20,
     wrapLines: false,
     stripedRows: true,
-    visibleContent: ['MedicalScribeJobName', 'MedicalScribeJobStatus', 'LanguageCode', 'CreationTime', 'ExpiresIn'],
+    visibleContent: ['MedicalScribeJobName', 'MedicalScribeJobStatus', 'CreationTime', 'ExpiresIn'],
 };

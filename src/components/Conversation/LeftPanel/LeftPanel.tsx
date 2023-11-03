@@ -1,43 +1,34 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React from 'react';
+import { Dispatch, MutableRefObject, SetStateAction, useEffect, useState } from 'react';
 
-import { MutableRefObject, useEffect, useState } from 'react';
+import Grid from '@cloudscape-design/components/grid';
 
-// Audio
+import has from 'lodash/has';
+import keyBy from 'lodash/keyBy';
+import keys from 'lodash/keys';
+import pickBy from 'lodash/pickBy';
+import slice from 'lodash/slice';
+import takeWhile from 'lodash/takeWhile';
+import values from 'lodash/values';
+import { toast } from 'react-hot-toast';
 import WaveSurfer from 'wavesurfer.js';
 
-// Cloudscape
-import Box from '@cloudscape-design/components/box';
-import Container from '@cloudscape-design/components/container';
-import Grid from '@cloudscape-design/components/grid';
-import Header from '@cloudscape-design/components/header';
-
-// App
+import LoadingContainer from '@/components/Conversation/Common/LoadingContainer';
+import ScrollingContainer from '@/components/Conversation/Common/ScrollingContainer';
 import {
     IAuraTranscriptOutput,
     IClinicalInsights,
     ITranscript,
     ITranscriptItems,
     ITranscriptSegments,
-} from '../../../types/HealthScribe';
+} from '@/types/HealthScribe';
+import toTitleCase from '@/utils/toTitleCase';
+
 import { HighlightId } from '../types';
-import { Loading } from '../Common/Loading';
-import { TranscriptSegment } from './TranscriptSegment';
-import toTitleCase from '../../../utils/toTitleCase';
-
-// Lodash
-import has from 'lodash/has';
-import keys from 'lodash/keys';
-import keyBy from 'lodash/keyBy';
-import pickBy from 'lodash/pickBy';
-import slice from 'lodash/slice';
-import takeWhile from 'lodash/takeWhile';
-import values from 'lodash/values';
-
-// Toast
-import { toast } from 'react-hot-toast';
-
 import styles from './LeftPanel.module.css';
+import { TranscriptSegment } from './TranscriptSegment';
 
 const TRANSCRIPT_SPACING = '10px';
 
@@ -45,11 +36,11 @@ type LeftPanelProps = {
     jobLoading: boolean;
     transcriptFile: IAuraTranscriptOutput | null;
     highlightId: HighlightId;
-    setHighlightId: React.Dispatch<React.SetStateAction<HighlightId>>;
+    setHighlightId: Dispatch<SetStateAction<HighlightId>>;
     wavesurfer: MutableRefObject<WaveSurfer | undefined>;
     smallTalkCheck: boolean;
     audioTime: number;
-    setAudioTime: React.Dispatch<React.SetStateAction<number>>;
+    setAudioTime: Dispatch<SetStateAction<number>>;
     audioReady: boolean;
 };
 
@@ -166,8 +157,7 @@ export default function LeftPanel({
     }, [jobLoading, transcriptFile]);
 
     // Extract the part of the transcript to highlight
-    // If the current audio time is outside of this part, then reset the highlight
-    // The highlight comes from ClinicalConcepts ("Summarizations") from the right panel
+    // If the current audio time is outside of this part, then reset the highlight, which comes from ClinicalConcepts ("Summarizations") from the right panel
     const currentAudioTime = wavesurfer.current?.getCurrentTime() || 0;
     useEffect(() => {
         function resetHighlightId() {
@@ -209,7 +199,6 @@ export default function LeftPanel({
                         ) < 3
                     ) {
                         endHighlightTime = transcriptHighlightAll[i].EndAudioTime;
-                        continue;
                     } else {
                         break;
                     }
@@ -225,75 +214,68 @@ export default function LeftPanel({
     }, [highlightId, transcript, currentAudioTime, audioReady, setAudioTime]);
 
     if (jobLoading || transcriptFile == null) {
-        return (
-            <Container header={<Header variant="h2">Transcript</Header>}>
-                <Loading loading={jobLoading} text="Loading Transcript" />
-            </Container>
-        );
+        return <LoadingContainer containerTitle="Transcript" text="Loading Transcript" />;
     } else {
         return (
-            <Container header={<Header variant="h2">Transcript</Header>}>
-                <div className={styles.transcript}>
-                    {transcript.map((script, key) => {
-                        const newSpeaker =
-                            script.ParticipantDetails.ParticipantRole !==
-                            transcript[key - 1]?.ParticipantDetails.ParticipantRole;
-                        const speakerName = script.ParticipantDetails.ParticipantRole.split('_')[0];
-                        const speakerNameFormatted = multiSpeakers.includes(speakerName)
-                            ? `${toTitleCase(speakerName)} ${
-                                  parseInt(script.ParticipantDetails.ParticipantRole.split('_')[1]) + 1
-                              }`
-                            : toTitleCase(speakerName);
-
-                        // Highlight both the same for uniformity highlightLight/highlightMedium
-                        const highlightSegmentStyle =
-                            script.SegmentId === highlightId.selectedSegmentId
-                                ? styles.highlightMedium
-                                : highlightId.allSegmentIds.includes(script.SegmentId)
-                                ? styles.highlightMedium
-                                : '';
-                        return (
-                            <div key={key} style={{ paddingTop: !key ? '15px' : '' }}>
-                                <Grid disableGutters gridDefinition={[{ colspan: 2 }, { colspan: 10 }]}>
-                                    <div
-                                        style={{
-                                            paddingTop: newSpeaker && key > 0 ? TRANSCRIPT_SPACING : '',
-                                            fontWeight: 'bold',
-                                            fontSize: multiSpeakers ? '14px' : '16px',
-                                        }}
-                                        className={
-                                            ['OTHER', 'SMALL_TALK'].includes(script.SectionDetails.SectionName) &&
-                                            smallTalkCheck
-                                                ? styles.disabled
-                                                : ''
-                                        }
-                                    >
-                                        {newSpeaker && (
-                                            <div className={`${styles.row} ${styles.hidescrollbar}`}>
-                                                {speakerNameFormatted}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div
-                                        style={{
-                                            paddingTop: newSpeaker && key > 0 ? TRANSCRIPT_SPACING : '',
-                                        }}
-                                        className={highlightSegmentStyle}
-                                    >
-                                        <TranscriptSegment
-                                            script={script}
-                                            smallTalkCheck={smallTalkCheck}
-                                            audioTime={audioTime}
-                                            audioReady={audioReady}
-                                            wavesurfer={wavesurfer}
-                                        />
-                                    </div>
-                                </Grid>
-                            </div>
-                        );
-                    })}
-                </div>
-            </Container>
+            <ScrollingContainer containerTitle="Transcript">
+                {transcript.map((script, key) => {
+                    const newSpeaker =
+                        script.ParticipantDetails.ParticipantRole !==
+                        transcript[key - 1]?.ParticipantDetails.ParticipantRole;
+                    const speakerName = script.ParticipantDetails.ParticipantRole.split('_')[0];
+                    const speakerNameFormatted = multiSpeakers.includes(speakerName)
+                        ? `${toTitleCase(speakerName)} ${
+                              parseInt(script.ParticipantDetails.ParticipantRole.split('_')[1]) + 1
+                          }`
+                        : toTitleCase(speakerName);
+                    // Highlight both the same for uniformity highlightLight/highlightMedium
+                    const highlightSegmentStyle =
+                        script.SegmentId === highlightId.selectedSegmentId
+                            ? styles.highlightMedium
+                            : highlightId.allSegmentIds.includes(script.SegmentId)
+                            ? styles.highlightMedium
+                            : '';
+                    return (
+                        <div key={key} style={{ paddingTop: !key ? '15px' : '' }}>
+                            <Grid disableGutters gridDefinition={[{ colspan: 2 }, { colspan: 10 }]}>
+                                <div
+                                    style={{
+                                        paddingTop: newSpeaker && key > 0 ? TRANSCRIPT_SPACING : '',
+                                        fontWeight: 'bold',
+                                        fontSize: multiSpeakers ? '14px' : '16px',
+                                    }}
+                                    className={
+                                        ['OTHER', 'SMALL_TALK'].includes(script.SectionDetails.SectionName) &&
+                                        smallTalkCheck
+                                            ? styles.disabled
+                                            : ''
+                                    }
+                                >
+                                    {newSpeaker && (
+                                        <div className={`${styles.row} ${styles.hidescrollbar}`}>
+                                            {speakerNameFormatted}
+                                        </div>
+                                    )}
+                                </div>
+                                <div
+                                    style={{
+                                        paddingTop: newSpeaker && key > 0 ? TRANSCRIPT_SPACING : '',
+                                    }}
+                                    className={highlightSegmentStyle}
+                                >
+                                    <TranscriptSegment
+                                        script={script}
+                                        smallTalkCheck={smallTalkCheck}
+                                        audioTime={audioTime}
+                                        audioReady={audioReady}
+                                        wavesurfer={wavesurfer}
+                                    />
+                                </div>
+                            </Grid>
+                        </div>
+                    );
+                })}
+            </ScrollingContainer>
         );
     }
 }

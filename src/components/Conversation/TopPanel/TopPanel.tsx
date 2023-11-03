@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
-// Cloudscape
+import { useNavigate } from 'react-router-dom';
+
 import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import ButtonDropdown from '@cloudscape-design/components/button-dropdown';
@@ -10,25 +11,18 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 
-// Router
-import { useNavigate } from 'react-router-dom';
-
-// Audio
+import reduce from 'lodash/reduce';
 import WaveSurfer from 'wavesurfer.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions';
 
-// Lodash
-import reduce from 'lodash/reduce';
+import { useNotificationsContext } from '@/store/notifications';
+import { IAuraTranscriptOutput } from '@/types/HealthScribe';
+import { getPresignedUrl, getS3Object } from '@/utils/S3Api';
 
-// App
-import { IAuraTranscriptOutput } from '../../../types/HealthScribe';
-import { NotificationContext } from '../../App/contexts';
 import { HealthScribeJob, SmallTalkList } from '../types';
-import { extractRegions } from './extractRegions';
-import { getPresignedUrl, getS3Object } from '../../../utils/S3Api';
 import AudioControls from './AudioControls';
-
 import styles from './TopPanel.module.css';
+import { extractRegions } from './extractRegions';
 
 type TopPanelProps = {
     jobLoading: boolean;
@@ -53,7 +47,7 @@ export default function TopPanel({
     setViewResultsModal,
 }: TopPanelProps) {
     const navigate = useNavigate();
-    const { addFlashMessage } = useContext(NotificationContext);
+    const { addFlashMessage } = useNotificationsContext();
     const [wavesurferRegions, setWavesurferRegions] = useState<RegionsPlugin>();
     const [audioLoading, setAudioLoading] = useState<boolean>(true); // is audio file loading
     const [showControls, setShowControls] = useState<boolean>(false); // show/hide audio controls
@@ -88,7 +82,7 @@ export default function TopPanel({
         async function getAudio() {
             try {
                 if (!jobDetails?.Media?.MediaFileUri) {
-                    throw new Error('Unable to find HealthScribe audio URL');
+                    throw Error('Unable to find HealthScribe audio URL');
                 }
                 const s3Object = getS3Object(jobDetails?.Media?.MediaFileUri);
                 const s3PresignedUrl = await getPresignedUrl(s3Object);
@@ -96,6 +90,7 @@ export default function TopPanel({
                 // Initialize Wavesurfer with presigned S3 URL
                 if (!wavesurfer.current) {
                     wavesurfer.current = WaveSurfer.create({
+                        backend: 'MediaElement',
                         container: waveformElement || '#waveform',
                         height: 40,
                         normalize: false,
@@ -159,7 +154,7 @@ export default function TopPanel({
             }
         }
 
-        if (!jobLoading && waveformElement) getAudio();
+        if (!jobLoading && waveformElement) getAudio().catch(console.error);
     }, [jobLoading, waveformElement]);
 
     // Draw regions on the audio player for small talk and silences
@@ -216,31 +211,29 @@ export default function TopPanel({
         }
 
         return (
-            <Box>
-                <Header
-                    variant="h3"
-                    actions={
-                        <SpaceBetween direction="horizontal" size="xs">
-                            <ButtonDropdown
-                                items={[
-                                    { text: 'Audio', id: 'audio' },
-                                    { text: 'Transcript', id: 'transcript' },
-                                    { text: 'Summary', id: 'summary' },
-                                ]}
-                                onItemClick={({ detail }) => openUrl(detail)}
-                            >
-                                Download
-                            </ButtonDropdown>
-                            <Button onClick={() => setViewResultsModal(true)}>View Output JSON</Button>
-                            <Button variant="primary" onClick={() => navigate('/conversations')}>
-                                Exit Conversation
-                            </Button>
-                        </SpaceBetween>
-                    }
-                >
-                    {jobDetails?.MedicalScribeJobName}
-                </Header>
-            </Box>
+            <Header
+                variant="h3"
+                actions={
+                    <SpaceBetween direction="horizontal" size="xs">
+                        <ButtonDropdown
+                            items={[
+                                { text: 'Audio', id: 'audio' },
+                                { text: 'Transcript', id: 'transcript' },
+                                { text: 'Summary', id: 'summary' },
+                            ]}
+                            onItemClick={({ detail }) => openUrl(detail)}
+                        >
+                            Download
+                        </ButtonDropdown>
+                        <Button onClick={() => setViewResultsModal(true)}>View Output JSON</Button>
+                        <Button variant="primary" onClick={() => navigate('/conversations')}>
+                            Exit Conversation
+                        </Button>
+                    </SpaceBetween>
+                }
+            >
+                {jobDetails?.MedicalScribeJobName}
+            </Header>
         );
     }
 
@@ -250,8 +243,8 @@ export default function TopPanel({
                 style={{
                     flex: 'display',
                     textAlign: 'center',
-                    paddingTop: '60px',
-                    paddingBottom: '35px',
+                    paddingTop: '30px',
+                    paddingBottom: '30px',
                     color: 'var(--color-text-status-inactive-5ei55p, #5f6b7a)',
                 }}
             >

@@ -13,6 +13,7 @@
     "dependencies": {
         "@aws-amplify/ui": "^5.8.1",
         "@aws-amplify/ui-react": "^5.3.1",
+        "@aws-sdk/client-comprehendmedical": "^3.441.0",
         "@aws-sdk/client-polly": "^3.441.0",
         "@aws-sdk/client-s3": "^3.441.0",
         "@aws-sdk/lib-storage": "^3.441.0",
@@ -20,6 +21,7 @@
         "@cloudscape-design/collection-hooks": "^1.0.27",
         "@cloudscape-design/components": "^3.0.425",
         "@cloudscape-design/global-styles": "^1.0.15",
+        "@trivago/prettier-plugin-sort-imports": "^4.2.1",
         "ace-builds": "^1.31.1",
         "aws-amplify": "^5.3.11",
         "axios": "^1.6.0",
@@ -33,6 +35,7 @@
         "react-dropzone": "^14.2.3",
         "react-hot-toast": "^2.4.1",
         "react-router-dom": "^6.18.0",
+        "timekeeper": "^2.3.1",
         "use-debounce": "^9.0.4",
         "uuid4": "^2.0.3",
         "wavesurfer.js": "^7.4.2"

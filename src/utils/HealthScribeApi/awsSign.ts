@@ -1,14 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-
-// AWS
 import { Auth, Signer } from 'aws-amplify';
-
-// App
-import { ApiConfig } from '.';
-
-// Axios
 import axios from 'axios';
+
+import { ApiConfig } from '.';
 
 type Creds = {
     access_key: string;
@@ -25,30 +20,6 @@ async function getCreds(): Promise<Creds> {
         session_token: credentials.sessionToken,
     };
 }
-
-/**
- * The transcribe service does not have any GET requests.
-
-type HealthScribeGet = {
-    apiConfig: ApiConfig;
-    url: string;
-    headers?: object;
-    axiosArgs?: object;
-};
-export async function healthScribeGet({ apiConfig, url, headers, axiosArgs }: HealthScribeGet) {
-    if (!apiConfig.region || !url) throw new Error('API configuration not set');
-    const serviceInfo = {
-        service: 'transcribe',
-        region: apiConfig.region,
-    };
-    const processedUrl = Signer.signUrl(url, await getCreds(), serviceInfo);
-    const start = performance.now();
-    const getResult = await axios(processedUrl, { headers: headers, ...axiosArgs });
-    const end = performance.now();
-    if (apiConfig.apiTiming) console.debug(`Time: ${end - start}ms for URL ${url}`);
-    return getResult;
-}
-*/
 
 type HealthScribePost = {
     apiConfig: ApiConfig;
@@ -85,7 +56,7 @@ export async function healthScribePost({ apiConfig, url, headers = {}, data = {}
     const start = performance.now();
     const reqResult = await axios(signedReq);
     const end = performance.now();
-    if (apiConfig.apiTiming) console.debug(`Time: ${end - start}ms for URL ${url}`);
+    if (apiConfig.apiTiming === 'on') console.debug(`Time: ${end - start}ms for URL ${url}`);
 
     return reqResult;
 }

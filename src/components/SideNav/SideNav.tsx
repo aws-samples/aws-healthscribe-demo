@@ -1,12 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React from 'react';
 
-// Cloudscape
+import { useNavigate } from 'react-router-dom';
+
 import SideNavigation from '@cloudscape-design/components/side-navigation';
 import { SideNavigationProps } from '@cloudscape-design/components/side-navigation';
-
-// Router
-import { useNavigate } from 'react-router-dom';
 
 type SideNavProps = {
     activeHref: string;

@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { memo, useEffect } from 'react';
 
-import { memo, useEffect } from 'react';
-import { useDropzone, FileWithPath } from 'react-dropzone';
+import { FileWithPath, useDropzone } from 'react-dropzone';
 
 import styles from './Dropzone.module.css';
 

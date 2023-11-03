@@ -1,9 +1,10 @@
-import * as cdk from 'aws-cdk-lib';
 import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
-import { AmplifyDependentResourcesAttributes } from '../../types/amplify-dependent-resources-ref';
+import * as cdk from 'aws-cdk-lib';
+import { CfnOutput, CustomResource } from 'aws-cdk-lib';
+import { BlockPublicAccess, Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
-import { CustomResource, CfnOutput } from 'aws-cdk-lib';
-import { Bucket, BlockPublicAccess, BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
+import { AmplifyDependentResourcesAttributes } from '../../types/amplify-dependent-resources-ref';
 
 export class cdkStack extends cdk.Stack {
     constructor(

@@ -1,32 +1,27 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useEffect, useState } from 'react';
 
-import { useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-// Cloudscape
 import ContentLayout from '@cloudscape-design/components/content-layout';
 import Grid from '@cloudscape-design/components/grid';
 
-// Router
-import { useParams } from 'react-router-dom';
+import { useAudio } from '@/hooks/useAudio';
+import { useNotificationsContext } from '@/store/notifications';
+import { IAuraClinicalDocOutput, IAuraTranscriptOutput } from '@/types/HealthScribe';
+import { getHealthScribeJob } from '@/utils/HealthScribeApi';
+import { getObject, getS3Object } from '@/utils/S3Api';
 
-// API
-import { getHealthScribeJob } from '../../utils/HealthScribeApi';
-
-// App
-import { useAudio } from '../../hooks/useAudio';
-import { HealthScribeJob } from './types';
-import { NotificationContext } from '../App/contexts';
-import { IAuraClinicalDocOutput, IAuraTranscriptOutput } from '../../types/HealthScribe';
-import { getObject, getS3Object } from '../../utils/S3Api';
-import TopPanel from './TopPanel';
-import RightPanel from './RightPanel';
 import LeftPanel from './LeftPanel';
+import RightPanel from './RightPanel';
+import TopPanel from './TopPanel';
 import ViewResults from './ViewResults';
+import { HealthScribeJob } from './types';
 
 export default function Conversation() {
     const { conversationName } = useParams();
-    const { addFlashMessage } = useContext(NotificationContext);
+    const { addFlashMessage } = useNotificationsContext();
 
     const [jobLoading, setJobLoading] = useState(true); // Is getHealthScribeJob in progress
     const [jobDetails, setJobDetails] = useState<HealthScribeJob | null>(null); // HealthScribe job details
@@ -55,8 +50,6 @@ export default function Conversation() {
                 const MedicalScribeJob = getHealthScribeJobRsp.data?.MedicalScribeJob;
                 if (Object.keys(MedicalScribeJob).length > 0) {
                     setJobDetails(MedicalScribeJob);
-                } else {
-                    throw new Error(`HealthScribe job name ${conversationName} not found`);
                 }
 
                 // Get Clinical Document from result S3 URL
@@ -83,7 +76,7 @@ export default function Conversation() {
         if (!conversationName) {
             return;
         } else {
-            getJob(conversationName);
+            getJob(conversationName).catch(console.error);
         }
     }, []);
 

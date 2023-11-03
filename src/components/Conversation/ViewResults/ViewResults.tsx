@@ -1,24 +1,22 @@
-import { useState, useEffect } from 'react';
-
-// Cloudscape
-import Container from '@cloudscape-design/components/container';
-import Modal from '@cloudscape-design/components/modal';
-import Header from '@cloudscape-design/components/header';
-import Grid from '@cloudscape-design/components/grid';
-
-// App
-import { useAppContext } from '../../App';
-
-// Ace Editor
+import React from 'react';
 import AceEditor from 'react-ace';
+
+import Container from '@cloudscape-design/components/container';
+import Grid from '@cloudscape-design/components/grid';
+import Header from '@cloudscape-design/components/header';
+import Modal from '@cloudscape-design/components/modal';
+
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-github';
 import 'ace-builds/src-noconflict/theme-twilight';
+
+import { useAppThemeContext } from '@/store/appTheme';
 
 type ReadOnlyAceEditorProps = {
     appTheme: string;
     value: string;
 };
+
 function ReadOnlyAceEditor({ appTheme, value }: ReadOnlyAceEditorProps) {
     return (
         <AceEditor
@@ -38,7 +36,6 @@ function ReadOnlyAceEditor({ appTheme, value }: ReadOnlyAceEditorProps) {
 
 type ViewResultsProps = {
     visible: boolean;
-    // eslint-disable-next-line no-unused-vars
     setVisible: (visible: boolean) => void;
     transcriptString: string;
     clinicalDocumentString: string;
@@ -49,7 +46,7 @@ export default function ViewResults({
     transcriptString,
     clinicalDocumentString,
 }: ViewResultsProps) {
-    const { appTheme } = useAppContext();
+    const { appTheme } = useAppThemeContext();
 
     return (
         <Modal size="max" onDismiss={() => setVisible(false)} visible={visible} header="HealthScribe Results">

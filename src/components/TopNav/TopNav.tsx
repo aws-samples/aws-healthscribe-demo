@@ -1,25 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useEffect, useState } from 'react';
 
-import { useState, useEffect } from 'react';
-
-// Context
-import { useAuthContext, useAppContext } from '../App';
-
-// App
-import Auth from '../Auth';
-import isUserAuth from '../../utils/Auth/isUserAuth';
-
-// Cloudscape
-import { applyDensity, applyMode, Density, Mode } from '@cloudscape-design/global-styles';
 import TopNavigation from '@cloudscape-design/components/top-navigation';
 import { TopNavigationProps } from '@cloudscape-design/components/top-navigation';
+import { Density, Mode, applyDensity, applyMode } from '@cloudscape-design/global-styles';
 
-type TopNavParams = {
-    signOut: () => void;
-    // eslint-disable-next-line no-unused-vars
-    setAppTheme: (theme: string) => void;
-};
+import Auth from '@/components/Auth';
+import { useAppThemeContext } from '@/store/appTheme';
+import { useAuthContext } from '@/store/auth';
+
+import './TopNav.css';
 
 type TopNavClick = {
     detail: {
@@ -27,9 +18,9 @@ type TopNavClick = {
     };
 };
 
-export default function TopNav({ signOut, setAppTheme }: TopNavParams) {
-    const { user } = useAuthContext();
-    const { appTheme } = useAppContext();
+export default function TopNav() {
+    const { user, signOut } = useAuthContext();
+    const { appTheme, setAppTheme } = useAppThemeContext();
 
     const [authVisible, setAuthVisible] = useState(false); // authentication modal visibility
     const [density, setDensity] = useState('density.comfortable'); // app density
@@ -50,7 +41,7 @@ export default function TopNav({ signOut, setAppTheme }: TopNavParams) {
 
     // When user authenticates, close authentication modal window
     useEffect(() => {
-        if (isUserAuth(user)) {
+        if (user) {
             setAuthVisible(false);
         }
         // no else because we want the auth window to only pop up by clicking sign in, not automatically
@@ -124,7 +115,7 @@ export default function TopNav({ signOut, setAppTheme }: TopNavParams) {
         onItemClick: (e) => handleUtilVisualClick(e),
     };
 
-    const utilUser: TopNavigationProps.ButtonUtility | TopNavigationProps.MenuDropdownUtility = !isUserAuth(user)
+    const utilUser: TopNavigationProps.ButtonUtility | TopNavigationProps.MenuDropdownUtility = !user
         ? {
               type: 'button',
               text: 'Sign In',

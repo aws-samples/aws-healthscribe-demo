@@ -1,21 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-
-// S3 SDK
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
-
-// Amplify-generated
-import awsExports from '../../aws-exports';
-
-// Amplify
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Auth } from 'aws-amplify';
+import tk from 'timekeeper';
 
-type GetObjectProps = {
-    Bucket: string;
-    Key: string;
-};
+import awsExports from '@/aws-exports';
 
 async function getS3Client() {
     return new S3Client({
@@ -52,11 +43,36 @@ export function getS3Object(s3Uri: string) {
     }
 }
 
+/**
+ * @description Get time with the last 14-minute interval.
+ *              Sigv4 requests are valid up to 15 minutes of the timestamp
+ */
+function getDateLastDiscreteInterval() {
+    const round = 1000 * 60 * 14;
+    const date = new Date();
+    return new Date(Math.floor(date.getTime() / round) * round);
+}
+
+/**
+ * @description Get a presigned URL to an S3 object with a 1-day cache and 1-day expiration
+ * @param getObjectProps
+ */
+type GetObjectProps = {
+    Bucket: string;
+    Key: string;
+};
 export async function getPresignedUrl(getObjectProps: GetObjectProps) {
     const s3Client = await getS3Client();
-    const getObjectCmd = new GetObjectCommand(getObjectProps);
-    // 300 seconds is the presigned URL's maximum age (5 minutes)
-    return await getSignedUrl(s3Client, getObjectCmd, { expiresIn: 300 });
+    const getObjectCmd = new GetObjectCommand({
+        ...getObjectProps,
+        ...{
+            ResponseCacheControl: 'max-age: 900',
+        },
+    });
+
+    return tk.withFreeze(getDateLastDiscreteInterval(), async () => {
+        return await getSignedUrl(s3Client, getObjectCmd, { expiresIn: 900 });
+    });
 }
 
 export async function getObject(getObjectProps: GetObjectProps) {
@@ -69,7 +85,6 @@ type MultipartUploadProps = {
     Bucket: string;
     Key: string;
     Body: File;
-    // eslint-disable-next-line no-unused-vars
     callbackFn?: (progress: Progress) => void;
 };
 export async function multipartUpload({ Bucket, Key, Body, callbackFn }: MultipartUploadProps) {
@@ -93,7 +108,8 @@ export async function multipartUpload({ Bucket, Key, Body, callbackFn }: Multipa
             }
         });
         return await s3Upload.done();
-    } catch (e) {
-        throw new Error(`Error in S3 multipart upload: ${(<Error>e).message}`);
+    } catch (e: unknown) {
+        const err = e as Error;
+        throw new Error(`Error in S3 multipart upload: ${err.message}`);
     }
 }

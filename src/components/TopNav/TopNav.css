@@ -1,0 +1,6 @@
+#appTopNav {
+    /* https://cloudscape.design/components/top-navigation/?tabId=api */
+    position: sticky;
+    top: 0;
+    z-index: 1999;
+}

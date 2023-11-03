@@ -1,21 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-
 // This is a modal authentication component that displays the AWS Amplify Authenticator.
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
-// Context
-import { useAppContext } from '../App';
-
-// Cloudscape
 import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import Modal from '@cloudscape-design/components/modal';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 
-// AWS
 import { Authenticator, ThemeProvider, defaultDarkModeOverride } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
+
+import { useAppThemeContext } from '@/store/appTheme';
 
 const authUiComponents = {
     SignUp: {
@@ -41,7 +37,7 @@ type AuthParams = {
 };
 
 export default function Auth({ visible, setVisible }: AuthParams) {
-    const { appTheme } = useAppContext();
+    const { appTheme } = useAppThemeContext();
 
     /**
      * Amplify-UI's <Authentication /> uses 80 for the button, 90 for hover

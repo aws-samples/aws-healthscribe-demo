@@ -1,24 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useCallback, useMemo, useState } from 'react';
 
-import { useCallback, useContext, useMemo, useState } from 'react';
-
-// CloudScape
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import Button from '@cloudscape-design/components/button';
 import Pagination from '@cloudscape-design/components/pagination';
 import Table from '@cloudscape-design/components/table';
 
-// App
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { DEFAULT_PREFERENCES, TablePreferencesDef } from './tablePrefs';
-import { NotificationContext } from '../App/contexts';
-import { columnDefs } from './tableColumnDefs';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { useNotificationsContext } from '@/store/notifications';
+import { ListHealthScribeJobsProps, listHealthScribeJobs } from '@/utils/HealthScribeApi';
+
 import { TableHeader, TablePreferences } from './ConversationsTableComponents';
 import TableEmptyState from './TableEmptyState';
-
-// API
-import { listHealthScribeJobs, ListHealthScribeJobsProps } from '../../utils/HealthScribeApi';
+import { columnDefs } from './tableColumnDefs';
+import { DEFAULT_PREFERENCES, TablePreferencesDef } from './tablePrefs';
 
 export type HealthScribeJob = {
     CompletionTime: number;
@@ -36,7 +32,7 @@ type MoreHealthScribeJobs = {
 };
 
 export default function Conversations() {
-    const { addFlashMessage } = useContext(NotificationContext);
+    const { addFlashMessage } = useNotificationsContext();
     const [healthScribeJobs, setHealthScribeJobs] = useState<HealthScribeJob[]>([]); // HealthScribe jobs from API
     const [moreHealthScribeJobs, setMoreHealthScribeJobs] = useState<MoreHealthScribeJobs>({}); // More HealthScribe jobs from API (NextToken returned)
     const [selectedHealthScribeJob, setSelectedHealthScribeJob] = useState<HealthScribeJob[] | []>([]); // Selected HealthScribe job
@@ -147,7 +143,7 @@ export default function Conversations() {
                             listHealthScribeJobsWrapper({
                                 ...moreHealthScribeJobs.searchFilter,
                                 NextToken: moreHealthScribeJobs.NextToken,
-                            });
+                            }).catch(console.error);
                         }
                         paginationProps.onChange(event);
                     }}

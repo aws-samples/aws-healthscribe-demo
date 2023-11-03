@@ -1,8 +1,0 @@
-.loading {
-    min-height: 600px;
-    height: 80vh;
-    padding-top: 90px;
-    flex: display;
-    text-align: center;
-    color: 'var(--color-text-status-inactive-5ei55p, #5f6b7a)';
-}

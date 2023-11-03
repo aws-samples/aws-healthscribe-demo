@@ -1,17 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-
-// API
 import { healthScribePost } from './awsSign';
 
 export type ApiConfig = {
     region: string;
-    apiTiming: boolean;
+    apiTiming: string;
 };
 
 let apiConfig: ApiConfig = {
     region: '',
-    apiTiming: false,
+    apiTiming: '',
 };
 
 function updateConfig(newApiConfig: ApiConfig) {
@@ -70,7 +68,7 @@ async function getHealthScribeJob({ MedicalScribeJobName }: GetHealthScribeJobPr
 export type DeleteHealthScribeJobProps = {
     MedicalScribeJobName: string;
 };
-async function deleteHealthScribeJob({ MedicalScribeJobName }: GetHealthScribeJobProps) {
+async function deleteHealthScribeJob({ MedicalScribeJobName }: DeleteHealthScribeJobProps) {
     return await healthScribePost({
         apiConfig: apiConfig,
         url: serviceEndpoint(),
