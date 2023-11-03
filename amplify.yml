@@ -8,6 +8,7 @@ frontend:
   phases:
     preBuild:
       commands:
+        - nvm use 18
         - yarn install
     build:
       commands:

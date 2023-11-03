@@ -1,15 +1,12 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-
 import React from 'react';
 
-// Cloudscape
 import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import Container from '@cloudscape-design/components/container';
 import Icon from '@cloudscape-design/components/icon';
 
-// Audio
 import WaveSurfer from 'wavesurfer.js';
 
 import styles from './AudioControls.module.css';

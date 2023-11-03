@@ -1,13 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useCallback, useState } from 'react';
 
-import { useCallback, useState } from 'react';
-
-// Cloudscape
 import { FlashbarProps } from '@cloudscape-design/components/flashbar';
 import ProgressBar from '@cloudscape-design/components/progress-bar';
 
-// Dayjs
 import dayjs from 'dayjs';
 
 export type AddFlashMessageProps = {
@@ -61,7 +58,7 @@ export function useNotification() {
     function updateProgressBar({ type = 'info', id, value, description, additionalInfo = '' }: UpdateProgressBarProps) {
         addFlashMessage({
             id: id,
-            dismissible: ['success', 'error'].includes(type) ? true : false,
+            dismissible: ['success', 'error'].includes(type),
             header: id,
             type: type,
             content: (

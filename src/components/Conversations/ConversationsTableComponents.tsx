@@ -1,9 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useEffect, useMemo, useState } from 'react';
 
-import { useContext, useEffect, useMemo, useState } from 'react';
-
-// Cloudscape
 import Alert from '@cloudscape-design/components/alert';
 import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
@@ -17,14 +15,13 @@ import Select from '@cloudscape-design/components/select';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 
-// App
-import { deleteHealthScribeJob, ListHealthScribeJobsProps } from '../../utils/HealthScribeApi';
-import { collectionPreferencesProps, TablePreferencesDef } from './tablePrefs';
-import { HealthScribeJob } from './Conversations';
-import { NotificationContext } from '../App/contexts';
-
-// Debouncer
 import { useDebounce } from 'use-debounce';
+
+import { useNotificationsContext } from '@/store/notifications';
+import { ListHealthScribeJobsProps, deleteHealthScribeJob } from '@/utils/HealthScribeApi';
+
+import { HealthScribeJob } from './Conversations';
+import { TablePreferencesDef, collectionPreferencesProps } from './tablePrefs';
 
 type DeleteModalProps = {
     selectedHealthScribeJob: HealthScribeJob[];
@@ -38,7 +35,7 @@ function DeleteModal({
     setDeleteModalActive,
     refreshTable,
 }: DeleteModalProps) {
-    const { addFlashMessage } = useContext(NotificationContext);
+    const { addFlashMessage } = useNotificationsContext();
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
     async function doDelete(medicalScribeJobName: string) {
@@ -104,6 +101,8 @@ function TableHeaderActions({
     setDeleteModalActive,
     refreshTable,
 }: TableHeaderActionsProps) {
+    const DO_NOT_DELETE = ['Demo-Fatigue', 'Demo-Kidney', 'Demo-Knee'];
+
     // Disable HealthScribeJob action buttons (view metadata, view images) if nothing is selected
     const actionButtonDisabled = useMemo(
         () =>
@@ -116,7 +115,12 @@ function TableHeaderActions({
         <SpaceBetween direction="horizontal" size="s">
             <Button onClick={() => refreshTable()} iconName="refresh" />
             <Button onClick={() => setSearchParams({})}>Clear</Button>
-            <Button onClick={() => setDeleteModalActive(true)} disabled={actionButtonDisabled}>
+            <Button
+                onClick={() => setDeleteModalActive(true)}
+                disabled={
+                    actionButtonDisabled || DO_NOT_DELETE.includes(selectedHealthScribeJob[0].MedicalScribeJobName)
+                }
+            >
                 Delete
             </Button>
         </SpaceBetween>
@@ -133,7 +137,6 @@ const statusSelections = [
 type TableHeaderProps = {
     selectedHealthScribeJob: HealthScribeJob[];
     headerCounterText: string;
-    // eslint-disable-next-line no-unused-vars
     listHealthScribeJobs: (searchFilter: ListHealthScribeJobsProps) => Promise<void>;
 };
 function TableHeader({ selectedHealthScribeJob, headerCounterText, listHealthScribeJobs }: TableHeaderProps) {
@@ -143,28 +146,27 @@ function TableHeader({ selectedHealthScribeJob, headerCounterText, listHealthScr
 
     // List HealthScribe jobs on initial load
     useEffect(() => {
-        listHealthScribeJobs({});
+        listHealthScribeJobs({}).catch(console.error);
     }, []);
 
     // Update list based on deboucned search params
     useEffect(() => {
-        listHealthScribeJobs(debouncedSearchParams);
+        listHealthScribeJobs(debouncedSearchParams).catch(console.error);
     }, [debouncedSearchParams]);
 
     // Update searchParam to id: value
     function handleInputChange(id: string, value: string) {
         setSearchParams((currentSearchParams) => {
-            const newSearchParams = {
+            return {
                 ...currentSearchParams,
                 [id]: value,
             };
-            return newSearchParams;
         });
     }
 
     // Manual refresh function for the header actions
     function refreshTable() {
-        listHealthScribeJobs(debouncedSearchParams);
+        listHealthScribeJobs(debouncedSearchParams).catch(console.error);
     }
 
     return (
@@ -175,7 +177,6 @@ function TableHeader({ selectedHealthScribeJob, headerCounterText, listHealthScr
                 setDeleteModalActive={setDeleteModalActive}
                 refreshTable={refreshTable}
             />
-
             <Header
                 variant="awsui-h1-sticky"
                 counter={headerCounterText}
@@ -211,7 +212,6 @@ function TableHeader({ selectedHealthScribeJob, headerCounterText, listHealthScr
 
 type TablePreferencesProps = {
     preferences: TablePreferencesDef;
-    // eslint-disable-next-line no-unused-vars
     setPreferences: (newValue: TablePreferencesDef) => void;
 };
 function TablePreferences({ preferences, setPreferences }: TablePreferencesProps) {

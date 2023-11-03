@@ -30,13 +30,18 @@ export function override(resources: AmplifyRootStackTemplate, amplifyProjectInfo
             },
         },
         {
-            policyName: 'polly-synthesize',
+            policyName: 'supporting-services',
             policyDocument: {
                 Version: '2012-10-17',
                 Statement: [
                     {
                         Resource: '*',
-                        Action: ['polly:SynthesizeSpeech'],
+                        Action: [
+                            'polly:SynthesizeSpeech',
+                            'comprehendmedical:InferICD10CM',
+                            'comprehendmedical:InferRxNorm',
+                            'comprehendmedical:InferSNOMEDCT',
+                        ],
                         Effect: 'Allow',
                     },
                 ],

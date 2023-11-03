@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React from 'react';
 
-// CloudScape
 import Box from '@cloudscape-design/components/box';
 import FormField from '@cloudscape-design/components/form-field';
 import Grid from '@cloudscape-design/components/grid';
@@ -9,10 +9,8 @@ import Input from '@cloudscape-design/components/input';
 import RadioGroup from '@cloudscape-design/components/radio-group';
 import TextContent from '@cloudscape-design/components/text-content';
 
-// App
-import { AudioDetails, AudioSelection } from './types';
-
 import styles from './NewConversation.module.css';
+import { AudioDetails, AudioSelection } from './types';
 
 type InputNameProps = {
     jobName: string;

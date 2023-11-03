@@ -1,23 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React from 'react';
 
-import { useContext } from 'react';
-
-// Cloudscape
 import Button from '@cloudscape-design/components/button';
 import Container from '@cloudscape-design/components/container';
 import ContentLayout from '@cloudscape-design/components/content-layout';
 import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 
-// App
-import { NotificationContext } from '../App/contexts';
-
-// API
-import { getHealthScribeJob, listHealthScribeJobs } from '../../utils/HealthScribeApi';
+import { useNotificationsContext } from '@/store/notifications';
+import { getHealthScribeJob, listHealthScribeJobs } from '@/utils/HealthScribeApi';
 
 export default function Debug() {
-    const { addFlashMessage } = useContext(NotificationContext);
+    const { addFlashMessage } = useNotificationsContext();
 
     async function listJobs() {
         const scribeJobs = await listHealthScribeJobs({});
@@ -31,7 +26,7 @@ export default function Debug() {
 
     function addNotification() {
         addFlashMessage({
-            id: 'test',
+            id: 'test' + new Date(),
             header: 'Test notification',
             content: 'Test notification',
             type: 'success',

@@ -2,15 +2,23 @@
 // SPDX-License-Identifier: MIT-0
 
 export interface IAuraClinicalDocOutput {
-    ClinicalDocumentation: { Sections: IAuraClinicalDocOutputSection[] | IAuraClinicalDocOutputSectionOld[] };
+    ClinicalDocumentation: { Sections: IAuraClinicalDocOutputSection[] | IAuraClinicalDocOutputSectionNew[] };
 }
 
 export interface IAuraClinicalDocOutputSection {
     SectionName: string;
-    Summary: IEvidence[];
+    Subsections: {
+        SubsectionName: string;
+        Summary: IEvidence[];
+    }[];
 }
 
-export interface IEvidence {
+export interface IAuraClinicalDocOutputSectionNew {
+    SectionName: string;
+    Summary: IEvidenceNew[];
+}
+
+export interface IEvidenceNew {
     EvidenceLinks: {
         SegmentId: string;
     }[];
@@ -18,22 +26,13 @@ export interface IEvidence {
     SummarizedSegment: string;
 }
 
-export interface IAuraClinicalDocOutputSectionOld {
-    SectionName: string;
-    Subsections: {
-        SubsectionName: string;
-        Summary: IEvidenceOld[];
-    }[];
-}
-
-export interface IEvidenceOld {
+export interface IEvidence {
     EvidenceMap: {
         SegmentId: string;
     }[];
 
     SummarizedSegment: string;
 }
-
 export interface IClinicalFields {
     Attributes: {
         AttributeId: string;
@@ -71,8 +70,19 @@ export interface IAuraTranscriptOutput {
     };
 }
 
+export interface IClinicalInsightAttribute {
+    AttributeId: string;
+    Spans: {
+        BeginCharacterOffset: number;
+        Content: string;
+        EndCharacterOffset: number;
+        SegmentId: string;
+    }[];
+    Type: string;
+}
+
 export interface IClinicalInsights {
-    Attributes: string[];
+    Attributes: IClinicalInsightAttribute[];
     Category: string;
     InsightId: string;
     InsightType: string;
@@ -108,17 +118,20 @@ export interface ITranscriptSegments {
 }
 
 export interface ITranscript extends ITranscriptSegments {
-    Words: {
-        ClinicalEntity: object;
-        ClinicalPhrase: object;
-        Alternatives: {
-            Confidence: null;
-            Content: string;
-        }[];
-        BeginAudioTime: number;
-        EndAudioTime: number;
-        Type: string;
-    }[];
+    Words: ITranscriptWord[];
+}
+
+export interface IWordAlternative {
+    Confidence: number | null;
+    Content: string;
+}
+export interface ITranscriptWord {
+    ClinicalEntity: object;
+    ClinicalPhrase: object;
+    Alternatives: IWordAlternative[];
+    BeginAudioTime: number;
+    EndAudioTime: number;
+    Type: string;
 }
 
 export interface ITranscriptContent {

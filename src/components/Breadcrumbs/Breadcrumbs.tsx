@@ -1,11 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useLocation, useNavigate } from 'react-router-dom';
 
-// Cloudscape
 import BreadcrumbGroup, { BreadcrumbGroupProps } from '@cloudscape-design/components/breadcrumb-group';
-
-// Router
-import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Breadcrumbs() {
     const location = useLocation();

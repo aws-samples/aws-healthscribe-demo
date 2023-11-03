@@ -1,0 +1,52 @@
+.childDiv {
+    min-height: 300px;
+    height: calc(100vh - 400px);
+    margin-bottom: 15px;
+    overflow: scroll;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* mozilla */
+}
+
+.childDiv::-webkit-scrollbar {
+    display: none; /* Safari and Chrome browsers */
+}
+
+.scrollUpIcon {
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    opacity: 0.5;
+    animation: jumpTop 1.5s infinite;
+}
+
+.scrollDownIcon {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    opacity: 0.5;
+    animation: jumpBottom 1.5s infinite;
+}
+
+@keyframes jumpTop {
+    0% {
+        margin-top: 0;
+    }
+    50% {
+        margin-top: 10px;
+    }
+    100% {
+        margin-top: 0;
+    }
+}
+
+@keyframes jumpBottom {
+    0% {
+        margin-top: 0;
+    }
+    50% {
+        margin-bottom: 10px;
+    }
+    100% {
+        margin-top: 0;
+    }
+}

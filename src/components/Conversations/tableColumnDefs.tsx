@@ -1,19 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React from 'react';
 
-// Cloudscape
 import Link from '@cloudscape-design/components/link';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 
-// Router
+import dayjs from 'dayjs';
 import { useNavigate } from 'react-router';
 
-// App
-import toTitleCase from '../../utils/toTitleCase';
-import { HealthScribeJob } from './Conversations';
+import toTitleCase from '@/utils/toTitleCase';
 
-// Dayjs
-import dayjs from 'dayjs';
+import { HealthScribeJob } from './Conversations';
 
 function JobName(healthScribeJob: HealthScribeJob) {
     const navigate = useNavigate();
@@ -40,7 +37,7 @@ function JobStatus(status: string) {
         case 'QUEUED':
             return <StatusIndicator type="pending">Queued</StatusIndicator>;
         default:
-            <StatusIndicator type="info">{toTitleCase(status)}</StatusIndicator>;
+            return <StatusIndicator type="info">{toTitleCase(status)}</StatusIndicator>;
     }
 }
 
@@ -50,19 +47,13 @@ export const columnDefs = [
         header: 'Name',
         cell: (e: HealthScribeJob) => JobName(e),
         sortingField: 'MedicalScribeJobName',
+        width: 300,
     },
     {
         id: 'MedicalScribeJobStatus',
         header: 'Status',
         cell: (e: HealthScribeJob) => JobStatus(e.MedicalScribeJobStatus),
         sortingField: 'MedicalScribeJobStatus',
-    },
-    {
-        id: 'LanguageCode',
-        header: 'Language',
-        cell: (e: HealthScribeJob) => e.LanguageCode,
-        sortingField: 'LanguageCode',
-        width: 135,
     },
     {
         id: 'CreationTime',
@@ -79,6 +70,13 @@ export const columnDefs = [
     },
     // TODO: add a popover that does a getHealthScribeJob
     // objects below here are not shown by default
+    {
+        id: 'LanguageCode',
+        header: 'Language',
+        cell: (e: HealthScribeJob) => e.LanguageCode,
+        sortingField: 'LanguageCode',
+        width: 135,
+    },
     {
         id: 'CompletionTime',
         header: 'Completed',

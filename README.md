@@ -6,19 +6,19 @@ After deploying the demo, you can submit audio files to AWS HealthScribe, view t
 
 This project uses [AWS Amplify](https://aws.amazon.com/amplify/) to deploy a full-stack web application with an UI based on [Cloudscape](https://cloudscape.design/), authentication using [Amazon Cognito](https://aws.amazon.com/cognito/) and storage using [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/).
 
-![UI Sample](./images/UI-Sample.gif)
-
--   [Deployment](#deployment)
-    -   [Automatic Deployment](#automatic-deployment)
-    -   [Semi-Automatic Deployment via AWS CodeCommit](#semi-automatic-deployment-via-aws-codecommit)
--   [Security Considerations](#security-considerations)
-    -   [Disable User Sign Ups](#disable-user-sign-ups)
-    -   [Additional Information](#additional-information)
--   [Usage](#usage)
--   [Architecture](#architecture)
--   [Cleanup](#cleanup)
--   [Security](#security)
--   [License](#license)
+-   [AWS HealthScribe Demo](#aws-healthscribe-demo)
+    -   [Deployment](#deployment)
+        -   [Automatic Deployment](#automatic-deployment)
+        -   [Semi-Automatic Deployment via AWS CodeCommit](#semi-automatic-deployment-via-aws-codecommit)
+    -   [Security Considerations](#security-considerations)
+        -   [Disable User Sign Ups](#disable-user-sign-ups)
+        -   [Encryption At Rest and In Transit](#encryption-at-rest-and-in-transit)
+        -   [Access Logging](#access-logging)
+    -   [Usage](#usage)
+    -   [Architecture](#architecture)
+    -   [Cleanup](#cleanup)
+    -   [Security](#security)
+    -   [License](#license)
 
 ## Deployment
 
@@ -57,9 +57,11 @@ By default, any user with a valid email can sign up and authenticate into the we
 -   Uncheck _Enable self-registration_.
 -   Select _Save changes_.
 
-### Additional Information
+### Encryption At Rest and In Transit
 
 All traffic between the client (browser) and the server (AWS Amplify Hosting, AWS HealthScribe, Amazon S3) is encrypted in transit. Audio files uploaded to S3 and AWS HealthScribe output JSON is encrypted at rest.
+
+### Access Logging
 
 Access logging is enabled for audio files and HealthScribe output in S3. These audit logs are written to a separate S3 bucket with a name starting with `amplify-awshealthscribedemo-loggingbucket`. Both buckets are retained when you delete the app.
 
@@ -78,6 +80,27 @@ _Note:_ the S3 bucket containing audio files and HealthScribe output is retained
 -   Navigate to the [AWS console for AWS Amplify](https://console.aws.amazon.com/amplify/home)
 -   Select the web app
 -   On the top right, select _Actions_, then _Delete app_
+
+## FAQ
+
+#### The public sample repo has been updated. How do I update my local deployment to the latest code?
+
+During the initial deployment, AWS Amplify forked this repository to your GitHub account. Amplify then built a CI/CD pipeline using your fork as the source.
+To update your Amplify deployment, sync your fork with this repository:
+
+1. Navigate to the fork in your GitHub account.
+2. Select "Sync fork"
+3. Select "Update branch"
+
+#### Can I use this UI with existing AWS HealthScribe jobs?
+
+Yes, but you will have to grant the Amazon Cognito identity pool's authenticated role access to the S3 bucket where the input audio files and output JSON files are located.
+
+1. Navigate to [Amazon Cognito Identy Pools](https://console.aws.amazon.com/cognito/v2/identity) in the AWS console. Make sure you are in the correct region.
+2. Select the identity pool associated with the demo. It is named similar to `healthScribeDemoAuthIdentityPool..`
+3. Select the "User access" tab
+4. Select the link under "Authenticated role." This will open a new tab to the IAM role assumed by authenticated users.
+5. Add `s3:GetObject` actions for the S3 bucket(s) where your existing audio input and JSON output files are located
 
 ## Security
 

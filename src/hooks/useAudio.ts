@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-
 import { useRef, useState } from 'react';
+
 import WaveSurfer from 'wavesurfer.js';
 
-import { HighlightId } from '../components/Conversation/types';
+import { HighlightId } from '@/components/Conversation/types';
 
 export function useAudio() {
     const wavesurfer = useRef<WaveSurfer>();

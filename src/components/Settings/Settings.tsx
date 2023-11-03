@@ -1,39 +1,30 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import React, { useState } from 'react';
 
-import { useState, useContext } from 'react';
-
-// Contexts
-import { AppContext } from '../App/contexts';
-
-// Cloudscape
 import Button from '@cloudscape-design/components/button';
 import Container from '@cloudscape-design/components/container';
 import ContentLayout from '@cloudscape-design/components/content-layout';
+import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Form from '@cloudscape-design/components/form';
 import FormField from '@cloudscape-design/components/form-field';
 import Header from '@cloudscape-design/components/header';
+import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
 import Select from '@cloudscape-design/components/select';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
-import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
 
-// App
-import { DEFAULT_SETTINGS } from './defaultSettings';
-import { appRegionOptions } from './selectOptions';
+import * as settingOptions from '@/store/appSettings/settingOptions';
+import { useAppSettingsContext } from '@/store/appSettings';
+import { DEFAULT_SETTINGS } from '@/store/appSettings/defaultSettings';
 
 export type AppSettings = {
     'app.region': { label: string; value: string };
-    'app.apiTiming': { label: string; value: boolean };
+    'app.apiTiming': { label: string; value: string };
 };
 
-type SettingsProps = {
-    // eslint-disable-next-line no-unused-vars
-    setAppSettings: (newValue: AppSettings) => void;
-};
-
-export default function Settings({ setAppSettings }: SettingsProps) {
-    const { appSettings } = useContext(AppContext);
+export default function Settings() {
+    const { appSettings, setAppSettings } = useAppSettingsContext();
     // Saving is instant, but create artificial wait
     const [isSaving, setIsSaving] = useState(false);
     // Make a copy of appSettings, write back it after form validation
@@ -65,7 +56,7 @@ export default function Settings({ setAppSettings }: SettingsProps) {
             setAppSettings(settings);
             setIsSaving(false);
             window.location.reload();
-        }, 900);
+        }, 300);
     }
 
     return (
@@ -100,16 +91,34 @@ export default function Settings({ setAppSettings }: SettingsProps) {
                             </Button>
                         }
                     >
-                        <FormField
-                            label="AWS HealthScribe Region"
-                            description="During the public preview, AWS HealthScribe is available in the US East (N. Virginia) region."
-                        >
-                            <Select
-                                selectedOption={settings['app.region']}
-                                onChange={({ detail }) => updateSettings('app.region', detail.selectedOption)}
-                                options={appRegionOptions}
-                            />
-                        </FormField>
+                        <SpaceBetween size={'m'}>
+                            <FormField
+                                label="AWS HealthScribe Region"
+                                description="During the public preview, AWS HealthScribe is available in the US East (N. Virginia) region."
+                            >
+                                <Select
+                                    selectedOption={settings['app.region']}
+                                    onChange={({ detail }) => updateSettings('app.region', detail.selectedOption)}
+                                    options={settingOptions.appRegionOptions}
+                                />
+                            </FormField>
+                            <ExpandableSection headerText="Advanced">
+                                <SpaceBetween direction="vertical" size="m">
+                                    <FormField
+                                        label="API Timing"
+                                        description="Print API timing information in the browser console."
+                                    >
+                                        <Select
+                                            selectedOption={settings['app.apiTiming']}
+                                            onChange={({ detail }) =>
+                                                updateSettings('app.apiTiming', detail.selectedOption)
+                                            }
+                                            options={settingOptions.apiTimings}
+                                        />
+                                    </FormField>
+                                </SpaceBetween>
+                            </ExpandableSection>
+                        </SpaceBetween>
                     </Form>
                 </form>
             </Container>

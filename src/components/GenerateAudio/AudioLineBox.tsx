@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-// Cloudscape
 import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import Grid from '@cloudscape-design/components/grid';
@@ -8,13 +7,13 @@ import Select, { SelectProps } from '@cloudscape-design/components/select';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Textarea from '@cloudscape-design/components/textarea';
 
-// Crunker
 import Crunker from 'crunker';
-const crunker = new Crunker();
 
-// App
+import { PollyPhrase, getAudioBlobFromPolly } from '@/utils/PollyApi';
+
 import { AudioLine } from './GenerateAudio';
-import { PollyPhrase, getAudioBlobFromPolly } from '../../utils/PollyApi';
+
+const crunker = new Crunker();
 
 const SPEAKERS = [
     { value: 'Salli', label: 'Salli (Female)' },

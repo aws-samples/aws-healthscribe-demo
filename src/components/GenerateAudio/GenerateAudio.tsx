@@ -1,6 +1,5 @@
-import { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
-// Cloudscape
 import Button from '@cloudscape-design/components/button';
 import ButtonDropdown from '@cloudscape-design/components/button-dropdown';
 import Container from '@cloudscape-design/components/container';
@@ -10,24 +9,19 @@ import Link from '@cloudscape-design/components/link';
 import { SelectProps } from '@cloudscape-design/components/select';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 
-// Framer motion
+import Crunker from 'crunker';
+import dayjs from 'dayjs';
 import { Reorder } from 'framer-motion';
 
-// Dayjs
-import dayjs from 'dayjs';
+import { useNotificationsContext } from '@/store/notifications';
+import { PollyPhrase, getAudioBlobFromPolly } from '@/utils/PollyApi';
 
-// Crunker
-import Crunker from 'crunker';
-const crunker = new Crunker();
-
-// App
 import AudioLineBox from './AudioLineBox';
-import { PollyPhrase, getAudioBlobFromPolly } from '../../utils/PollyApi';
-import { NotificationContext } from '../App/contexts';
+import styles from './GenerateAudio.module.css';
 import { KNEE_PROBLEM } from './templates/knee';
 import { SLEEP_APNEA } from './templates/sleep';
 
-import styles from './GenerateAudio.module.css';
+const crunker = new Crunker();
 
 export type AudioLine = {
     id: number;
@@ -40,7 +34,8 @@ const DEFAULT_AUDIOLINES = [{ id: 1, speaker: null, text: '' }] as AudioLines;
 const PROGRESS_BAR_ID = 'Generating audio file';
 
 export default function GenerateAudio() {
-    const { addFlashMessage, updateProgressBar } = useContext(NotificationContext);
+    const { addFlashMessage, updateProgressBar } = useNotificationsContext();
+
     const [audioLines, setAudioLines] = useState<AudioLines>(DEFAULT_AUDIOLINES);
     const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
