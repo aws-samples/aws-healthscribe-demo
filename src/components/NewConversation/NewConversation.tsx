@@ -52,7 +52,7 @@ export default function NewConversation() {
     const [filePath, setFilePath] = useState<File>(); // only one file is allowd from react-dropzone. NOT an array
     const [outputBucket, getUploadMetadata] = useS3(); // outputBucket is the Amplify bucket, and uploadMetadata contains uuid4
 
-    const [submissionMode, setSubmissionMode] = useState<string>('liveRecording'); // to hide or show the live recorder
+    const [submissionMode, setSubmissionMode] = useState<string>('uploadRecording'); // to hide or show the live recorder
     const [recordedAudio, setRecordedAudio] = useState<File | undefined>(); // audio file recorded via live recorder
 
     // Set array for TokenGroup items
@@ -268,8 +268,8 @@ export default function NewConversation() {
                                             onChange={({ detail }) => setSubmissionMode(detail.value)}
                                             value={submissionMode}
                                             items={[
-                                                { value: 'liveRecording', label: 'Live Recording' },
                                                 { value: 'uploadRecording', label: 'Upload Recording' },
+                                                { value: 'liveRecording', label: 'Live Recording' }
                                             ]}
                                         />
                                     </div>
