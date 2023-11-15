@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ import ContentLayout from '@cloudscape-design/components/content-layout';
 import Form from '@cloudscape-design/components/form';
 import FormField from '@cloudscape-design/components/form-field';
 import Header from '@cloudscape-design/components/header';
+import RadioGroup from '@cloudscape-design/components/radio-group';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 import TokenGroup from '@cloudscape-design/components/token-group';
@@ -24,8 +25,10 @@ import { multipartUpload } from '@/utils/S3Api';
 import sleep from '@/utils/sleep';
 
 import amplifyCustom from '../../aws-custom.json';
+import AudioRecorder from './AudioRecorder';
 import { AudioDropzone } from './Dropzone';
 import { AudioDetailSettings, AudioIdentificationType, InputName } from './FormComponents';
+import styles from './NewConversation.module.css';
 import { verifyJobParams } from './formUtils';
 import { AudioDetails, AudioSelection } from './types';
 
@@ -48,6 +51,9 @@ export default function NewConversation() {
     });
     const [filePath, setFilePath] = useState<File>(); // only one file is allowd from react-dropzone. NOT an array
     const [outputBucket, getUploadMetadata] = useS3(); // outputBucket is the Amplify bucket, and uploadMetadata contains uuid4
+
+    const [submissionMode, setSubmissionMode] = useState<string>('liveRecording'); // to hide or show the live recorder
+    const [recordedAudio, setRecordedAudio] = useState<File | undefined>(); // audio file recorded via live recorder
 
     // Set array for TokenGroup items
     const fileToken = useMemo(() => {
@@ -203,6 +209,10 @@ export default function NewConversation() {
         setIsSubmitting(false);
     }
 
+    useEffect(() => {
+        setFilePath(recordedAudio);
+    }, [recordedAudio]);
+
     return (
         <ContentLayout
             header={
@@ -250,20 +260,45 @@ export default function NewConversation() {
                                 audioDetails={audioDetails}
                                 setAudioDetails={setAudioDetails}
                             />
-                            <FormField label="Select Files">
-                                <AudioDropzone setFilePath={setFilePath} setFormError={setFormError} />
-                                <TokenGroup
-                                    i18nStrings={{
-                                        limitShowFewer: 'Show fewer files',
-                                        limitShowMore: 'Show more files',
-                                    }}
-                                    onDismiss={() => {
-                                        setFilePath(undefined);
-                                    }}
-                                    items={fileToken ? [fileToken] : []}
-                                    alignment="vertical"
-                                    limit={1}
-                                />
+                            <FormField label="Session Recording Type">
+                                <SpaceBetween direction="vertical" size="xl">
+                                    <div className={styles.submissionModeRadio}>
+                                        <RadioGroup
+                                            ariaLabel="submissionMode"
+                                            onChange={({ detail }) => setSubmissionMode(detail.value)}
+                                            value={submissionMode}
+                                            items={[
+                                                { value: 'liveRecording', label: 'Live Recording' },
+                                                { value: 'uploadRecording', label: 'Upload Recording' },
+                                            ]}
+                                        />
+                                    </div>
+                                    {submissionMode === 'liveRecording' ? (
+                                        <>
+                                            <FormField
+                                                label="Live Recording"
+                                                description="Note: You may only record one live recording at a time."
+                                            ></FormField>
+                                            <AudioRecorder setRecordedAudio={setRecordedAudio} />
+                                        </>
+                                    ) : (
+                                        <FormField label="Select Files">
+                                            <AudioDropzone setFilePath={setFilePath} setFormError={setFormError} />
+                                            <TokenGroup
+                                                i18nStrings={{
+                                                    limitShowFewer: 'Show fewer files',
+                                                    limitShowMore: 'Show more files',
+                                                }}
+                                                onDismiss={() => {
+                                                    setFilePath(undefined);
+                                                }}
+                                                items={fileToken ? [fileToken] : []}
+                                                alignment="vertical"
+                                                limit={1}
+                                            />
+                                        </FormField>
+                                    )}
+                                </SpaceBetween>
                             </FormField>
                         </SpaceBetween>
                     </Form>

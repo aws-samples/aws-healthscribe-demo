@@ -1,0 +1,35 @@
+.ctrlHeading {
+    padding: 0 !important;
+    margin-bottom: 15px !important;
+}
+
+.playerControl {
+    position: fixed;
+    bottom: 1%;
+    right: 1%;
+    z-index: 100;
+}
+
+.playerControlInline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.closeButton {
+    position: absolute !important;
+    top: 5px;
+    right: 5px;
+}
+
+.downloadButton {
+    background: var(--color-background-button-normal-default-klhbuw, #ffffff);
+    color: var(--color-text-button-normal-default-mo7k6u, #0972d3);
+    font-weight: var(--font-button-weight-hv56tz, 700);
+    border-radius: var(--border-radius-button-ypmfry, 20px);
+    border: var(--border-field-width-09w7vk, 2px) solid;
+    padding: var(--space-scaled-xxs-7597g1, 4px) var(--space-button-horizontal-8jxzea, 20px);
+    text-decoration: none;
+    cursor: pointer;
+}

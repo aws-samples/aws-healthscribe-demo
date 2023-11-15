@@ -1,3 +1,5 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
@@ -20,7 +22,7 @@ import { IAuraTranscriptOutput } from '@/types/HealthScribe';
 import { getPresignedUrl, getS3Object } from '@/utils/S3Api';
 
 import { HealthScribeJob, SmallTalkList } from '../types';
-import AudioControls from './AudioControls';
+import AudioControls from '../../Common/AudioControls';
 import styles from './TopPanel.module.css';
 import { extractRegions } from './extractRegions';
 
