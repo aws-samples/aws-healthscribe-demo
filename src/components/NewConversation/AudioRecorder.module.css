@@ -1,0 +1,87 @@
+#waveformForRecording {
+    padding: 15px 0;
+}
+
+.audioRecorderTopPanel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-bottom: 1px solid #e0e0e0;
+    border-top: 1px solid #e0e0e0;
+}
+
+.audioRecorderIcon {
+    margin-right: 3px;
+}
+
+.audioRecorderSpeaker {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.audioRecorderSpeakerText {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.audioRecorderSpeakerIcon {
+    width: 30px;
+}
+
+.audioRecorderRecordingControls {
+    display: flex;
+}
+
+.audioRecorderIcon {
+    margin-right: 3px;
+}
+
+.audioWavesurferInitialState {
+    width: 350px;
+    max-width: 100%;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: block;
+    height: 0px;
+    visibility: hidden;
+}
+
+.audioWavesurferLoadedState {
+    width: 350px;
+    max-width: 100%;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: table;
+    height: auto;
+    visibility: visible;
+}
+
+.audioRecorderStopWatch {
+    font-weight: bold;
+    padding: 5px 10px;
+    font-size: 16px;
+}
+
+.audioRecorderTopPanel {
+    padding: 10px 0;
+}
+
+.recordingItem {
+    margin-top: 15px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+}
+
+.recordingItemHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.recordingItemHeader div:nth-child(1) {
+    font-weight: bold;
+}
