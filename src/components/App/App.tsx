@@ -17,6 +17,7 @@ import TopNav from '@/components/TopNav';
 import Welcome from '@/components/Welcome';
 import { useAuthContext } from '@/store/auth';
 import { useNotificationsContext } from '@/store/notifications';
+import { isUserEmailVerified } from '@/utils/Auth/isUserEmailVerified';
 
 Amplify.configure(awsExports);
 
@@ -34,7 +35,7 @@ export default function App() {
 
     const content = (
         <Suspense fallback={<SuspenseLoader />}>
-            {user ? (
+            {isUserEmailVerified(user) ? (
                 <Routes>
                     <Route index element={<Welcome />} />
                     <Route path="/debug" element={<Debug />} />
