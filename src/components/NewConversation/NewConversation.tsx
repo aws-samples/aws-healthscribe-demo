@@ -4,15 +4,18 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
+import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import Container from '@cloudscape-design/components/container';
 import ContentLayout from '@cloudscape-design/components/content-layout';
 import Form from '@cloudscape-design/components/form';
 import FormField from '@cloudscape-design/components/form-field';
 import Header from '@cloudscape-design/components/header';
+import Popover from '@cloudscape-design/components/popover';
 import RadioGroup from '@cloudscape-design/components/radio-group';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
+import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import TokenGroup from '@cloudscape-design/components/token-group';
 
 import { Progress } from '@aws-sdk/lib-storage';
@@ -260,7 +263,26 @@ export default function NewConversation() {
                                 audioDetails={audioDetails}
                                 setAudioDetails={setAudioDetails}
                             />
-                            <FormField label="Session Recording Type">
+                            <FormField
+                                label={
+                                    <SpaceBetween direction="horizontal" size="xs">
+                                        <div>Session Recording Type</div>
+                                        <Box
+                                            display="inline-block"
+                                            color="text-status-info"
+                                            fontSize="body-s"
+                                            fontWeight="bold"
+                                        >
+                                            <Popover
+                                                header="Live Recording"
+                                                content="The audio file will be submitted to AWS HealthScribe after the recording is complete. Please position your device or microphone so it can capture all conversation participants."
+                                            >
+                                                <StatusIndicator type="info">New</StatusIndicator>
+                                            </Popover>
+                                        </Box>
+                                    </SpaceBetween>
+                                }
+                            >
                                 <SpaceBetween direction="vertical" size="xl">
                                     <div className={styles.submissionModeRadio}>
                                         <RadioGroup
@@ -269,7 +291,7 @@ export default function NewConversation() {
                                             value={submissionMode}
                                             items={[
                                                 { value: 'uploadRecording', label: 'Upload Recording' },
-                                                { value: 'liveRecording', label: 'Live Recording' }
+                                                { value: 'liveRecording', label: 'Live Recording' },
                                             ]}
                                         />
                                     </div>

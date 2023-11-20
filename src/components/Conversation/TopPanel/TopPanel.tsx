@@ -21,8 +21,8 @@ import { useNotificationsContext } from '@/store/notifications';
 import { IAuraTranscriptOutput } from '@/types/HealthScribe';
 import { getPresignedUrl, getS3Object } from '@/utils/S3Api';
 
-import { HealthScribeJob, SmallTalkList } from '../types';
 import AudioControls from '../../Common/AudioControls';
+import { HealthScribeJob, SmallTalkList } from '../types';
 import styles from './TopPanel.module.css';
 import { extractRegions } from './extractRegions';
 

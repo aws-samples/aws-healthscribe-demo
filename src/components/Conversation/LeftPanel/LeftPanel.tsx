@@ -233,8 +233,8 @@ export default function LeftPanel({
                         script.SegmentId === highlightId.selectedSegmentId
                             ? styles.highlightMedium
                             : highlightId.allSegmentIds.includes(script.SegmentId)
-                            ? styles.highlightMedium
-                            : '';
+                              ? styles.highlightMedium
+                              : '';
                     return (
                         <div key={key} style={{ paddingTop: !key ? '15px' : '' }}>
                             <Grid disableGutters gridDefinition={[{ colspan: 2 }, { colspan: 10 }]}>
