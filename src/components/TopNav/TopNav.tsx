@@ -9,6 +9,7 @@ import { Density, Mode, applyDensity, applyMode } from '@cloudscape-design/globa
 import Auth from '@/components/Auth';
 import { useAppThemeContext } from '@/store/appTheme';
 import { useAuthContext } from '@/store/auth';
+import { isUserEmailVerified } from '@/utils/Auth/isUserEmailVerified';
 
 import './TopNav.css';
 
@@ -41,7 +42,7 @@ export default function TopNav() {
 
     // When user authenticates, close authentication modal window
     useEffect(() => {
-        if (user) {
+        if (isUserEmailVerified(user)) {
             setAuthVisible(false);
         }
         // no else because we want the auth window to only pop up by clicking sign in, not automatically
@@ -115,20 +116,21 @@ export default function TopNav() {
         onItemClick: (e) => handleUtilVisualClick(e),
     };
 
-    const utilUser: TopNavigationProps.ButtonUtility | TopNavigationProps.MenuDropdownUtility = !user
-        ? {
-              type: 'button',
-              text: 'Sign In',
-              onClick: () => setAuthVisible(true),
-          }
-        : {
-              type: 'menu-dropdown',
-              text: user?.attributes?.email || user?.username,
-              description: user?.attributes?.email,
-              iconName: 'user-profile',
-              items: [{ id: 'signout', text: 'Sign out' }],
-              onItemClick: () => signOut(),
-          };
+    const utilUser: TopNavigationProps.ButtonUtility | TopNavigationProps.MenuDropdownUtility =
+        user && isUserEmailVerified(user)
+            ? {
+                  type: 'menu-dropdown',
+                  text: user?.attributes?.email || user?.username,
+                  description: user?.attributes?.email,
+                  iconName: 'user-profile',
+                  items: [{ id: 'signout', text: 'Sign out' }],
+                  onItemClick: () => signOut(),
+              }
+            : {
+                  type: 'button',
+                  text: 'Sign In',
+                  onClick: () => setAuthVisible(true),
+              };
 
     const navUtils = [utilVisual, utilUser];
 
