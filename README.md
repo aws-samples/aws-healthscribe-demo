@@ -2,9 +2,13 @@
 
 The AWS HealthScribe Demo app shows the art of the possible with [AWS HealthScribe](https://aws.amazon.com/healthscribe/), a HIPAA-elgible service empowering healthcare software vendors to build clinical applications that automatically generate clinical notes by analyzing patient-clinician conversations.
 
-After deploying the demo, you can submit audio files to AWS HealthScribe, view the status of the job, and visualize the transcript and summarized clinical notes, including sections like complaint, history of present illness, assessment, and treatment plan.
+After deploying the demo, you can record or submit audio files to AWS HealthScribe, view the status of the job, and visualize the transcript and summarized clinical notes, including sections like complaint, history of present illness, assessment, and treatment plan.
+
+Additionally, structured medical terms extracted by AWS HealthScribe can be sent to [Amazon Comprehend Medical](https://aws.amazon.com/comprehend/medical/) for ontology linking, allowing you to infer ICD-10-CM, SNOMED CT, or RxNorm codes.
 
 This project uses [AWS Amplify](https://aws.amazon.com/amplify/) to deploy a full-stack web application with an UI based on [Cloudscape](https://cloudscape.design/), authentication using [Amazon Cognito](https://aws.amazon.com/cognito/) and storage using [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/).
+
+![UI Sample](./images/UI-Sample.gif)
 
 -   [AWS HealthScribe Demo](#aws-healthscribe-demo)
     -   [Deployment](#deployment)
