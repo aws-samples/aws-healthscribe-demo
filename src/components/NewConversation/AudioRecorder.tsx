@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import Button from '@cloudscape-design/components/button';
 import Grid from '@cloudscape-design/components/grid';
@@ -48,6 +48,7 @@ export default function AudioRecorder({ setRecordedAudio }: AudioRecorderProps) 
                 progressColor: 'rgb(232, 232, 232)',
                 height: 40,
             });
+            // @ts-expect-error TODO Property wavesurfer is protected but type BasePlugin<EventTypes, Options> is not a class derived from BasePlugin<EventTypes, Options>
             wavesurferRecordPlugin.current = wavesurfermic.current?.registerPlugin(RecordPlugin.create());
         }
     }, []);
@@ -100,7 +101,7 @@ export default function AudioRecorder({ setRecordedAudio }: AudioRecorderProps) 
     };
 
     const loadWaveSurfer = (audioUrl: string, reset: boolean = false) => {
-        if (reset === true || !wavesurfer || !wavesurfer.current) {
+        if (reset || !wavesurfer || !wavesurfer.current) {
             wavesurfer.current = WaveSurfer.create({
                 container: waveformElement || '#waveformForRecording',
                 height: 40,
@@ -127,7 +128,7 @@ export default function AudioRecorder({ setRecordedAudio }: AudioRecorderProps) 
             <div className={styles.audioRecorderTopPanel}>
                 <Grid gridDefinition={[{ colspan: { default: 1, xxs: 1 } }, { colspan: { default: 11, xxs: 11 } }]}>
                     <div className={styles.audioRecorderSpeaker}>
-                        <img className={styles.audioRecorderSpeakerIcon} src="/record.png" />
+                        <img className={styles.audioRecorderSpeakerIcon} src="/record.png" alt={'Record Icon'} />
                     </div>
                     <div>
                         <span className={styles.audioRecorderSpeakerText}>

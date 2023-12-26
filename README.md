@@ -2,9 +2,15 @@
 
 The AWS HealthScribe Demo app shows the art of the possible with [AWS HealthScribe](https://aws.amazon.com/healthscribe/), a HIPAA-elgible service empowering healthcare software vendors to build clinical applications that automatically generate clinical notes by analyzing patient-clinician conversations.
 
-After deploying the demo, you can submit audio files to AWS HealthScribe, view the status of the job, and visualize the transcript and summarized clinical notes, including sections like complaint, history of present illness, assessment, and treatment plan.
+After deploying the demo, you can record or submit audio files to AWS HealthScribe, view the status of the job, and visualize the transcript and summarized clinical notes, including sections like complaint, history of present illness, assessment, and treatment plan.
+
+Additionally, structured medical terms extracted by AWS HealthScribe can be sent to [Amazon Comprehend Medical](https://aws.amazon.com/comprehend/medical/) for ontology linking, allowing you to infer ICD-10-CM, SNOMED CT, or RxNorm codes.
 
 This project uses [AWS Amplify](https://aws.amazon.com/amplify/) to deploy a full-stack web application with an UI based on [Cloudscape](https://cloudscape.design/), authentication using [Amazon Cognito](https://aws.amazon.com/cognito/) and storage using [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/).
+
+![UI Sample](./images/UI-Sample.gif)
+
+<!-- TOC -->
 
 -   [AWS HealthScribe Demo](#aws-healthscribe-demo)
     -   [Deployment](#deployment)
@@ -17,8 +23,12 @@ This project uses [AWS Amplify](https://aws.amazon.com/amplify/) to deploy a ful
     -   [Usage](#usage)
     -   [Architecture](#architecture)
     -   [Cleanup](#cleanup)
+    -   [FAQ](#faq)
+        -   [The public sample repo has been updated. How do I update my local deployment to the latest code?](#the-public-sample-repo-has-been-updated-how-do-i-update-my-local-deployment-to-the-latest-code)
+        -   [Can I use this UI with existing AWS HealthScribe jobs?](#can-i-use-this-ui-with-existing-aws-healthscribe-jobs)
     -   [Security](#security)
     -   [License](#license)
+    <!-- TOC -->
 
 ## Deployment
 
@@ -77,9 +87,9 @@ Amplify deploys a public-accessible website. When you first visit the site, sele
 
 _Note:_ the S3 bucket containing audio files and HealthScribe output is retained during delete. The S3 bucket containing access logs for the former is also retained during delete.
 
--   Navigate to the [AWS console for AWS Amplify](https://console.aws.amazon.com/amplify/home)
--   Select the web app
--   On the top right, select _Actions_, then _Delete app_
+-   Navigate to the [AWS console for AWS Amplify](https://console.aws.amazon.com/amplify/home).
+-   Select the web app.
+-   On the top right, select _Actions_, then _Delete app_.
 
 ## FAQ
 
@@ -89,8 +99,8 @@ During the initial deployment, AWS Amplify forked this repository to your GitHub
 To update your Amplify deployment, sync your fork with this repository:
 
 1. Navigate to the fork in your GitHub account.
-2. Select "Sync fork"
-3. Select "Update branch"
+2. Select "Sync fork."
+3. Select "Update branch."
 
 #### Can I use this UI with existing AWS HealthScribe jobs?
 
@@ -98,9 +108,9 @@ Yes, but you will have to grant the Amazon Cognito identity pool's authenticated
 
 1. Navigate to [Amazon Cognito Identy Pools](https://console.aws.amazon.com/cognito/v2/identity) in the AWS console. Make sure you are in the correct region.
 2. Select the identity pool associated with the demo. It is named similar to `healthScribeDemoAuthIdentityPool..`
-3. Select the "User access" tab
+3. Select the "User access" tab.
 4. Select the link under "Authenticated role." This will open a new tab to the IAM role assumed by authenticated users.
-5. Add `s3:GetObject` actions for the S3 bucket(s) where your existing audio input and JSON output files are located
+5. Add `s3:GetObject` actions for the S3 bucket(s) where your existing audio input and JSON output files are located.
 
 ## Security
 
