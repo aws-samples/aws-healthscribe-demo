@@ -101,7 +101,6 @@ export default function TopPanel({
                         url: s3PresignedUrl,
                     });
 
-                    // @ts-expect-error TODO Property wavesurfer is protected but type BasePlugin<EventTypes, Options> is not a class derived from BasePlugin<EventTypes, Options>
                     setWavesurferRegions(wavesurfer.current.registerPlugin(RegionsPlugin.create()));
                 }
                 // Disable spinner when Wavesurfer is ready
