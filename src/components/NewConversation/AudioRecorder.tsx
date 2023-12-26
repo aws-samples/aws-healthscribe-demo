@@ -48,7 +48,6 @@ export default function AudioRecorder({ setRecordedAudio }: AudioRecorderProps) 
                 progressColor: 'rgb(232, 232, 232)',
                 height: 40,
             });
-            // @ts-expect-error TODO Property wavesurfer is protected but type BasePlugin<EventTypes, Options> is not a class derived from BasePlugin<EventTypes, Options>
             wavesurferRecordPlugin.current = wavesurfermic.current?.registerPlugin(RecordPlugin.create());
         }
     }, []);
