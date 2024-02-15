@@ -3,6 +3,7 @@
 import React from 'react';
 import { Dispatch, MutableRefObject, SetStateAction, useEffect, useState } from 'react';
 
+import * as awsui from '@cloudscape-design/design-tokens';
 import Grid from '@cloudscape-design/components/grid';
 
 import has from 'lodash/has';
@@ -190,6 +191,7 @@ export default function LeftPanel({
 
             const startHighlightTime = transcriptHighlightAll[transcriptHighlightSelectedInd].BeginAudioTime;
             let endHighlightTime = transcriptHighlightAll[transcriptHighlightSelectedInd].EndAudioTime;
+
             if (transcriptHighlightSelectedInd >= 0) {
                 for (let i = transcriptHighlightSelectedInd + 1; i < transcriptHighlightAll.length; i++) {
                     if (
@@ -207,7 +209,11 @@ export default function LeftPanel({
                 resetHighlightId();
             }
 
-            if (audioReady && (currentAudioTime < startHighlightTime || currentAudioTime > endHighlightTime)) {
+            if (
+                audioReady &&
+                (currentAudioTime < Math.floor(startHighlightTime * 100 - 1) / 100 ||
+                    currentAudioTime > Math.ceil(endHighlightTime * 100 + 1) / 100)
+            ) {
                 resetHighlightId();
             }
         }
@@ -229,11 +235,11 @@ export default function LeftPanel({
                           }`
                         : toTitleCase(speakerName);
                     // Highlight both the same for uniformity highlightLight/highlightMedium
-                    const highlightSegmentStyle =
+                    const highlightSegmentBackgroundColor =
                         script.SegmentId === highlightId.selectedSegmentId
-                            ? styles.highlightMedium
+                            ? awsui.colorBackgroundToggleCheckedDisabled
                             : highlightId.allSegmentIds.includes(script.SegmentId)
-                              ? styles.highlightMedium
+                              ? awsui.colorBackgroundToggleCheckedDisabled
                               : '';
                     return (
                         <div key={key} style={{ paddingTop: !key ? '15px' : '' }}>
@@ -260,8 +266,8 @@ export default function LeftPanel({
                                 <div
                                     style={{
                                         paddingTop: newSpeaker && key > 0 ? TRANSCRIPT_SPACING : '',
+                                        backgroundColor: highlightSegmentBackgroundColor,
                                     }}
-                                    className={highlightSegmentStyle}
                                 >
                                     <TranscriptSegment
                                         script={script}

@@ -1,28 +1,16 @@
 .summaryList {
-    list-style-type: none;
-}
-
-ul {
-    padding-left: 2px;
     margin-top: 0;
     margin-bottom: 0;
-}
-
-li {
-    list-style-type: disc;
-    position: relative;
-    margin: 0;
+    padding-top: 2px;
     padding-bottom: 5px;
-    display: block;
 }
 
-button {
-    border: none;
-    background-color: inherit;
-    text-align: left;
+.summaryListWithSectionHeader {
+    padding-left: 0;
+}
+
+.summarizedSegment {
     cursor: pointer;
-}
-
-button:hover {
-    background-color: #d1d1d1;
+    line-height: normal;
+    font-weight: 400;
 }
