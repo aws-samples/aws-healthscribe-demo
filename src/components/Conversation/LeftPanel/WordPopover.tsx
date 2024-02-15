@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 import React, { memo, useMemo } from 'react';
 
+import * as awsui from '@cloudscape-design/design-tokens';
 import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import Popover from '@cloudscape-design/components/popover';
@@ -13,8 +14,6 @@ import WaveSurfer from 'wavesurfer.js';
 import ValueWithLabel from '@/components/Common/ValueWithLabel';
 import ClinicalInsight from '@/components/Conversation/LeftPanel/ClinicalInsight';
 import { IClinicalInsights, IWordAlternative } from '@/types/HealthScribe';
-
-import styles from './WordPopover.module.css';
 
 type PopOverCompProps = {
     isPunctuation: boolean;
@@ -41,19 +40,21 @@ function WordPopover({
     audioReady,
     wavesurfer,
 }: PopOverCompProps) {
-    const popoverHighlightClass = useMemo(() => {
-        return highlightWord ? styles.highlight : '';
-    }, [highlightWord]);
+    const wordStyle = useMemo(() => {
+        const style = {
+            color: '',
+            fontWeight: 'normal',
+        };
 
-    // disable the word if the word is tagged with small talk and smalltalk is selected
-    const popoverDisableClass = useMemo(() => {
-        return disableSegment ? styles.disabled : '';
-    }, [disableSegment]);
+        if (isClinicalEntity) {
+            style.color = awsui.colorTextStatusInfo;
+            style.fontWeight = 'bold';
+        }
+        if (highlightWord) style.color = awsui.colorTextStatusError;
+        if (disableSegment) style.color = awsui.colorTextStatusInactive;
 
-    // highlight the word if it contains a clinical entity
-    const popoverClinicalEntityClass = useMemo(() => {
-        return isClinicalEntity ? styles.clinicalEntity : '';
-    }, [isClinicalEntity]);
+        return style;
+    }, [highlightWord, disableSegment, isClinicalEntity]);
 
     const wordConfidence = useMemo(() => {
         if (typeof word.Confidence === 'number') {
@@ -93,7 +94,7 @@ function WordPopover({
                 }
             >
                 <span
-                    className={`${popoverHighlightClass} ${popoverDisableClass} ${popoverClinicalEntityClass}`}
+                    style={wordStyle}
                     onCopy={() => {
                         toast.success('Copied Text!');
                     }}

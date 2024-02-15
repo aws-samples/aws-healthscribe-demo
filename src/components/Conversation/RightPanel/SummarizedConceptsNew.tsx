@@ -1,14 +1,19 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
+import * as awsui from '@cloudscape-design/design-tokens';
 import Box from '@cloudscape-design/components/box';
-import Header from '@cloudscape-design/components/header';
+import TextContent from '@cloudscape-design/components/text-content';
 
 import toast from 'react-hot-toast';
 import WaveSurfer from 'wavesurfer.js';
 
-import { IAuraClinicalDocOutputSectionNew, ITranscriptSegments } from '@/types/HealthScribe';
+import {
+    processSections,
+    processSummarizedSegment,
+} from '@/components/Conversation/RightPanel/summarizedConceptsUtils';
+import { IAuraClinicalDocOutputSectionNew, IEvidenceNew, ITranscriptSegments } from '@/types/HealthScribe';
 import toTitleCase from '@/utils/toTitleCase';
 
 import { HighlightId } from '../types';
@@ -78,37 +83,87 @@ export default function SummarizedConceptsNew({
         }
     }
 
+    /**
+     * Create a memoized copy of sections processed for headers
+     */
+    const processedSections = useMemo(() => processSections(sections), [sections]);
+
+    type SummaryListProps = {
+        summary: IEvidenceNew[];
+        level?: number;
+    };
+    function SummaryList({ summary, level = 0 }: SummaryListProps) {
+        let listStyle = {};
+        if (level <= 0) {
+            listStyle = {
+                paddingLeft: '0px',
+            };
+        } else if (level === 1) {
+            listStyle = {
+                paddingLeft: '20px',
+            };
+        }
+        if (summary.length) {
+            return (
+                <ul className={styles.summaryList} style={listStyle}>
+                    {summary.map(({ EvidenceLinks, SummarizedSegment }, index) => {
+                        return (
+                            <li key={index} className={styles.summaryList}>
+                                <div
+                                    onClick={() => handleClick(SummarizedSegment, EvidenceLinks)}
+                                    className={styles.summarizedSegment}
+                                    style={{
+                                        color: awsui.colorTextBodyDefault,
+                                        backgroundColor:
+                                            currentSegment === SummarizedSegment
+                                                ? awsui.colorBackgroundToggleCheckedDisabled
+                                                : '',
+                                    }}
+                                >
+                                    {processSummarizedSegment(SummarizedSegment)}
+                                </div>
+                            </li>
+                        );
+                    })}
+                </ul>
+            );
+        } else {
+            return (
+                <div style={{ paddingLeft: '5px' }}>
+                    <Box variant="small">No Clinical Entities</Box>
+                </div>
+            );
+        }
+    }
+
     return (
         <>
-            {sections.map(({ SectionName, Summary }, i) => {
+            {processedSections.map(({ SectionName, Summary }, i) => {
                 return (
-                    <div key={i}>
-                        <Header variant="h3">{toTitleCase(SectionName.replace(/_/g, ' '))}</Header>
-                        {Summary.length ? (
-                            <ul className={styles.summaryList}>
-                                {Summary.map(({ EvidenceLinks, SummarizedSegment }, index) => {
-                                    return (
-                                        <li key={index}>
-                                            <button
-                                                style={{
-                                                    lineHeight: 'normal',
-                                                    backgroundColor:
-                                                        currentSegment === SummarizedSegment
-                                                            ? 'rgba(204, 218, 255, 0.6)'
-                                                            : '',
-                                                }}
-                                                onClick={() => handleClick(SummarizedSegment, EvidenceLinks)}
-                                            >
-                                                {SummarizedSegment}
-                                            </button>
-                                        </li>
-                                    );
-                                })}
-                            </ul>
+                    <div key={`insightsSection_${i}`}>
+                        <TextContent>
+                            <h3>{toTitleCase(SectionName.replace(/_/g, ' '))}</h3>
+                        </TextContent>
+                        {Summary.constructor.name === 'Array' ? (
+                            <SummaryList summary={Summary as IEvidenceNew[]} level={0} />
                         ) : (
-                            <div style={{ paddingLeft: '5px' }}>
-                                <Box variant="small">No Clinical Entities</Box>
-                            </div>
+                            <ul className={`${styles.summaryList} ${styles.summaryListWithSectionHeader}`}>
+                                {Object.keys(Summary).map((summaryHeader) => (
+                                    <div key={`insightsSummary_${summaryHeader.replace(' ', '')}`}>
+                                        <TextContent>
+                                            <p>{summaryHeader}</p>
+                                        </TextContent>
+                                        <SummaryList
+                                            summary={
+                                                (Summary as { [header: string]: IEvidenceNew[] })[
+                                                    summaryHeader
+                                                ] as IEvidenceNew[]
+                                            }
+                                            level={1}
+                                        />
+                                    </div>
+                                ))}
+                            </ul>
                         )}
                     </div>
                 );

@@ -7,14 +7,6 @@
     display: none; /* Safari and Chrome browsers */
 }
 
-.highlightLight {
-    background-color: rgba(204, 218, 255, 0.3);
-}
-
-.highlightMedium {
-    background-color: rgba(204, 218, 255, 0.6);
-}
-
 .disabled {
     color: #9d9d9de1 !important;
 }
