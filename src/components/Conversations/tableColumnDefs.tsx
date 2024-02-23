@@ -84,6 +84,13 @@ export const columnDefs = [
         sortingField: 'CompletionTime',
     },
     {
+        id: 'Duration',
+        header: 'Duration',
+        cell: (e: HealthScribeJob) =>
+            Number.isNaN(e.CompletionTime - e.CreationTime) ? '-' : Math.ceil(e.CompletionTime - e.CreationTime) || '-',
+        sortingField: 'Duration',
+    },
+    {
         id: 'FailureReason',
         header: 'Failure Reason',
         cell: (e: HealthScribeJob) => e.FailureReason,

@@ -6,7 +6,7 @@ For a more automated deployment, see the relevant section in [the readme](../REA
 
 ### Steps
 
-#### Populate AWSCodeCommit
+#### Populate AWS CodeCommit
 
 For other ways of commiting code to AWS CodeCommit, refer to the [Setting up](https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up.html) section in the reference guide.
 
