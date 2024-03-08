@@ -160,6 +160,7 @@ export default function NewConversation() {
             await multipartUpload({
                 ...s3Location,
                 Body: filePath as File,
+                ContentType: filePath?.type,
                 callbackFn: s3UploadCallback,
             });
         } catch (e) {

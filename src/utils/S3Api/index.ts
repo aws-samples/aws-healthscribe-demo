@@ -85,10 +85,17 @@ type MultipartUploadProps = {
     Bucket: string;
     Key: string;
     Body: File;
+    ContentType?: string;
     callbackFn?: (progress: Progress) => void;
 };
-export async function multipartUpload({ Bucket, Key, Body, callbackFn }: MultipartUploadProps) {
-    const params = { Bucket: Bucket, Key: Key, Body: Body };
+export async function multipartUpload({
+    Bucket,
+    Key,
+    Body,
+    ContentType = 'audio/mpeg',
+    callbackFn,
+}: MultipartUploadProps) {
+    const params = { Bucket: Bucket, Key: Key, Body: Body, ContentType: ContentType };
 
     const s3Client = await getS3Client();
     try {
