@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: MIT-0
 import React from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 import Link from '@cloudscape-design/components/link';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 
 import dayjs from 'dayjs';
-import { useNavigate } from 'react-router';
 
 import toTitleCase from '@/utils/toTitleCase';
 
