@@ -48,6 +48,7 @@ This method uses AWS Amplify hosting to build, deploy, and serve the web app. Yo
 [![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/aws-samples/aws-healthscribe-demo)
 
 -   Select the link above.
+-   Ensure you are in a region where AWS HealthScribe is available. See the [AWS HealthScribe region table](https://aws.amazon.com/healthscribe/pricing/) for more information.
 -   On the _Welcome to Amplify Hosting_ page, Select _Connect to GitHub_.
 -   This redirects you to GitHub for authentication, after which you are redirected back to AWS Amplify.
 -   In the _Select service role_ dropdown, select a service role that allows Amplify to deploy the app. If none exist,
