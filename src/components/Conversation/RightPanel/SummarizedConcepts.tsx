@@ -13,14 +13,14 @@ import {
     processSections,
     processSummarizedSegment,
 } from '@/components/Conversation/RightPanel/summarizedConceptsUtils';
-import { IAuraClinicalDocOutputSectionNew, IEvidenceNew, ITranscriptSegments } from '@/types/HealthScribe';
+import { IAuraClinicalDocOutputSection, IEvidence, ITranscriptSegments } from '@/types/HealthScribe';
 import toTitleCase from '@/utils/toTitleCase';
 
 import { HighlightId } from '../types';
 import styles from './SummarizedConcepts.module.css';
 
 type SummarizedConceptsProps = {
-    sections: IAuraClinicalDocOutputSectionNew[];
+    sections: IAuraClinicalDocOutputSection[];
     highlightId: HighlightId;
     setHighlightId: React.Dispatch<React.SetStateAction<HighlightId>>;
     segmentById: {
@@ -89,7 +89,7 @@ export default function SummarizedConcepts({
     const processedSections = useMemo(() => processSections(sections), [sections]);
 
     type SummaryListProps = {
-        summary: IEvidenceNew[];
+        summary: IEvidence[];
         level?: number;
     };
     function SummaryList({ summary, level = 0 }: SummaryListProps) {
@@ -145,7 +145,7 @@ export default function SummarizedConcepts({
                             <h3>{toTitleCase(SectionName.replace(/_/g, ' '))}</h3>
                         </TextContent>
                         {Summary.constructor.name === 'Array' ? (
-                            <SummaryList summary={Summary as IEvidenceNew[]} level={0} />
+                            <SummaryList summary={Summary as IEvidence[]} level={0} />
                         ) : (
                             <ul className={`${styles.summaryList} ${styles.summaryListWithSectionHeader}`}>
                                 {Object.keys(Summary).map((summaryHeader) => (
@@ -155,9 +155,9 @@ export default function SummarizedConcepts({
                                         </TextContent>
                                         <SummaryList
                                             summary={
-                                                (Summary as { [header: string]: IEvidenceNew[] })[
+                                                (Summary as { [header: string]: IEvidence[] })[
                                                     summaryHeader
-                                                ] as IEvidenceNew[]
+                                                ] as IEvidence[]
                                             }
                                             level={1}
                                         />
