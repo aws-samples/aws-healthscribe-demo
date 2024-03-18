@@ -24,7 +24,7 @@
         "@cloudscape-design/global-styles": "^1.0.24",
         "ace-builds": "^1.32.7",
         "aws-amplify": "^5.3.17",
-        "axios": "^1.6.7",
+        "axios": "^1.6.8",
         "crunker": "^2.4.0",
         "dayjs": "^1.11.10",
         "framer-motion": "^11.0.8",
