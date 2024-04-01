@@ -9,7 +9,6 @@ import { Density, Mode, applyDensity, applyMode } from '@cloudscape-design/globa
 import Auth from '@/components/Auth';
 import { useAppThemeContext } from '@/store/appTheme';
 import { useAuthContext } from '@/store/auth';
-import { isUserEmailVerified } from '@/utils/Auth/isUserEmailVerified';
 
 import './TopNav.css';
 
@@ -20,56 +19,55 @@ type TopNavClick = {
 };
 
 export default function TopNav() {
-    const { user, signOut } = useAuthContext();
-    const { appTheme, setAppTheme } = useAppThemeContext();
+    const { isUserAuthenticated, user, signOut } = useAuthContext();
+    const { appTheme, setAppThemeColor, setAppThemeDensity } = useAppThemeContext();
 
     const [authVisible, setAuthVisible] = useState(false); // authentication modal visibility
-    const [density, setDensity] = useState('density.comfortable'); // app density
 
-    // Set appTheme
+    // Set app appTheme
     useEffect(() => {
-        switch (appTheme) {
-            case 'theme.light':
-                applyMode(Mode.Light);
-                break;
-            case 'theme.dark':
-                applyMode(Mode.Dark);
-                break;
-            default:
-                break;
+        if (appTheme.color === 'appTheme.light') {
+            applyMode(Mode.Light);
+        } else if (appTheme.color === 'appTheme.dark') {
+            applyMode(Mode.Dark);
+        }
+
+        if (appTheme.density === 'density.comfortable') {
+            applyDensity(Density.Comfortable);
+        } else if (appTheme.density === 'density.compact') {
+            applyDensity(Density.Compact);
         }
     }, [appTheme]);
 
     // When user authenticates, close authentication modal window
     useEffect(() => {
-        if (isUserEmailVerified(user)) {
+        if (isUserAuthenticated) {
             setAuthVisible(false);
         }
-        // no else because we want the auth window to only pop up by clicking sign in, not automatically
-    }, [user]);
+        // no else because we want the appAuth window to only pop up by clicking sign in, not automatically
+    }, [isUserAuthenticated]);
 
     // Change visualization
     function handleUtilVisualClick(e: TopNavClick) {
         switch (e.detail.id) {
-            case 'theme.light':
-                setAppTheme('theme.light');
+            case 'appTheme.light':
+                setAppThemeColor('appTheme.light');
                 break;
-            case 'theme.dark':
-                setAppTheme('theme.dark');
+            case 'appTheme.dark':
+                setAppThemeColor('appTheme.dark');
                 break;
             case 'density.comfortable':
-                applyDensity(Density.Comfortable);
-                setDensity('density.comfortable');
+                setAppThemeDensity('density.comfortable');
                 break;
             case 'density.compact':
-                applyDensity(Density.Compact);
-                setDensity('density.compact');
+                setAppThemeDensity('density.compact');
                 break;
             default:
                 break;
         }
     }
 
+    // App appTheme dropdown
     const utilVisual: TopNavigationProps.MenuDropdownUtility = {
         type: 'menu-dropdown',
         iconName: 'settings',
@@ -77,19 +75,19 @@ export default function TopNav() {
         title: 'Settings',
         items: [
             {
-                id: 'theme',
+                id: 'appTheme',
                 text: 'Theme',
                 items: [
                     {
-                        id: 'theme.light',
+                        id: 'appTheme.light',
                         text: 'Light',
-                        disabled: appTheme === 'theme.light',
+                        disabled: appTheme.color === 'appTheme.light',
                         disabledReason: 'Currently selected',
                     },
                     {
-                        id: 'theme.dark',
+                        id: 'appTheme.dark',
                         text: 'Dark',
-                        disabled: appTheme === 'theme.dark',
+                        disabled: appTheme.color === 'appTheme.dark',
                         disabledReason: 'Currently selected',
                     },
                 ],
@@ -101,13 +99,13 @@ export default function TopNav() {
                     {
                         id: 'density.comfortable',
                         text: 'Comfortable',
-                        disabled: density === 'density.comfortable',
+                        disabled: appTheme.density === 'density.comfortable',
                         disabledReason: 'Currently selected',
                     },
                     {
                         id: 'density.compact',
                         text: 'Compact',
-                        disabled: density === 'density.compact',
+                        disabled: appTheme.density === 'density.compact',
                         disabledReason: 'Currently selected',
                     },
                 ],
@@ -116,21 +114,21 @@ export default function TopNav() {
         onItemClick: (e) => handleUtilVisualClick(e),
     };
 
-    const utilUser: TopNavigationProps.ButtonUtility | TopNavigationProps.MenuDropdownUtility =
-        user && isUserEmailVerified(user)
-            ? {
-                  type: 'menu-dropdown',
-                  text: user?.attributes?.email || user?.username,
-                  description: user?.attributes?.email,
-                  iconName: 'user-profile',
-                  items: [{ id: 'signout', text: 'Sign out' }],
-                  onItemClick: () => signOut(),
-              }
-            : {
-                  type: 'button',
-                  text: 'Sign In',
-                  onClick: () => setAuthVisible(true),
-              };
+    // User appAuth dropdown (if appAuth) else sign-in
+    const utilUser: TopNavigationProps.ButtonUtility | TopNavigationProps.MenuDropdownUtility = isUserAuthenticated
+        ? {
+              type: 'menu-dropdown',
+              text: user?.signInDetails?.loginId || user?.username,
+              description: user?.signInDetails?.loginId,
+              iconName: 'user-profile',
+              items: [{ id: 'signout', text: 'Sign out' }],
+              onItemClick: () => signOut(),
+          }
+        : {
+              type: 'button',
+              text: 'Sign In',
+              onClick: () => setAuthVisible(true),
+          };
 
     const navUtils = [utilVisual, utilUser];
 

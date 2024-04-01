@@ -38,7 +38,7 @@ export default function AudioRecorder({ setRecordedAudio }: AudioRecorderProps) 
     const stopWatchMinutes = Math.floor((stopWatchTime % 360000) / 6000);
     const stopWatchSeconds = Math.floor((stopWatchTime % 6000) / 100);
     const [lastRecordingDetails, setLastRecordingDetails] = useState<Recording | null>(null);
-    const showDownloadButton = true;
+    // const showDownloadButton = true;
 
     useEffect(() => {
         if (!wavesurfermic || !wavesurfermic.current) {

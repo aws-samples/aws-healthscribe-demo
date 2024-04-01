@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: MIT-0
 import uuid4 from 'uuid4';
 
-import awsExports from '@/aws-exports';
+import config from '@/amplifyconfiguration.json';
 
 export function useS3() {
     const uploadKeyPrefix = 'uploads/HealthScribeDemo/';
 
-    const bucketName = awsExports.aws_user_files_s3_bucket;
+    const bucketName = config.aws_user_files_s3_bucket;
     function getUploadMetadata() {
         return {
             bucket: bucketName,

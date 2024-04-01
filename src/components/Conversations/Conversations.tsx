@@ -7,6 +7,8 @@ import Button from '@cloudscape-design/components/button';
 import Pagination from '@cloudscape-design/components/pagination';
 import Table from '@cloudscape-design/components/table';
 
+import { MedicalScribeJobSummary } from '@aws-sdk/client-transcribe';
+
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useNotificationsContext } from '@/store/notifications';
 import { ListHealthScribeJobsProps, listHealthScribeJobs } from '@/utils/HealthScribeApi';
@@ -16,16 +18,6 @@ import TableEmptyState from './TableEmptyState';
 import { columnDefs } from './tableColumnDefs';
 import { DEFAULT_PREFERENCES, TablePreferencesDef } from './tablePrefs';
 
-export type HealthScribeJob = {
-    CompletionTime: number;
-    CreationTime: number;
-    FailureReason: string;
-    LanguageCode: string;
-    MedicalScribeJobName: string;
-    MedicalScribeJobStatus: string;
-    StartTime: number;
-};
-
 type MoreHealthScribeJobs = {
     searchFilter?: ListHealthScribeJobsProps;
     NextToken?: string;
@@ -33,9 +25,9 @@ type MoreHealthScribeJobs = {
 
 export default function Conversations() {
     const { addFlashMessage } = useNotificationsContext();
-    const [healthScribeJobs, setHealthScribeJobs] = useState<HealthScribeJob[]>([]); // HealthScribe jobs from API
+    const [healthScribeJobs, setHealthScribeJobs] = useState<MedicalScribeJobSummary[]>([]); // HealthScribe jobs from API
     const [moreHealthScribeJobs, setMoreHealthScribeJobs] = useState<MoreHealthScribeJobs>({}); // More HealthScribe jobs from API (NextToken returned)
-    const [selectedHealthScribeJob, setSelectedHealthScribeJob] = useState<HealthScribeJob[] | []>([]); // Selected HealthScribe job
+    const [selectedHealthScribeJob, setSelectedHealthScribeJob] = useState<MedicalScribeJobSummary[] | []>([]); // Selected HealthScribe job
     const [tableLoading, setTableLoading] = useState(false); // Loading state for table
     const [preferences, setPreferences] = useLocalStorage<TablePreferencesDef>(
         'Conversation-Table-Preferences',
@@ -57,13 +49,13 @@ export default function Conversations() {
             const listHealthScribeJobsRsp = await listHealthScribeJobs(processedSearchFilter);
 
             // Handle undefined MedicalScribeJobSummaries (the service should return an empty array)
-            if (typeof listHealthScribeJobsRsp.data?.MedicalScribeJobSummaries === 'undefined') {
+            if (typeof listHealthScribeJobsRsp.MedicalScribeJobSummaries === 'undefined') {
                 setHealthScribeJobs([]);
                 setTableLoading(false);
                 return;
             }
 
-            const listResults: HealthScribeJob[] = listHealthScribeJobsRsp.data?.MedicalScribeJobSummaries;
+            const listResults: MedicalScribeJobSummary[] = listHealthScribeJobsRsp.MedicalScribeJobSummaries;
 
             // if NextToken is specified, append search results to existing results
             if (processedSearchFilter.NextToken) {
@@ -73,10 +65,10 @@ export default function Conversations() {
             }
 
             //If the research returned NextToken, there are additional jobs. Set moreHealthScribeJobs to enable pagination
-            if (listHealthScribeJobsRsp.data?.NextToken) {
+            if (listHealthScribeJobsRsp?.NextToken) {
                 setMoreHealthScribeJobs({
                     searchFilter: searchFilter,
-                    NextToken: listHealthScribeJobsRsp.data?.NextToken,
+                    NextToken: listHealthScribeJobsRsp?.NextToken,
                 });
             } else {
                 setMoreHealthScribeJobs({});

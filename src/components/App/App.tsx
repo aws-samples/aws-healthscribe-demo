@@ -7,9 +7,6 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import AppLayout from '@cloudscape-design/components/app-layout';
 import Flashbar from '@cloudscape-design/components/flashbar';
 
-import { Amplify } from 'aws-amplify';
-
-import awsExports from '@/aws-exports';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import SideNav from '@/components/SideNav';
 import SuspenseLoader from '@/components/SuspenseLoader';
@@ -17,9 +14,6 @@ import TopNav from '@/components/TopNav';
 import Welcome from '@/components/Welcome';
 import { useAuthContext } from '@/store/auth';
 import { useNotificationsContext } from '@/store/notifications';
-import { isUserEmailVerified } from '@/utils/Auth/isUserEmailVerified';
-
-Amplify.configure(awsExports);
 
 // Lazy components
 const Debug = lazy(() => import('@/components/Debug'));
@@ -30,12 +24,12 @@ const NewConversation = lazy(() => import('@/components/NewConversation'));
 const GenerateAudio = lazy(() => import('@/components/GenerateAudio'));
 
 export default function App() {
-    const { user } = useAuthContext();
+    const { isUserAuthenticated } = useAuthContext();
     const { flashbarItems } = useNotificationsContext();
 
     const content = (
         <Suspense fallback={<SuspenseLoader />}>
-            {isUserEmailVerified(user) ? (
+            {isUserAuthenticated ? (
                 <Routes>
                     <Route index element={<Welcome />} />
                     <Route path="/debug" element={<Debug />} />

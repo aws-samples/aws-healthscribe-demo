@@ -7,13 +7,12 @@ import { useNavigate } from 'react-router-dom';
 import Link from '@cloudscape-design/components/link';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 
+import { MedicalScribeJobSummary } from '@aws-sdk/client-transcribe';
 import dayjs from 'dayjs';
 
 import toTitleCase from '@/utils/toTitleCase';
 
-import { HealthScribeJob } from './Conversations';
-
-function JobName(healthScribeJob: HealthScribeJob) {
+function JobName(healthScribeJob: MedicalScribeJobSummary) {
     const navigate = useNavigate();
 
     if (healthScribeJob.MedicalScribeJobStatus === 'COMPLETED') {
@@ -46,27 +45,27 @@ export const columnDefs = [
     {
         id: 'MedicalScribeJobName',
         header: 'Name',
-        cell: (e: HealthScribeJob) => JobName(e),
+        cell: (e: MedicalScribeJobSummary) => JobName(e),
         sortingField: 'MedicalScribeJobName',
         width: 300,
     },
     {
         id: 'MedicalScribeJobStatus',
         header: 'Status',
-        cell: (e: HealthScribeJob) => JobStatus(e.MedicalScribeJobStatus),
+        cell: (e: MedicalScribeJobSummary) => JobStatus(e.MedicalScribeJobStatus || ''),
         sortingField: 'MedicalScribeJobStatus',
     },
     {
         id: 'CreationTime',
         header: 'Created',
-        cell: (e: HealthScribeJob) => dayjs.unix(e.CreationTime).format('MMMM D YYYY, H:mm'),
+        cell: (e: MedicalScribeJobSummary) => dayjs(e.CreationTime!.toString()).format('MMMM D YYYY, H:mm'),
         sortingField: 'CreationTime',
     },
     {
         id: 'ExpiresIn',
         header: 'Expires In',
-        cell: (e: HealthScribeJob) =>
-            e.CompletionTime ? dayjs.unix(e.CompletionTime).add(90, 'day').diff(dayjs(), 'day') + ' days' : '-',
+        cell: (e: MedicalScribeJobSummary) =>
+            e.CompletionTime ? dayjs(e.CompletionTime).add(90, 'day').diff(dayjs(), 'day') + ' days' : '-',
         sortingField: 'CompletionTime',
     },
     // TODO: add a popover that does a getHealthScribeJob
@@ -74,27 +73,29 @@ export const columnDefs = [
     {
         id: 'LanguageCode',
         header: 'Language',
-        cell: (e: HealthScribeJob) => e.LanguageCode,
+        cell: (e: MedicalScribeJobSummary) => e.LanguageCode,
         sortingField: 'LanguageCode',
         width: 135,
     },
     {
         id: 'CompletionTime',
         header: 'Completed',
-        cell: (e: HealthScribeJob) => dayjs.unix(e.CompletionTime).format('MMMM D YYYY, H:mm'),
+        cell: (e: MedicalScribeJobSummary) => dayjs(e.CompletionTime).format('MMMM D YYYY, H:mm'),
         sortingField: 'CompletionTime',
     },
     {
         id: 'Duration',
         header: 'Duration',
-        cell: (e: HealthScribeJob) =>
-            Number.isNaN(e.CompletionTime - e.CreationTime) ? '-' : Math.ceil(e.CompletionTime - e.CreationTime) || '-',
+        cell: (e: MedicalScribeJobSummary) =>
+            Number.isNaN(e.CompletionTime!.getDate() - e.CreationTime!.getDate())
+                ? '-'
+                : Math.ceil(e.CompletionTime!.getDate() - e.CreationTime!.getDate()) || '-',
         sortingField: 'Duration',
     },
     {
         id: 'FailureReason',
         header: 'Failure Reason',
-        cell: (e: HealthScribeJob) => e.FailureReason,
+        cell: (e: MedicalScribeJobSummary) => e.FailureReason,
         sortingField: 'FailureReason',
     },
 ];

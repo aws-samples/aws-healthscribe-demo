@@ -1,15 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 import { PollyClient, SynthesizeSpeechCommand, SynthesizeSpeechCommandInput } from '@aws-sdk/client-polly';
-import { Auth } from 'aws-amplify';
 
-import awsExports from '@/aws-exports';
+import { getAmplifyRegion, getCredentials } from '@/utils/Sdk';
 
 // Use the same region as the Amplify-created S3 bucket
 async function getPollyClient() {
     return new PollyClient({
-        region: awsExports?.aws_user_files_s3_bucket_region || 'us-east-1',
-        credentials: await Auth.currentCredentials(),
+        region: getAmplifyRegion(),
+        credentials: await getCredentials(),
     });
 }
 

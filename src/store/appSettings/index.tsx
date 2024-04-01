@@ -1,6 +1,7 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 
-import { useSettings } from '@/hooks/useSettings';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { updateConfig } from '@/utils/Sdk';
 
 import { AppSettings } from './appSettings.type';
 import { DEFAULT_SETTINGS } from './defaultSettings';
@@ -23,7 +24,14 @@ export function useAppSettingsContext() {
     return context;
 }
 export default function AppSettingsContextProvider({ children }: { children: React.ReactElement }) {
-    const [appSettings, setAppSettings] = useSettings();
+    const [appSettings, setAppSettings] = useLocalStorage('App-Settings', DEFAULT_SETTINGS);
+
+    // Update AWS API settings when appSettings is changed
+    useEffect(() => {
+        const region = appSettings['app.region']?.value || 'us-east-1';
+        const apiTiming = appSettings['app.apiTiming']?.value || 'off';
+        updateConfig({ region: region, apiTiming: apiTiming });
+    }, [appSettings]);
 
     const appSettingsContextValue = {
         appSettings: appSettings,
