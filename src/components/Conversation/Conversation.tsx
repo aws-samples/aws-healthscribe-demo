@@ -7,6 +7,8 @@ import { useParams } from 'react-router-dom';
 import ContentLayout from '@cloudscape-design/components/content-layout';
 import Grid from '@cloudscape-design/components/grid';
 
+import { MedicalScribeJob } from '@aws-sdk/client-transcribe';
+
 import { useAudio } from '@/hooks/useAudio';
 import { useNotificationsContext } from '@/store/notifications';
 import { IAuraClinicalDocOutput, IAuraTranscriptOutput } from '@/types/HealthScribe';
@@ -17,14 +19,13 @@ import LeftPanel from './LeftPanel';
 import RightPanel from './RightPanel';
 import TopPanel from './TopPanel';
 import ViewResults from './ViewResults';
-import { HealthScribeJob } from './types';
 
 export default function Conversation() {
     const { conversationName } = useParams();
     const { addFlashMessage } = useNotificationsContext();
 
     const [jobLoading, setJobLoading] = useState(true); // Is getHealthScribeJob in progress
-    const [jobDetails, setJobDetails] = useState<HealthScribeJob | null>(null); // HealthScribe job details
+    const [jobDetails, setJobDetails] = useState<MedicalScribeJob | null>(null); // HealthScribe job details
     const [viewResultsModal, setViewResultsModal] = useState<boolean>(false); // Is view results modal open
 
     const [clinicalDocument, setClinicalDocument] = useState<IAuraClinicalDocOutput | null>(null);
@@ -47,19 +48,21 @@ export default function Conversation() {
             try {
                 setJobLoading(true);
                 const getHealthScribeJobRsp = await getHealthScribeJob({ MedicalScribeJobName: conversationName });
-                const MedicalScribeJob = getHealthScribeJobRsp.data?.MedicalScribeJob;
-                if (Object.keys(MedicalScribeJob).length > 0) {
-                    setJobDetails(MedicalScribeJob);
+                const medicalScribeJob = getHealthScribeJobRsp?.MedicalScribeJob;
+
+                if (typeof medicalScribeJob === 'undefined') return;
+                if (Object.keys(medicalScribeJob).length > 0) {
+                    setJobDetails(medicalScribeJob);
                 }
 
                 // Get Clinical Document from result S3 URL
-                const clinicalDocumentUri = MedicalScribeJob.MedicalScribeOutput?.ClinicalDocumentUri;
-                const clinicalDocumentRsp = await getObject(getS3Object(clinicalDocumentUri));
+                const clinicalDocumentUri = medicalScribeJob.MedicalScribeOutput?.ClinicalDocumentUri;
+                const clinicalDocumentRsp = await getObject(getS3Object(clinicalDocumentUri || ''));
                 setClinicalDocument(JSON.parse((await clinicalDocumentRsp?.Body?.transformToString()) || ''));
 
                 // Get Transcript File from result S3 URL
-                const transcriptFileUri = MedicalScribeJob.MedicalScribeOutput?.TranscriptFileUri;
-                const transcriptFileRsp = await getObject(getS3Object(transcriptFileUri));
+                const transcriptFileUri = medicalScribeJob.MedicalScribeOutput?.TranscriptFileUri;
+                const transcriptFileRsp = await getObject(getS3Object(transcriptFileUri || ''));
                 setTranscriptFile(JSON.parse((await transcriptFileRsp?.Body?.transformToString()) || ''));
             } catch (e) {
                 setJobDetails(null);

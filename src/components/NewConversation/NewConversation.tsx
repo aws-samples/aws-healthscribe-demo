@@ -18,6 +18,7 @@ import Spinner from '@cloudscape-design/components/spinner';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import TokenGroup from '@cloudscape-design/components/token-group';
 
+import { MedicalScribeParticipantRole, StartMedicalScribeJobRequest } from '@aws-sdk/client-transcribe';
 import { Progress } from '@aws-sdk/lib-storage';
 import dayjs from 'dayjs';
 
@@ -40,7 +41,7 @@ export default function NewConversation() {
     const navigate = useNavigate();
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // is job submitting
-    const [formError, setFormError] = useState<string | JSX.Element[]>('');
+    const [formError, setFormError] = useState<string | React.ReactElement[]>('');
     const [jobName, setJobName] = useState<string>(''); // form - job name
     const [audioSelection, setAudioSelection] = useState<AudioSelection>('speakerPartitioning'); // form - audio selection
     // form - audio details
@@ -73,9 +74,9 @@ export default function NewConversation() {
     /**
      * @description Callback function used by the lib-storage SDK Upload function. Updates the progress bar
      *              with the status of the upload
-     * @param {number} loaded - number of bytes uploaded
-     * @param {number} part - number of the part that was uploaded
-     * @param {number} total - total number of bytes to be uploaded
+     * @param loaded {number} number of bytes uploaded
+     * @param part {number} number of the part that was uploaded
+     * @param total {number} total number of bytes to be uploaded
      */
     function s3UploadCallback({ loaded, part, total }: Progress) {
         // Last 1% is for submitting to the HealthScribe API
@@ -110,12 +111,15 @@ export default function NewConversation() {
                       ChannelDefinitions: [
                           {
                               ChannelId: 0,
-                              ParticipantRole: audioDetails.channelIdentification.channel1,
+                              ParticipantRole: audioDetails.channelIdentification
+                                  .channel1 as MedicalScribeParticipantRole,
                           },
                           {
                               ChannelId: 1,
                               ParticipantRole:
-                                  audioDetails.channelIdentification.channel1 === 'CLINICIAN' ? 'PATIENT' : 'CLINICIAN',
+                                  audioDetails.channelIdentification.channel1 === 'CLINICIAN'
+                                      ? 'PATIENT'
+                                      : ('CLINICIAN' as MedicalScribeParticipantRole),
                           },
                       ],
                       Settings: {
@@ -129,7 +133,7 @@ export default function NewConversation() {
             Key: `${uploadLocation.key}/${(filePath as File).name}`,
         };
 
-        const jobParams = {
+        const jobParams: StartMedicalScribeJobRequest = {
             MedicalScribeJobName: jobName,
             DataAccessRoleArn: amplifyCustom.healthScribeServiceRole,
             OutputBucketName: outputBucket,
@@ -177,15 +181,15 @@ export default function NewConversation() {
 
         try {
             const startJob = await startMedicalScribeJob(jobParams);
-            if (startJob?.data?.MedicalScribeJob?.MedicalScribeJobStatus) {
+            if (startJob?.MedicalScribeJob?.MedicalScribeJobStatus) {
                 updateProgressBar({
                     id: `New HealthScribe Job: ${jobName}`,
                     type: 'success',
                     value: 100,
                     description: 'HealthScribe job submitted',
-                    additionalInfo: `Audio file successfully uploaded to S3 and submitted to HealthScribe at ${dayjs
-                        .unix(startJob.data.MedicalScribeJob.StartTime)
-                        .format('MM/DD/YYYY hh:mm A')}. Redirecting to conversation list in 5 seconds.`,
+                    additionalInfo: `Audio file successfully uploaded to S3 and submitted to HealthScribe at ${dayjs(
+                        startJob.MedicalScribeJob.StartTime
+                    ).format('MM/DD/YYYY hh:mm A')}. Redirecting to conversation list in 5 seconds.`,
                 });
                 await sleep(5000);
                 navigate('/conversations');
@@ -195,7 +199,7 @@ export default function NewConversation() {
                     type: 'info',
                     value: 100,
                     description: 'Unable to confirm HealthScribe job submission',
-                    additionalInfo: `Response from HealthScribe: ${JSON.stringify(startJob?.data)}`,
+                    additionalInfo: `Response from HealthScribe: ${JSON.stringify(startJob)}`,
                 });
             }
         } catch (e) {

@@ -1,23 +1,21 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import { healthScribePost } from './awsSign';
+import {
+    DeleteMedicalScribeJobCommand,
+    GetMedicalScribeJobCommand,
+    ListMedicalScribeJobsCommand,
+    StartMedicalScribeJobCommand,
+    StartMedicalScribeJobRequest,
+    TranscribeClient,
+} from '@aws-sdk/client-transcribe';
 
-export type ApiConfig = {
-    region: string;
-    apiTiming: string;
-};
+import { getConfigRegion, getCredentials, printTiming } from '@/utils/Sdk';
 
-let apiConfig: ApiConfig = {
-    region: '',
-    apiTiming: '',
-};
-
-function updateConfig(newApiConfig: ApiConfig) {
-    apiConfig = { ...apiConfig, ...newApiConfig };
-}
-
-function serviceEndpoint() {
-    return `https://transcribe.${apiConfig.region}.amazonaws.com`;
+async function getTranscribeClient() {
+    return new TranscribeClient({
+        region: getConfigRegion(),
+        credentials: await getCredentials(),
+    });
 }
 
 export type ListHealthScribeJobsProps = {
@@ -32,64 +30,68 @@ async function listHealthScribeJobs({
     NextToken,
     Status,
 }: ListHealthScribeJobsProps) {
-    const listHealthScribeJobsReq = {
+    const start = performance.now();
+    const transcribeClient = await getTranscribeClient();
+    const listMedicalScribeJobsInput = {
+        ...(Status && Status !== 'ALL' && { Status: Status }),
         ...(JobNameContains && { JobNameContains: JobNameContains }),
-        ...(MaxResults && { MaxResults: MaxResults }),
         ...(NextToken && { NextToken: NextToken }),
-        ...(Status && { Status: Status }),
+        ...(MaxResults && { MaxResults: MaxResults }),
     };
 
-    return await healthScribePost({
-        apiConfig: apiConfig,
-        url: serviceEndpoint(),
-        data: listHealthScribeJobsReq,
-        headers: {
-            'X-Amz-Target': 'Transcribe.ListMedicalScribeJobs',
-        },
-    });
+    const listMedicalScribeJobsCmd = new ListMedicalScribeJobsCommand(listMedicalScribeJobsInput);
+    const listMedicalScribeJobsRsp = await transcribeClient.send(listMedicalScribeJobsCmd);
+
+    const end = performance.now();
+    printTiming(end - start, 'ListMedicalScribeJobsCommand');
+
+    return listMedicalScribeJobsRsp;
 }
 
 export type GetHealthScribeJobProps = {
     MedicalScribeJobName: string;
 };
 async function getHealthScribeJob({ MedicalScribeJobName }: GetHealthScribeJobProps) {
-    return await healthScribePost({
-        apiConfig: apiConfig,
-        url: serviceEndpoint(),
-        data: {
-            MedicalScribeJobName: MedicalScribeJobName,
-        },
-        headers: {
-            'X-Amz-Target': 'Transcribe.GetMedicalScribeJob',
-        },
+    const start = performance.now();
+    const transcribeClient = await getTranscribeClient();
+    const getMedicalScribeJobCmd = new GetMedicalScribeJobCommand({
+        MedicalScribeJobName: MedicalScribeJobName,
     });
+    const getMedicalScribeJobRsp = await transcribeClient.send(getMedicalScribeJobCmd);
+
+    const end = performance.now();
+    printTiming(end - start, 'GetMedicalScribeJobCommand');
+
+    return getMedicalScribeJobRsp;
 }
 
 export type DeleteHealthScribeJobProps = {
     MedicalScribeJobName: string;
 };
 async function deleteHealthScribeJob({ MedicalScribeJobName }: DeleteHealthScribeJobProps) {
-    return await healthScribePost({
-        apiConfig: apiConfig,
-        url: serviceEndpoint(),
-        data: {
-            MedicalScribeJobName: MedicalScribeJobName,
-        },
-        headers: {
-            'X-Amz-Target': 'Transcribe.DeleteMedicalScribeJob',
-        },
+    const start = performance.now();
+    const transcribeClient = await getTranscribeClient();
+    const deleteMedicalScribeJobCmd = new DeleteMedicalScribeJobCommand({
+        MedicalScribeJobName: MedicalScribeJobName,
     });
+    const deleteMedicalScribeJobRsp = await transcribeClient.send(deleteMedicalScribeJobCmd);
+
+    const end = performance.now();
+    printTiming(end - start, 'DeleteMedicalScribeJobCommand');
+
+    return deleteMedicalScribeJobRsp;
 }
 
-async function startMedicalScribeJob(startMedicalScribeJobParams: object) {
-    return await healthScribePost({
-        apiConfig: apiConfig,
-        url: serviceEndpoint(),
-        data: startMedicalScribeJobParams,
-        headers: {
-            'X-Amz-Target': 'Transcribe.StartMedicalScribeJob',
-        },
-    });
+async function startMedicalScribeJob(startMedicalScribeJobParams: StartMedicalScribeJobRequest) {
+    const start = performance.now();
+    const transcribeClient = await getTranscribeClient();
+    const startMedicalScribeJobCmd = new StartMedicalScribeJobCommand(startMedicalScribeJobParams);
+    const startMedicalScribeJobRsp = await transcribeClient.send(startMedicalScribeJobCmd);
+
+    const end = performance.now();
+    printTiming(end - start, 'StartMedicalScribeJobCommand');
+
+    return startMedicalScribeJobRsp;
 }
 
-export { updateConfig, listHealthScribeJobs, getHealthScribeJob, deleteHealthScribeJob, startMedicalScribeJob };
+export { listHealthScribeJobs, getHealthScribeJob, deleteHealthScribeJob, startMedicalScribeJob };

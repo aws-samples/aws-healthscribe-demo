@@ -34,8 +34,21 @@ jobs:
         run: yarn install --immutable --immutable-cache --check-cache
 
       - name: Mock aws-custom.json
-        run: >
-          echo "{\"healthScribeServiceRole\":\"arn:aws:iam::0123456789012:role/healthScribeServiceRole\"}" > ./aws-custom.json
+        run: |
+          cat > ./aws-custom.json << EOF
+          {
+            "healthScribeServiceRole": "arn:aws:iam::0123456789012:role/healthScribeServiceRole"
+          }
+          EOF
+
+      - name: Mock amplifyconfiguration.json
+        run: |
+          cat > ./amplifyconfiguration.json << EOF
+          {
+            "aws_project_region": "us-east-1",
+            "aws_user_files_s3_bucket": "s3bucket",
+          }
+          EOF
 
       - name: Type Check
         run: yarn run type-check

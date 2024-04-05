@@ -13,6 +13,7 @@ import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 
+import { MedicalScribeJob } from '@aws-sdk/client-transcribe';
 import reduce from 'lodash/reduce';
 import WaveSurfer from 'wavesurfer.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions';
@@ -22,13 +23,13 @@ import { IAuraTranscriptOutput } from '@/types/HealthScribe';
 import { getPresignedUrl, getS3Object } from '@/utils/S3Api';
 
 import AudioControls from '../../Common/AudioControls';
-import { HealthScribeJob, SmallTalkList } from '../types';
+import { SmallTalkList } from '../types';
 import styles from './TopPanel.module.css';
 import { extractRegions } from './extractRegions';
 
 type TopPanelProps = {
     jobLoading: boolean;
-    jobDetails: HealthScribeJob | null;
+    jobDetails: MedicalScribeJob | null;
     transcriptFile: IAuraTranscriptOutput | null;
     wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
     smallTalkCheck: boolean;

@@ -15,16 +15,16 @@ import Select from '@cloudscape-design/components/select';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 
+import { MedicalScribeJobSummary } from '@aws-sdk/client-transcribe';
 import { useDebounce } from 'use-debounce';
 
 import { useNotificationsContext } from '@/store/notifications';
 import { ListHealthScribeJobsProps, deleteHealthScribeJob } from '@/utils/HealthScribeApi';
 
-import { HealthScribeJob } from './Conversations';
 import { TablePreferencesDef, collectionPreferencesProps } from './tablePrefs';
 
 type DeleteModalProps = {
-    selectedHealthScribeJob: HealthScribeJob[];
+    selectedHealthScribeJob: MedicalScribeJobSummary[];
     deleteModalActive: boolean;
     setDeleteModalActive: React.Dispatch<React.SetStateAction<boolean>>;
     refreshTable: () => void;
@@ -39,6 +39,7 @@ function DeleteModal({
     const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
     async function doDelete(medicalScribeJobName: string) {
+        if (!medicalScribeJobName) return;
         setIsDeleting(true);
         try {
             await deleteHealthScribeJob({ MedicalScribeJobName: medicalScribeJobName });
@@ -68,7 +69,7 @@ function DeleteModal({
                         <Button
                             disabled={isDeleting}
                             variant="primary"
-                            onClick={() => doDelete(selectedHealthScribeJob?.[0]?.MedicalScribeJobName)}
+                            onClick={() => doDelete(selectedHealthScribeJob?.[0]?.MedicalScribeJobName || '')}
                         >
                             {isDeleting ? <Spinner /> : 'Delete'}
                         </Button>
@@ -91,7 +92,7 @@ function DeleteModal({
 
 type TableHeaderActionsProps = {
     setSearchParams: React.Dispatch<React.SetStateAction<ListHealthScribeJobsProps>>;
-    selectedHealthScribeJob: HealthScribeJob[];
+    selectedHealthScribeJob: MedicalScribeJobSummary[];
     setDeleteModalActive: React.Dispatch<React.SetStateAction<boolean>>;
     refreshTable: () => void;
 };
@@ -107,7 +108,7 @@ function TableHeaderActions({
     const actionButtonDisabled = useMemo(
         () =>
             selectedHealthScribeJob.length === 0 ||
-            !['COMPLETED', 'FAILED'].includes(selectedHealthScribeJob[0].MedicalScribeJobStatus),
+            !['COMPLETED', 'FAILED'].includes(selectedHealthScribeJob[0].MedicalScribeJobStatus || ''),
         [selectedHealthScribeJob]
     );
 
@@ -118,7 +119,8 @@ function TableHeaderActions({
             <Button
                 onClick={() => setDeleteModalActive(true)}
                 disabled={
-                    actionButtonDisabled || DO_NOT_DELETE.includes(selectedHealthScribeJob[0].MedicalScribeJobName)
+                    actionButtonDisabled ||
+                    DO_NOT_DELETE.includes(selectedHealthScribeJob[0].MedicalScribeJobName || '')
                 }
             >
                 Delete
@@ -135,7 +137,7 @@ const statusSelections = [
     { label: 'Failed', value: 'FAILED' },
 ];
 type TableHeaderProps = {
-    selectedHealthScribeJob: HealthScribeJob[];
+    selectedHealthScribeJob: MedicalScribeJobSummary[];
     headerCounterText: string;
     listHealthScribeJobs: (searchFilter: ListHealthScribeJobsProps) => Promise<void>;
 };
@@ -144,12 +146,7 @@ function TableHeader({ selectedHealthScribeJob, headerCounterText, listHealthScr
     const [searchParams, setSearchParams] = useState<ListHealthScribeJobsProps>({});
     const [debouncedSearchParams] = useDebounce(searchParams, 500);
 
-    // List HealthScribe jobs on initial load
-    useEffect(() => {
-        listHealthScribeJobs({}).catch(console.error);
-    }, []);
-
-    // Update list based on deboucned search params
+    // Update list initially & deboucned search params
     useEffect(() => {
         listHealthScribeJobs(debouncedSearchParams).catch(console.error);
     }, [debouncedSearchParams]);

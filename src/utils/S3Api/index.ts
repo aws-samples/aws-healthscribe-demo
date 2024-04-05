@@ -3,24 +3,26 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Auth } from 'aws-amplify';
 import tk from 'timekeeper';
 
-import awsExports from '@/aws-exports';
+import { getAmplifyRegion, getCredentials } from '@/utils/Sdk';
 
+/**
+ * Get an S3 client object. Use the Amplify region since that's where the uploaded files are stored
+ */
 async function getS3Client() {
     return new S3Client({
-        region: awsExports?.aws_user_files_s3_bucket_region || 'us-east-1',
-        credentials: await Auth.currentCredentials(),
+        region: getAmplifyRegion(),
+        credentials: await getCredentials(),
     });
 }
 
 /**
  * @description Convert an S3 URL to a bucket and key object
  * @param {string} s3Uri An S3 URL, starting with s3:// or https://s3.
- * @returns { Bucket: string, Key: string}
+ * @returns { Bucket: string, Key: string }
  */
-export function getS3Object(s3Uri: string) {
+export function getS3Object(s3Uri: string): { Bucket: string; Key: string } {
     if (s3Uri.startsWith('s3://')) {
         // s3://<bucket name>/<key>
         const inputUrl = new URL(s3Uri.replace(/^s3:\/\//, 'https://'));

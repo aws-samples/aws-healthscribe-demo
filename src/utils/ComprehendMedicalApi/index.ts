@@ -4,15 +4,14 @@ import {
     InferRxNormCommand,
     InferSNOMEDCTCommand,
 } from '@aws-sdk/client-comprehendmedical';
-import { Auth } from 'aws-amplify';
 
-import awsExports from '@/aws-exports';
+import { getConfigRegion, getCredentials } from '@/utils/Sdk';
 
 // Use the same region as the Amplify-created S3 bucket
 async function getComprehendMedicalClient() {
     return new ComprehendMedicalClient({
-        region: awsExports?.aws_user_files_s3_bucket_region || 'us-east-1',
-        credentials: await Auth.currentCredentials(),
+        region: getConfigRegion(),
+        credentials: await getCredentials(),
     });
 }
 

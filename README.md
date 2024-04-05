@@ -35,6 +35,7 @@ storage using [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/).
     -   [FAQ](#faq)
         -   [The public sample repo has been updated. How do I update my local deployment to the latest code?](#the-public-sample-repo-has-been-updated-how-do-i-update-my-local-deployment-to-the-latest-code)
         -   [Can I use this UI with existing AWS HealthScribe jobs?](#can-i-use-this-ui-with-existing-aws-healthscribe-jobs)
+        -   [Can I deploy this demo from a private repository?](#can-i-deploy-this-demo-from-a-private-repository)
     -   [Security](#security)
     -   [License](#license)
     <!-- TOC -->

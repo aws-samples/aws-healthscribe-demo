@@ -1,24 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
+import { StartMedicalScribeJobRequest } from '@aws-sdk/client-transcribe';
 
-type VerifyJobParamsProps = {
-    MedicalScribeJobName: string;
-    DataAccessRoleArn: string;
-    OutputBucketName: string;
-    ChannelDefinitions?: {
-        ChannelId: number;
-        ParticipantRole: string;
-    }[];
-    Settings?: {
-        ChannelIdentification?: boolean;
-        MaxSpeakerLabels?: number;
-        ShowSpeakerLabels?: boolean;
-    };
-};
-
-export function verifyJobParams(jobParams: VerifyJobParamsProps) {
+export function verifyJobParams(jobParams: StartMedicalScribeJobRequest) {
     // Check job name
-    if (!/^[a-zA-Z0-9._-]{1,200}$/.test(jobParams.MedicalScribeJobName)) {
+    if (!/^[a-zA-Z0-9._-]{1,200}$/.test(jobParams.MedicalScribeJobName!)) {
         return {
             verified: false,
             message:
@@ -53,7 +39,7 @@ export function verifyJobParams(jobParams: VerifyJobParamsProps) {
     }
 
     // Check output bucket
-    if (!/[a-z0-9][.-a-z0-9]{1,61}[a-z0-9]/.test(jobParams.OutputBucketName)) {
+    if (!/[a-z0-9][.-a-z0-9]{1,61}[a-z0-9]/.test(jobParams.OutputBucketName!)) {
         return {
             verified: false,
             message: 'Output bucket must match [a-z0-9][.-a-z0-9]{1,61}[a-z0-9].',
