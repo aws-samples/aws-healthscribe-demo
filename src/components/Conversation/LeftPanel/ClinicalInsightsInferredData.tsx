@@ -60,9 +60,9 @@ function InferredData({ items }: InferredDataProps) {
     );
 }
 
-type OntologyLinkingProps = { inferredData: InferredDataType };
+type ClinicalInsightsInferredDataProps = { inferredData: InferredDataType };
 // Function to display an expandable selection with data from Comprehend Medical
-export default function OntologyLinking({ inferredData }: OntologyLinkingProps) {
+export default function ClinicalInsightsInferredData({ inferredData }: ClinicalInsightsInferredDataProps) {
     return (
         <div>
             {typeof inferredData.icd10cm === 'object' && (

@@ -22,7 +22,7 @@ function ReadOnlyAceEditor({ appColor, value }: ReadOnlyAceEditorProps) {
         <AceEditor
             name="transcriptJsonEditor"
             mode="json"
-            theme={appColor === 'theme.light' ? 'github' : 'twilight'}
+            theme={appColor === 'appTheme.light' ? 'github' : 'twilight'}
             value={value}
             width="100%"
             wrapEnabled={true}
@@ -35,21 +35,15 @@ function ReadOnlyAceEditor({ appColor, value }: ReadOnlyAceEditorProps) {
 }
 
 type ViewResultsProps = {
-    visible: boolean;
     setVisible: (visible: boolean) => void;
     transcriptString: string;
     clinicalDocumentString: string;
 };
-export default function ViewResults({
-    visible,
-    setVisible,
-    transcriptString,
-    clinicalDocumentString,
-}: ViewResultsProps) {
+export default function ViewOutput({ setVisible, transcriptString, clinicalDocumentString }: ViewResultsProps) {
     const { appTheme } = useAppThemeContext();
 
     return (
-        <Modal size="max" onDismiss={() => setVisible(false)} visible={visible} header="HealthScribe Results">
+        <Modal size="max" onDismiss={() => setVisible(false)} visible={true} header="HealthScribe Output">
             <Grid gridDefinition={[{ colspan: 6 }, { colspan: 6 }]}>
                 <Container header={<Header variant="h3">Transcript</Header>}>
                     <ReadOnlyAceEditor appColor={appTheme.color} value={transcriptString} />

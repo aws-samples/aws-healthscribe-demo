@@ -36,7 +36,7 @@ type TopPanelProps = {
     setSmallTalkCheck: React.Dispatch<React.SetStateAction<boolean>>;
     setAudioTime: React.Dispatch<React.SetStateAction<number>>;
     setAudioReady: React.Dispatch<React.SetStateAction<boolean>>;
-    setViewResultsModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowOutputModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export default function TopPanel({
     jobLoading,
@@ -47,7 +47,7 @@ export default function TopPanel({
     setSmallTalkCheck,
     setAudioTime,
     setAudioReady,
-    setViewResultsModal,
+    setShowOutputModal,
 }: TopPanelProps) {
     const navigate = useNavigate();
     const { addFlashMessage } = useNotificationsContext();
@@ -228,7 +228,7 @@ export default function TopPanel({
                         >
                             Download
                         </ButtonDropdown>
-                        <Button onClick={() => setViewResultsModal(true)}>View Output JSON</Button>
+                        <Button onClick={() => setShowOutputModal(true)}>View HealthScribe Output</Button>
                         <Button variant="primary" onClick={() => navigate('/conversations')}>
                             Exit Conversation
                         </Button>

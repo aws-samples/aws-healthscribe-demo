@@ -1,13 +1,19 @@
 import React, { memo, useMemo, useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 import Button from '@cloudscape-design/components/button';
+import Link from '@cloudscape-design/components/link';
 import SpaceBetween from '@cloudscape-design/components/space-between';
+import StatusIndicator from '@cloudscape-design/components/status-indicator';
 
 import { InferICD10CMResponse, InferRxNormResponse, InferSNOMEDCTResponse } from '@aws-sdk/client-comprehendmedical';
 
 import ValueWithLabel from '@/components/Common/ValueWithLabel';
 import ClinicalInsightsAttributesTable from '@/components/Conversation/LeftPanel/ClinicalInsightAttributesTable';
-import OntologyLinking from '@/components/Conversation/LeftPanel/ClinicalInsightsInferredData';
+import ClinicalInsightsInferredData from '@/components/Conversation/LeftPanel/ClinicalInsightsInferredData';
+import { useAppSettingsContext } from '@/store/appSettings';
+import { AppSettingKeys } from '@/store/appSettings/appSettings.type';
 import { IClinicalInsights } from '@/types/HealthScribe';
 import { getInferredData } from '@/utils/ComprehendMedicalApi';
 import toTitleCase from '@/utils/toTitleCase';
@@ -28,11 +34,18 @@ type ClinicalInsightProps = {
 };
 
 function ClinicalInsight({ wordClinicalEntity }: ClinicalInsightProps) {
+    const navigate = useNavigate();
+    const { appSettings } = useAppSettingsContext();
     const [inferredData, setInferredData] = useState<InferredDataType>({
         icd10cm: false,
         rxnorm: false,
         snomedct: false,
     });
+
+    const comprehendMedicalDisabled = useMemo(
+        () => appSettings[AppSettingKeys.ComprehendMedicalEnabled].value !== 'enabled',
+        [appSettings]
+    );
 
     const hasClinicalInsights = useMemo(() => {
         return typeof wordClinicalEntity !== 'undefined' && Object.keys(wordClinicalEntity)?.length > 0;
@@ -53,7 +66,7 @@ function ClinicalInsight({ wordClinicalEntity }: ClinicalInsightProps) {
                         return (
                             <Button
                                 key={`button_${clinicalInsight.InsightId}_${o.key}`}
-                                disabled={!!inferredData[o.key]}
+                                disabled={!!inferredData[o.key] || comprehendMedicalDisabled}
                                 loading={inferredData[o.key] === 'loading'}
                                 onClick={() => handleInfer(o.key, clinicalInsight.Spans[0].Content)}
                             >{`Infer ${o.name}`}</Button>
@@ -72,6 +85,19 @@ function ClinicalInsight({ wordClinicalEntity }: ClinicalInsightProps) {
                     <b>Clinical Insight: </b>
                     {clinicalInsight.Spans[0].Content}
                 </div>
+                {comprehendMedicalDisabled && (
+                    <StatusIndicator type="stopped">
+                        <Link
+                            onFollow={(e) => {
+                                e.preventDefault();
+                                navigate('/settings');
+                            }}
+                        >
+                            Enable Amazon Comprehend Medical
+                        </Link>{' '}
+                        for ontology linking
+                    </StatusIndicator>
+                )}
                 <InsightActions clinicalInsight={clinicalInsight} />
                 <SpaceBetween size="m" direction="horizontal">
                     <ValueWithLabel label={'Category'}>
@@ -84,7 +110,7 @@ function ClinicalInsight({ wordClinicalEntity }: ClinicalInsightProps) {
                 {clinicalInsight.Attributes.length > 0 && (
                     <ClinicalInsightsAttributesTable attributes={clinicalInsight.Attributes} />
                 )}
-                <OntologyLinking inferredData={inferredData} />
+                <ClinicalInsightsInferredData inferredData={inferredData} />
             </SpaceBetween>
         );
     } else {

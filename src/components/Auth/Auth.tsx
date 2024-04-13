@@ -33,11 +33,10 @@ const authUiComponents = {
 };
 
 type AuthParams = {
-    visible: boolean;
     setVisible: (visible: boolean) => void;
 };
 
-export default function Auth({ visible, setVisible }: AuthParams) {
+export default function Auth({ setVisible }: AuthParams) {
     const { appTheme } = useAppThemeContext();
 
     /**
@@ -82,7 +81,7 @@ export default function Auth({ visible, setVisible }: AuthParams) {
     return (
         <Modal
             onDismiss={() => setVisible(false)}
-            visible={visible}
+            visible={true}
             footer={
                 <Box float="right">
                     <SpaceBetween direction="horizontal" size="xs">

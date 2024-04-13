@@ -7,53 +7,37 @@ import Container from '@cloudscape-design/components/container';
 import ContentLayout from '@cloudscape-design/components/content-layout';
 import ExpandableSection from '@cloudscape-design/components/expandable-section';
 import Form from '@cloudscape-design/components/form';
-import FormField from '@cloudscape-design/components/form-field';
 import Header from '@cloudscape-design/components/header';
-import { OptionDefinition } from '@cloudscape-design/components/internal/components/option/interfaces';
-import Select from '@cloudscape-design/components/select';
+import Link from '@cloudscape-design/components/link';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 
-import * as settingOptions from '@/store/appSettings/settingOptions';
+import { SettingSelect } from '@/components/Settings/Common';
 import { useAppSettingsContext } from '@/store/appSettings';
+import { AppSettingKeys, AppSettings } from '@/store/appSettings/appSettings.type';
 import { DEFAULT_SETTINGS } from '@/store/appSettings/defaultSettings';
-
-export type AppSettings = {
-    'app.region': { label: string; value: string };
-    'app.apiTiming': { label: string; value: string };
-};
 
 export default function Settings() {
     const { appSettings, setAppSettings } = useAppSettingsContext();
     // Saving is instant, but create artificial wait
     const [isSaving, setIsSaving] = useState(false);
     // Make a copy of appSettings, write back it after form validation
-    const [settings, setSettings] = useState<AppSettings>(appSettings);
-
-    // Update local settings state
-    function updateSettings(settingKey: string, value: string | OptionDefinition) {
-        setSettings((prevSettings) => ({
-            ...prevSettings,
-            ...{
-                [settingKey]: value,
-            },
-        }));
-    }
+    const [localSettings, setLocalSettings] = useState<AppSettings>(appSettings);
 
     // Reset settings to defaults, defined in consts
     function handleResetToDefaults() {
-        setSettings(DEFAULT_SETTINGS);
+        setLocalSettings(DEFAULT_SETTINGS);
     }
 
     // Reload settings from appSettings from appContext
     function handleReload() {
-        setSettings(appSettings);
+        setLocalSettings(appSettings);
     }
 
     function handleSave() {
         setIsSaving(true);
         setTimeout(() => {
-            setAppSettings(settings);
+            setAppSettings(localSettings);
             setIsSaving(false);
             window.location.reload();
         }, 300);
@@ -92,30 +76,42 @@ export default function Settings() {
                         }
                     >
                         <SpaceBetween size={'m'}>
-                            <FormField
-                                label="AWS HealthScribe Region"
-                                description="As of March 31, AWS HealthScribe is available in the US East (N. Virginia) region."
-                            >
-                                <Select
-                                    selectedOption={settings['app.region']}
-                                    onChange={({ detail }) => updateSettings('app.region', detail.selectedOption)}
-                                    options={settingOptions.appRegionOptions}
-                                />
-                            </FormField>
+                            <SettingSelect
+                                formLabel="AWS HealthScribe Region"
+                                formDescription="As of April 13, 2024, AWS HealthScribe is available in the US East (N. Virginia) region."
+                                optionKey={AppSettingKeys.Region}
+                                selectedOption={localSettings['app.region']}
+                                setLocalSettings={setLocalSettings}
+                            />
+                            <SettingSelect
+                                formLabel="Amazon Comprehend Medical"
+                                formDescription={
+                                    <>
+                                        Extend AWS HealthScribe with{' '}
+                                        <Link
+                                            href="https://aws.amazon.com/comprehend/medical/"
+                                            external={true}
+                                            variant="primary"
+                                            fontSize="body-s"
+                                        >
+                                            Amazon Comprehend Medical
+                                        </Link>{' '}
+                                        for ontology linking and medical entity extraction.
+                                    </>
+                                }
+                                optionKey={AppSettingKeys.ComprehendMedicalEnabled}
+                                selectedOption={localSettings['app.comprehendMedicalEnabled']}
+                                setLocalSettings={setLocalSettings}
+                            />
                             <ExpandableSection headerText="Advanced">
                                 <SpaceBetween direction="vertical" size="m">
-                                    <FormField
-                                        label="API Timing"
-                                        description="Print API timing information in the browser console."
-                                    >
-                                        <Select
-                                            selectedOption={settings['app.apiTiming']}
-                                            onChange={({ detail }) =>
-                                                updateSettings('app.apiTiming', detail.selectedOption)
-                                            }
-                                            options={settingOptions.apiTimings}
-                                        />
-                                    </FormField>
+                                    <SettingSelect
+                                        formLabel="API Timing"
+                                        formDescription="Print API timing information in the browser console."
+                                        optionKey={AppSettingKeys.ApiTiming}
+                                        selectedOption={localSettings['app.apiTiming']}
+                                        setLocalSettings={setLocalSettings}
+                                    />
                                 </SpaceBetween>
                             </ExpandableSection>
                         </SpaceBetween>

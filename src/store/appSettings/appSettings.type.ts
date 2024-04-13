@@ -1,4 +1,19 @@
+export enum AppSettingKeys {
+    Region = 'app.region',
+    ApiTiming = 'app.apiTiming',
+    ComprehendMedicalEnabled = 'app.comprehendMedicalEnabled',
+}
+
+export type AppSettingOption = {
+    label: string;
+    value: string;
+    disabled?: boolean;
+};
+
+export type AppSettingsOptions = {
+    [key in AppSettingKeys]: AppSettingOption[];
+};
+
 export type AppSettings = {
-    'app.region': { label: string; value: string };
-    'app.apiTiming': { label: string; value: string };
+    [key in AppSettingKeys]: AppSettingOption;
 };

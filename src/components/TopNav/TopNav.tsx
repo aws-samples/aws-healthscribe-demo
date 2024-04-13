@@ -1,16 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 
 import TopNavigation from '@cloudscape-design/components/top-navigation';
 import { TopNavigationProps } from '@cloudscape-design/components/top-navigation';
 import { Density, Mode, applyDensity, applyMode } from '@cloudscape-design/global-styles';
 
-import Auth from '@/components/Auth';
+import ModalLoader from '@/components/SuspenseLoader/ModalLoader';
 import { useAppThemeContext } from '@/store/appTheme';
 import { useAuthContext } from '@/store/auth';
 
 import './TopNav.css';
+
+const Auth = lazy(() => import('@/components/Auth/Auth'));
 
 type TopNavClick = {
     detail: {
@@ -134,7 +136,11 @@ export default function TopNav() {
 
     return (
         <>
-            <Auth visible={authVisible} setVisible={setAuthVisible} />
+            {authVisible && (
+                <Suspense fallback={<ModalLoader />}>
+                    <Auth setVisible={setAuthVisible} />
+                </Suspense>
+            )}
             <TopNavigation
                 identity={{
                     href: '/',
