@@ -68,7 +68,6 @@ export const columnDefs = [
             e.CompletionTime ? dayjs(e.CompletionTime).add(90, 'day').diff(dayjs(), 'day') + ' days' : '-',
         sortingField: 'CompletionTime',
     },
-    // TODO: add a popover that does a getHealthScribeJob
     // objects below here are not shown by default
     {
         id: 'LanguageCode',
