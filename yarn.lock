@@ -15,10 +15,10 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@aws-amplify/analytics@7.1.0":
-  version "7.0.28-unstable.390c159.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/analytics/-/analytics-7.0.28-unstable.390c159.0.tgz#d9e00428ab6bb70b3283ec8305861a0a6448a653"
-  integrity sha512-mIaY9pZsiCMZjyw8taMCMxZwKfatv/OKFX4fQhI4QxX4kCY2aPdKkQ1jpFvsnGxMe3KDdjhcmQUaYqxgIivkog==
+"@aws-amplify/analytics@7.0.27":
+  version "7.0.27"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/analytics/-/analytics-7.0.27.tgz#782583c39d66fdcd9b5e833923996de4456d9436"
+  integrity sha512-UlONxdBSdvAScuda2RjB9tFo9cjQpairFnScBZpMRppUfMsLKJjVjokbrz8vt5/j2PKaW55A6h0LF1JYukm/SQ==
   dependencies:
     "@aws-sdk/client-firehose" "3.398.0"
     "@aws-sdk/client-kinesis" "3.398.0"
@@ -47,7 +47,7 @@
   dependencies:
     tslib "^2.5.0"
 
-"@aws-amplify/api@6.0.28", "@aws-amplify/api@6.1.0":
+"@aws-amplify/api@6.0.28":
   version "6.0.28"
   resolved "https://registry.yarnpkg.com/@aws-amplify/api/-/api-6.0.28.tgz#fa93d7b6417add061df7cb9540c3e3b66314ca8a"
   integrity sha512-QjKrNyFnt8avxgHMgF8in+bgpmSmnNpunTd5oTiA23cEKkcpZ1Dm4RvNjuqGWV3IxlfEbvI/0awUrBnmY8q69A==
@@ -56,10 +56,10 @@
     "@aws-amplify/api-rest" "4.0.27"
     tslib "^2.5.0"
 
-"@aws-amplify/auth@6.2.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/auth/-/auth-6.2.0.tgz#f888973ff1a63ad1b96498d30caac74b138ef428"
-  integrity sha512-Iv6Vulfe2WDu0xEz5km+0KufIY+l5do2zKtWZ1UaAJljvPYBWa3K/zcW72SCd9thnOqLWQR9XOhzPpB4/5RySQ==
+"@aws-amplify/auth@6.0.27":
+  version "6.0.27"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/auth/-/auth-6.0.27.tgz#2abf0921107f2afe7ae8a488f4e85173aa18af20"
+  integrity sha512-qhoPTPuvErX7EIDcwM0u8Jt4PipJcohc9Y+veEm9sV9SP2Sop37RubpiaDaQhXnFcKvB0wTYknUTZvs3TujHRw==
   dependencies:
     tslib "^2.5.0"
 
@@ -67,20 +67,6 @@
   version "6.0.27"
   resolved "https://registry.yarnpkg.com/@aws-amplify/core/-/core-6.0.27.tgz#92cb99be3ccc91a56171dae8b76c5a5edc700037"
   integrity sha512-S3IF2s6Qo+PGOXkWt0BiWwCHajImBJUhfcLi65D63mBi92gIL07310u5EZj+2RC4NzO/eSVNt3FNGR7EYCLAng==
-  dependencies:
-    "@aws-crypto/sha256-js" "5.2.0"
-    "@aws-sdk/types" "3.398.0"
-    "@smithy/util-hex-encoding" "2.0.0"
-    "@types/uuid" "^9.0.0"
-    js-cookie "^3.0.5"
-    rxjs "^7.8.1"
-    tslib "^2.5.0"
-    uuid "^9.0.0"
-
-"@aws-amplify/core@6.1.0":
-  version "6.0.28-unstable.bb94125.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/core/-/core-6.0.28-unstable.bb94125.0.tgz#979261363b1096f1a69ad70d31f40ed1f613bf11"
-  integrity sha512-PxdJi5Mws8WEKKjqdWNccSTmorkv0D4tsBUb0ohFW87LOQdomQbcQqSYJfHFFiTlExKA6aBEIqqIUnU/5cBFzw==
   dependencies:
     "@aws-crypto/sha256-js" "5.2.0"
     "@aws-sdk/types" "3.398.0"
@@ -99,7 +85,7 @@
     "@aws-amplify/plugin-types" "^0.9.0-beta.1"
     rxjs "^7.8.1"
 
-"@aws-amplify/datastore@5.1.0":
+"@aws-amplify/datastore@5.0.28":
   version "5.0.28"
   resolved "https://registry.yarnpkg.com/@aws-amplify/datastore/-/datastore-5.0.28.tgz#4889729180ccd13d4a5b76b9029ec2327f253035"
   integrity sha512-A51yUQZk/oZlor1mofyPfqotfA41agRZUFVTSJS0oMEsjzadDbJ1IqbVzKstiM9XhMjVVUn1hEytgZZFAu0OPA==
@@ -111,10 +97,10 @@
     rxjs "^7.8.1"
     ulid "^2.3.0"
 
-"@aws-amplify/notifications@2.1.0":
-  version "2.0.28-unstable.390c159.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/notifications/-/notifications-2.0.28-unstable.390c159.0.tgz#356e84f8e66bcdb067bb579bbcbcee6a6ae00865"
-  integrity sha512-p4/xQOx0b8cW1xbvGeFcP0CxCKHzeQR3EaOSNX4c7BR14M3YOo4h2iCkHfTuw7JPmJMv914Ch0TXsCkBDp6quQ==
+"@aws-amplify/notifications@2.0.27":
+  version "2.0.27"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/notifications/-/notifications-2.0.27.tgz#c6ff1041fe30f9b70f758f8b900e646635f5f386"
+  integrity sha512-/YLfjWo3nxmIJxCHzL8Ra5YG+gx01sZuGvpRX3couvsXoviywPIWE7D2KoxO1so9Z6qTaN7335XvtCxYcdLXSw==
   dependencies:
     lodash "^4.17.21"
     tslib "^2.5.0"
@@ -124,10 +110,10 @@
   resolved "https://registry.yarnpkg.com/@aws-amplify/plugin-types/-/plugin-types-0.9.0-beta.2.tgz#71f82cbe701615eafe35b8a5288f564ea2c17537"
   integrity sha512-jQLNPuvVban9bZAqx3Qthf6ZVrV4QmxLsExiDY456CnZWZwHAtFxNPF6v4r64Og7NhzWB/kxa/QuS+d8cwLZ/A==
 
-"@aws-amplify/storage@6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@aws-amplify/storage/-/storage-6.3.0.tgz#5ff3d5e4222a62249b5ad36ded918e6a1301e1eb"
-  integrity sha512-CwLtA6Y3SaZmJViMiRB1Go6rBymzShPp0s5dZ16OdFDirFBtn+XJpuxvcBfYYgBj0OibG3Zefb3JGwqywG0t+A==
+"@aws-amplify/storage@6.0.27":
+  version "6.0.27"
+  resolved "https://registry.yarnpkg.com/@aws-amplify/storage/-/storage-6.0.27.tgz#644ebec0ad89241eef02a3d841ed8041e88dfd43"
+  integrity sha512-1GKgPK6ZGxoZ3P58/SAFKWB+pwhoMM1ixaUbw1FGnHSQLM2aCSUeOPtk1DVM4TKvzeoxjs/K75QZBdoj0KauyA==
   dependencies:
     "@aws-sdk/types" "3.398.0"
     "@smithy/md5-js" "2.0.7"
@@ -3291,18 +3277,18 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-amplify@^6.1.3:
-  version "6.1.3"
-  resolved "https://registry.yarnpkg.com/aws-amplify/-/aws-amplify-6.1.3.tgz#943ffa7450764d3f53d5a195c61c5239c1a62e83"
-  integrity sha512-vsFIBE+uHk6INTn/Ppem3JTatS0oIMn+JM5BGSD14++Iq0CskvKzOmCsoIOaXtolCHcsqqbFX1E8Tf/7GVXKEA==
+aws-amplify@^6.0.28:
+  version "6.0.28"
+  resolved "https://registry.yarnpkg.com/aws-amplify/-/aws-amplify-6.0.28.tgz#d359e11b1f6d705bcbdb5810ef5c6ead13f7d9a4"
+  integrity sha512-gxP/osZNDGb5skWUpka6XCTjAyMsWLMI6gGpIuehxzA4xZ8/V/lOcwy4yoY0UB6830zEh5Jw8AZOBBpBTgrdZQ==
   dependencies:
-    "@aws-amplify/analytics" "7.1.0"
-    "@aws-amplify/api" "6.1.0"
-    "@aws-amplify/auth" "6.2.0"
-    "@aws-amplify/core" "6.1.0"
-    "@aws-amplify/datastore" "5.1.0"
-    "@aws-amplify/notifications" "2.1.0"
-    "@aws-amplify/storage" "6.3.0"
+    "@aws-amplify/analytics" "7.0.27"
+    "@aws-amplify/api" "6.0.28"
+    "@aws-amplify/auth" "6.0.27"
+    "@aws-amplify/core" "6.0.27"
+    "@aws-amplify/datastore" "5.0.28"
+    "@aws-amplify/notifications" "2.0.27"
+    "@aws-amplify/storage" "6.0.27"
     tslib "^2.5.0"
 
 balanced-match@^1.0.0, balanced-match@^1.0.2:
@@ -3404,9 +3390,9 @@ camelcase@^5.0.0:
   integrity sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg==
 
 caniuse-lite@^1.0.30001587:
-  version "1.0.30001609"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001609.tgz#fc34fad75c0c6d6d6303bdbceec2da8f203dabd6"
-  integrity sha512-JFPQs34lHKx1B5t1EpQpWH4c+29zIyn/haGsbpfq3suuV9v56enjFt23zqijxGTMwy1p/4H2tjnQMY+p1WoAyA==
+  version "1.0.30001610"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001610.tgz#2f44ed6e21d359e914271ae35b68903632628ccf"
+  integrity sha512-QFutAY4NgaelojVMjY63o6XlZyORPaLfyMnsl3HgnWdJUcX6K0oaJymHjH8PT5Gk7sTm8rvC/c5COUQKXqmOMA==
 
 capital-case@^1.0.4:
   version "1.0.4"
@@ -5574,7 +5560,6 @@ stream-browserify@3.0.0:
     readable-stream "^3.5.0"
 
 "string-width-cjs@npm:string-width@^4.2.0", string-width@^4.1.0, string-width@^4.2.0:
-  name string-width-cjs
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
@@ -5653,7 +5638,6 @@ string_decoder@~1.1.1:
     safe-buffer "~5.1.0"
 
 "strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
-  name strip-ansi-cjs
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
   integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
@@ -5925,6 +5909,11 @@ uuid@^9.0.0, uuid@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
   integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
+
+vite-plugin-optimize-css-modules@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/vite-plugin-optimize-css-modules/-/vite-plugin-optimize-css-modules-1.0.6.tgz#1b488020aba331c13e1d273522e34030517ba448"
+  integrity sha512-7MmlU50T1CXL5N4P3mLo40AoiHy4dsU6MBpyDzOFz8FdahPguyVkzowRMe8m+TFkQ3yPtR4vTdp3JiJN6uIB6A==
 
 vite@^5.2.8:
   version "5.2.8"
