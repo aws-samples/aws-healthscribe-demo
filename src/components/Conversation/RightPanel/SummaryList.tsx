@@ -3,24 +3,44 @@ import React from 'react';
 import * as awsui from '@cloudscape-design/design-tokens';
 import Box from '@cloudscape-design/components/box';
 
-import styles from '@/components/Conversation/RightPanel/SummarizedConcepts.module.css';
+import { SegmentExtractedData } from '@/types/ComprehendMedical';
 import { IEvidence } from '@/types/HealthScribe';
 
+import styles from './SummarizedConcepts.module.css';
+import { ExtractedHealthDataWord } from './SummaryListComponents';
 import { processSummarizedSegment } from './summarizedConceptsUtils';
 
-type SummaryListProps = {
+function NoEntities() {
+    return (
+        <div style={{ paddingLeft: '5px' }}>
+            <Box variant="small">No Clinical Entities</Box>
+        </div>
+    );
+}
+
+type SummaryListDefaultProps = {
     sectionName: string;
     summary: IEvidence[];
+    summaryExtractedHealthData?: SegmentExtractedData[];
+    acceptableConfidence: number;
     currentSegment: string;
-    handleClick: (SummarizedSegment: string, EvidenceLinks: { SegmentId: string }[]) => void;
+    handleSegmentClick: (SummarizedSegment: string, EvidenceLinks: { SegmentId: string }[]) => void;
 };
-export default function SummaryList({ sectionName, summary, currentSegment = '', handleClick }: SummaryListProps) {
+export function SummaryListDefault({
+    sectionName,
+    summary,
+    summaryExtractedHealthData,
+    acceptableConfidence,
+    currentSegment = '',
+    handleSegmentClick,
+}: SummaryListDefaultProps) {
     if (summary.length) {
         return (
             <ul className={styles.summaryList}>
-                {summary.map(({ EvidenceLinks, SummarizedSegment }, index) => {
+                {summary.map(({ EvidenceLinks, SummarizedSegment }, sectionIndex) => {
                     if (SummarizedSegment === '') return false;
 
+                    // Check if the segment is a section header
                     let sectionHeader = '';
                     let indent = false;
                     if (SummarizedSegment.endsWith('\n')) {
@@ -31,36 +51,80 @@ export default function SummaryList({ sectionName, summary, currentSegment = '',
                         }
                         indent = true;
                     }
+                    const sectionHeaderWordLength = sectionHeader ? sectionHeader.split(' ').length : 0;
 
-                    return (
-                        <div key={`${sectionName}_${index}`}>
-                            {sectionHeader && <div className={styles.summaryListItemSubHeader}>{sectionHeader}</div>}
-                            <li className={`${styles.summaryListItem} ${indent && styles.summaryListItemIndent}`}>
-                                <div
-                                    onClick={() => handleClick(SummarizedSegment, EvidenceLinks)}
-                                    className={styles.summarizedSegment}
-                                    style={{
-                                        display: 'inline',
-                                        color: awsui.colorTextBodyDefault,
-                                        backgroundColor:
-                                            currentSegment === SummarizedSegment
-                                                ? awsui.colorBackgroundToggleCheckedDisabled
-                                                : '',
-                                    }}
-                                >
-                                    {processSummarizedSegment(SummarizedSegment)}
-                                </div>
-                            </li>
-                        </div>
-                    );
+                    const summaryItemDivStyle = {
+                        color: awsui.colorTextBodyDefault,
+                        backgroundColor:
+                            currentSegment === SummarizedSegment ? awsui.colorBackgroundToggleCheckedDisabled : '',
+                    };
+
+                    if (summaryExtractedHealthData) {
+                        const sectionExtractedData = summaryExtractedHealthData[sectionIndex];
+                        return (
+                            <div key={`${sectionName}_${sectionIndex}`}>
+                                {sectionHeaderWordLength > 0 && (
+                                    <div className={styles.summaryListItemSubHeader}>
+                                        {sectionExtractedData.words
+                                            .slice(0, sectionHeaderWordLength)
+                                            .map(({ word, linkedId }, wordIndex) => (
+                                                <ExtractedHealthDataWord
+                                                    key={`${sectionName}_${sectionIndex}_${wordIndex}`}
+                                                    linkedId={linkedId}
+                                                    sectionExtractedData={sectionExtractedData}
+                                                    word={word}
+                                                    acceptableConfidence={acceptableConfidence}
+                                                />
+                                            ))}
+                                    </div>
+                                )}
+                                <li className={`${styles.summaryListItem} ${indent && styles.summaryListItemIndent}`}>
+                                    <div
+                                        onClick={() => handleSegmentClick(SummarizedSegment, EvidenceLinks)}
+                                        className={styles.summarizedSegment}
+                                        style={summaryItemDivStyle}
+                                    >
+                                        {sectionExtractedData.words
+                                            .slice(sectionHeaderWordLength)
+                                            .map(({ word, linkedId }, wordIndex) => {
+                                                if (word === '-' && wordIndex <= 1) return false;
+
+                                                return (
+                                                    <ExtractedHealthDataWord
+                                                        key={`${sectionName}_${sectionIndex}_${wordIndex}`}
+                                                        linkedId={linkedId}
+                                                        sectionExtractedData={sectionExtractedData}
+                                                        word={word}
+                                                        acceptableConfidence={acceptableConfidence}
+                                                    />
+                                                );
+                                            })}
+                                    </div>
+                                </li>
+                            </div>
+                        );
+                    } else {
+                        return (
+                            <div key={`${sectionName}_${sectionIndex}`}>
+                                {sectionHeader && (
+                                    <div className={styles.summaryListItemSubHeader}>{sectionHeader}</div>
+                                )}
+                                <li className={`${styles.summaryListItem} ${indent && styles.summaryListItemIndent}`}>
+                                    <div
+                                        onClick={() => handleSegmentClick(SummarizedSegment, EvidenceLinks)}
+                                        className={styles.summarizedSegment}
+                                        style={summaryItemDivStyle}
+                                    >
+                                        {processSummarizedSegment(SummarizedSegment)}
+                                    </div>
+                                </li>
+                            </div>
+                        );
+                    }
                 })}
             </ul>
         );
     } else {
-        return (
-            <div style={{ paddingLeft: '5px' }}>
-                <Box variant="small">No Clinical Entities</Box>
-            </div>
-        );
+        return <NoEntities />;
     }
 }

@@ -12,9 +12,14 @@ import styles from './ScrollingContainer.module.css';
 
 type ScrollingContainerProps = {
     containerTitle: string;
+    containerActions?: React.ReactNode;
     children: React.ReactNode;
 };
-export default function ScrollingContainer({ containerTitle, children }: ScrollingContainerProps) {
+export default function ScrollingContainer({
+    containerTitle,
+    containerActions = null,
+    children,
+}: ScrollingContainerProps) {
     const [showUpScroll, setShowUpScroll] = useState<boolean>(false);
     const [showDownScroll, setShowDownScroll] = useState<boolean>(false);
 
@@ -38,7 +43,13 @@ export default function ScrollingContainer({ containerTitle, children }: Scrolli
     }, [childContainerRef.current]);
 
     return (
-        <Container header={<Header variant="h2">{containerTitle}</Header>}>
+        <Container
+            header={
+                <Header variant="h2" actions={containerActions}>
+                    {containerTitle}
+                </Header>
+            }
+        >
             {showUpScroll && (
                 <div className={styles.scrollUpIcon}>
                     <Icon name="angle-up" size="medium" />

@@ -3,17 +3,19 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { updateConfig } from '@/utils/Sdk';
 
-import { AppSettings } from './appSettings.type';
+import { AppSettingKeys, AppSettings } from './appSettings.type';
 import { DEFAULT_SETTINGS } from './defaultSettings';
 
 type AppSettingsContextType = {
     appSettings: AppSettings;
     setAppSettings: (newValue: AppSettings) => void;
+    comprehendMedicalEnabled: boolean;
 };
 
 export const AppSettingsContext = createContext<AppSettingsContextType>({
     appSettings: DEFAULT_SETTINGS,
     setAppSettings: () => {},
+    comprehendMedicalEnabled: false,
 });
 
 export function useAppSettingsContext() {
@@ -36,6 +38,7 @@ export default function AppSettingsContextProvider({ children }: { children: Rea
     const appSettingsContextValue = {
         appSettings: appSettings,
         setAppSettings: setAppSettings,
+        comprehendMedicalEnabled: appSettings[AppSettingKeys.ComprehendMedicalEnabled].value === 'enabled',
     };
 
     return <AppSettingsContext.Provider value={appSettingsContextValue}>{children}</AppSettingsContext.Provider>;

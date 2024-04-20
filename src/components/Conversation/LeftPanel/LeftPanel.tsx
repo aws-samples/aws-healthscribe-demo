@@ -158,8 +158,6 @@ export default function LeftPanel({
     }, [jobLoading, transcriptFile]);
 
     // Extract the part of the transcript to highlight
-    // If the current audio time is outside of this part, then reset the highlight, which comes from ClinicalConcepts ("Summarizations") from the right panel
-    const currentAudioTime = wavesurfer.current?.getCurrentTime() || 0;
     useEffect(() => {
         function resetHighlightId() {
             setHighlightId({
@@ -167,6 +165,7 @@ export default function LeftPanel({
                 selectedSegmentId: '',
             });
         }
+
         // Reset highlightID - no segements will be highlighted
         if (highlightId.selectedSegmentId) {
             const transcriptHighlightAll = transcript
@@ -188,36 +187,8 @@ export default function LeftPanel({
             if (!audioReady && transcriptHighlightSelectedInd >= 0) {
                 setAudioTime(transcriptHighlightAll[transcriptHighlightSelectedInd].BeginAudioTime);
             }
-
-            const startHighlightTime = transcriptHighlightAll[transcriptHighlightSelectedInd].BeginAudioTime;
-            let endHighlightTime = transcriptHighlightAll[transcriptHighlightSelectedInd].EndAudioTime;
-
-            if (transcriptHighlightSelectedInd >= 0) {
-                for (let i = transcriptHighlightSelectedInd + 1; i < transcriptHighlightAll.length; i++) {
-                    if (
-                        Math.abs(
-                            Math.floor(transcriptHighlightAll[i - 1].EndAudioTime * 100) -
-                                Math.floor(transcriptHighlightAll[i].BeginAudioTime * 100)
-                        ) < 3
-                    ) {
-                        endHighlightTime = transcriptHighlightAll[i].EndAudioTime;
-                    } else {
-                        break;
-                    }
-                }
-            } else {
-                resetHighlightId();
-            }
-
-            if (
-                audioReady &&
-                (currentAudioTime < Math.floor(startHighlightTime * 100 - 1) / 100 ||
-                    currentAudioTime > Math.ceil(endHighlightTime * 100 + 1) / 100)
-            ) {
-                resetHighlightId();
-            }
         }
-    }, [highlightId, transcript, currentAudioTime, audioReady, setAudioTime]);
+    }, [highlightId, transcript, audioReady, setAudioTime]);
 
     if (jobLoading || transcriptFile == null) {
         return <LoadingContainer containerTitle="Transcript" text="Loading Transcript" />;

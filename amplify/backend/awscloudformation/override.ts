@@ -38,6 +38,7 @@ export function override(resources: AmplifyRootStackTemplate, amplifyProjectInfo
                         Resource: '*',
                         Action: [
                             'polly:SynthesizeSpeech',
+                            'comprehendmedical:DetectEntitiesV2',
                             'comprehendmedical:InferICD10CM',
                             'comprehendmedical:InferRxNorm',
                             'comprehendmedical:InferSNOMEDCT',

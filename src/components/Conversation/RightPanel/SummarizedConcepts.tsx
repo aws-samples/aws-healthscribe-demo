@@ -1,21 +1,25 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import TextContent from '@cloudscape-design/components/text-content';
 
 import toast from 'react-hot-toast';
 import WaveSurfer from 'wavesurfer.js';
 
-import { SECTION_ORDER } from '@/components/Conversation/RightPanel/sectionOrder';
-import { IAuraClinicalDocOutputSection, IEvidence, ITranscriptSegments } from '@/types/HealthScribe';
+import { ExtractedHealthData, SummarySectionEntityMapping } from '@/types/ComprehendMedical';
+import { IAuraClinicalDocOutputSection, ITranscriptSegments } from '@/types/HealthScribe';
 import toTitleCase from '@/utils/toTitleCase';
 
 import { HighlightId } from '../types';
-import SummaryList from './SummaryList';
+import { SummaryListDefault } from './SummaryList';
+import { SECTION_ORDER } from './sectionOrder';
+import { mergeHealthScribeOutputWithComprehendMedicalOutput } from './summarizedConceptsUtils';
 
 type SummarizedConceptsProps = {
     sections: IAuraClinicalDocOutputSection[];
+    extractedHealthData: ExtractedHealthData[];
+    acceptableConfidence: number;
     highlightId: HighlightId;
     setHighlightId: React.Dispatch<React.SetStateAction<HighlightId>>;
     segmentById: {
@@ -26,6 +30,8 @@ type SummarizedConceptsProps = {
 
 export default function SummarizedConcepts({
     sections,
+    extractedHealthData,
+    acceptableConfidence,
     highlightId,
     setHighlightId,
     segmentById,
@@ -39,7 +45,12 @@ export default function SummarizedConcepts({
         if (!highlightId.selectedSegmentId) setCurrentSegment('');
     }, [highlightId]);
 
-    function handleClick(SummarizedSegment: string, EvidenceLinks: { SegmentId: string }[]) {
+    const sectionsWithExtractedData: SummarySectionEntityMapping[] = useMemo(
+        () => mergeHealthScribeOutputWithComprehendMedicalOutput(sections, extractedHealthData),
+        [sections, extractedHealthData]
+    );
+
+    function handleSegmentClick(SummarizedSegment: string, EvidenceLinks: { SegmentId: string }[]) {
         let currentIdLocal = currentId;
         if (currentSegment !== SummarizedSegment) {
             setCurrentSegment(SummarizedSegment);
@@ -83,16 +94,22 @@ export default function SummarizedConcepts({
             {sections
                 .sort((a, b) => SECTION_ORDER.indexOf(a.SectionName) - SECTION_ORDER.indexOf(b.SectionName) || 1)
                 .map(({ SectionName, Summary }, i) => {
+                    // Match this section name to the Comprehend Medical extracted data. Returns undefined if the section doesn't exist
+                    const sectionExtractedHealthData = sectionsWithExtractedData.find(
+                        (s) => s.SectionName === SectionName
+                    );
                     return (
                         <div key={`insightsSection_${i}`}>
                             <TextContent>
                                 <h3>{toTitleCase(SectionName.replace(/_/g, ' '))}</h3>
                             </TextContent>
-                            <SummaryList
+                            <SummaryListDefault
                                 sectionName={SectionName}
-                                summary={Summary as IEvidence[]}
+                                summary={Summary}
+                                summaryExtractedHealthData={sectionExtractedHealthData?.Summary}
+                                acceptableConfidence={acceptableConfidence}
                                 currentSegment={currentSegment}
-                                handleClick={handleClick}
+                                handleSegmentClick={handleSegmentClick}
                             />
                         </div>
                     );

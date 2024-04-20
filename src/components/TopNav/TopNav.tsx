@@ -12,7 +12,7 @@ import { useAuthContext } from '@/store/auth';
 
 import './TopNav.css';
 
-const Auth = lazy(() => import('@/components/Auth/Auth'));
+const Auth = lazy(() => import('@/components/Auth'));
 
 type TopNavClick = {
     detail: {

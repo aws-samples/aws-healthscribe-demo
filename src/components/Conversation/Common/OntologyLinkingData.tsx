@@ -14,13 +14,13 @@ import {
 
 import getPercentageFromDecimal from '@/utils/getPercentageFromDecimal';
 
-import { InferredDataType } from './ClinicalInsight';
+import { InferredDataType } from './OntologyLinking';
 
 type InferredDataProps = {
     items: ICD10CMConcept[] | undefined;
 };
 
-function InferredData({ items }: InferredDataProps) {
+function OntologyTable({ items }: InferredDataProps) {
     if (typeof items === 'undefined') return null;
     return (
         <Table
@@ -62,12 +62,12 @@ function InferredData({ items }: InferredDataProps) {
 
 type ClinicalInsightsInferredDataProps = { inferredData: InferredDataType };
 // Function to display an expandable selection with data from Comprehend Medical
-export default function ClinicalInsightsInferredData({ inferredData }: ClinicalInsightsInferredDataProps) {
+export default function OntologyLinkingData({ inferredData }: ClinicalInsightsInferredDataProps) {
     return (
         <div>
             {typeof inferredData.icd10cm === 'object' && (
                 <ExpandableSection defaultExpanded headerText="ICD-10-CM">
-                    <InferredData
+                    <OntologyTable
                         items={(inferredData.icd10cm as InferICD10CMResponse).Entities?.[0]?.ICD10CMConcepts}
                     />
                     <SpaceBetween size={'s'} direction={'vertical'}>
@@ -79,7 +79,7 @@ export default function ClinicalInsightsInferredData({ inferredData }: ClinicalI
             )}
             {typeof inferredData.rxnorm === 'object' && (
                 <ExpandableSection defaultExpanded headerText="RxNorm">
-                    <InferredData items={(inferredData.rxnorm as InferRxNormResponse).Entities?.[0]?.RxNormConcepts} />
+                    <OntologyTable items={(inferredData.rxnorm as InferRxNormResponse).Entities?.[0]?.RxNormConcepts} />
                     <SpaceBetween size={'s'} direction={'vertical'}>
                         <div>
                             <b>Score:</b> {getPercentageFromDecimal(inferredData.rxnorm?.Entities?.[0]?.Score)}
@@ -89,7 +89,7 @@ export default function ClinicalInsightsInferredData({ inferredData }: ClinicalI
             )}
             {typeof inferredData.snomedct === 'object' && (
                 <ExpandableSection defaultExpanded headerText="SNOMED-CT">
-                    <InferredData
+                    <OntologyTable
                         items={(inferredData.snomedct as InferSNOMEDCTResponse).Entities?.[0]?.SNOMEDCTConcepts}
                     />
                     <SpaceBetween size={'s'} direction={'vertical'}>

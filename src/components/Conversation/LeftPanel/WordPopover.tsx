@@ -12,27 +12,28 @@ import toast from 'react-hot-toast';
 import WaveSurfer from 'wavesurfer.js';
 
 import ValueWithLabel from '@/components/Common/ValueWithLabel';
-import ClinicalInsight from '@/components/Conversation/LeftPanel/ClinicalInsight';
 import { IClinicalInsights, IWordAlternative } from '@/types/HealthScribe';
+
+import ClinicalInsight from './ClinicalInsight';
 
 type PopOverCompProps = {
     isPunctuation: boolean;
     highlightWord: boolean;
-    disableSegment: boolean;
-    isClinicalEntity: boolean;
-    wordBeginAudioTime: number;
-    audioDuration: number;
+    disableSegment?: boolean;
+    isClinicalEntity?: boolean;
+    wordBeginAudioTime?: number;
+    audioDuration?: number;
     word: IWordAlternative;
-    wordClinicalEntity: IClinicalInsights | object;
-    audioReady: boolean;
-    wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
+    wordClinicalEntity?: IClinicalInsights;
+    audioReady?: boolean;
+    wavesurfer?: React.MutableRefObject<WaveSurfer | undefined>;
 };
 
 function WordPopover({
     isPunctuation,
     highlightWord,
-    disableSegment,
-    isClinicalEntity,
+    disableSegment = false,
+    isClinicalEntity = false,
     wordBeginAudioTime,
     audioDuration,
     word,
@@ -65,6 +66,34 @@ function WordPopover({
         }
     }, [word.Confidence]);
 
+    /**
+     * Jump to button is disabled if audioDuration or wordBeginAudioTime is not available
+     * i.e. if selecting the word from Insights (vs Transcript)
+     * @constructor
+     */
+    function JumpToButton() {
+        if (audioDuration && wordBeginAudioTime) {
+            return (
+                <Box textAlign={'center'}>
+                    <Button
+                        disabled={!audioReady}
+                        onClick={() => {
+                            if (!wavesurfer) return;
+                            wavesurfer.current?.seekTo(
+                                audioDuration === -1 ? 0 : wordBeginAudioTime / audioDuration + 0.001
+                            );
+                            toast.success(`Seeked to: ${wordBeginAudioTime} seconds`);
+                        }}
+                    >
+                        Jump to
+                    </Button>
+                </Box>
+            );
+        } else {
+            return false;
+        }
+    }
+
     return (
         <>
             {!isPunctuation && <span> </span>}
@@ -74,22 +103,10 @@ function WordPopover({
                 size="large"
                 triggerType="custom"
                 content={
-                    <SpaceBetween size="xs" direction="vertical">
+                    <SpaceBetween size="m" direction="vertical">
                         <ValueWithLabel label={'Confidence'}>{wordConfidence}</ValueWithLabel>
-                        <ClinicalInsight wordClinicalEntity={wordClinicalEntity} />
-                        <Box textAlign={'center'}>
-                            <Button
-                                disabled={!audioReady}
-                                onClick={() => {
-                                    wavesurfer.current?.seekTo(
-                                        audioDuration === -1 ? 0 : wordBeginAudioTime / audioDuration + 0.001
-                                    );
-                                    toast.success(`Seeked to: ${wordBeginAudioTime} seconds`);
-                                }}
-                            >
-                                Jump to
-                            </Button>
-                        </Box>
+                        {wordClinicalEntity && <ClinicalInsight wordClinicalEntity={wordClinicalEntity} />}
+                        <JumpToButton />
                     </SpaceBetween>
                 }
             >
@@ -106,4 +123,4 @@ function WordPopover({
     );
 }
 
-export const WordPopoverMemo = memo(WordPopover);
+export const WordPopoverTranscript = memo(WordPopover);
