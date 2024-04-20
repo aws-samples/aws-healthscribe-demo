@@ -79,7 +79,7 @@
     chalk "^4.1.1"
     enquirer "^2.3.6"
 
-"@aws-amplify/cli-extensibility-helper@^3.0.26":
+"@aws-amplify/cli-extensibility-helper@^3.0.28":
   version "3.0.28"
   resolved "https://registry.yarnpkg.com/@aws-amplify/cli-extensibility-helper/-/cli-extensibility-helper-3.0.28.tgz#580e8f338e00ef9723a1268fb5aff40bff54d4cc"
   integrity sha512-2vKm1K//R+pjWnNhts3H2bZVYc7NZ57gUGCWPSe07qiGCEAEDEJ61yCsk+lgWaVceMTvIJ1Y/H/9T2juYcXaFA==
@@ -1559,7 +1559,7 @@ typescript-json-schema@~0.52.0:
     typescript "~4.4.4"
     yargs "^17.1.1"
 
-typescript@^5.4.3:
+typescript@^5.4.5:
   version "5.4.5"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.5.tgz#42ccef2c571fdbd0f6718b1d1f5e6e5ef006f611"
   integrity sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==
