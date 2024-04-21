@@ -114,11 +114,11 @@ export async function multipartUpload({
             tags: [
                 {
                     Key: 'uploadUsername',
-                    Value: username,
+                    Value: username || 'error: username not found',
                 },
                 {
                     Key: 'uploadLoginId',
-                    Value: signInDetails?.loginId,
+                    Value: signInDetails?.loginId || 'error: loginId not found',
                 },
             ],
         });

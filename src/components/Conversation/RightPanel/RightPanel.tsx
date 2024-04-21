@@ -5,8 +5,6 @@ import React, { useMemo, useState } from 'react';
 import { DetectEntitiesV2Response } from '@aws-sdk/client-comprehendmedical';
 import WaveSurfer from 'wavesurfer.js';
 
-import LoadingContainer from '@/components/Conversation/Common/LoadingContainer';
-import ScrollingContainer from '@/components/Conversation/Common/ScrollingContainer';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { ExtractedHealthData } from '@/types/ComprehendMedical';
 import {
@@ -17,9 +15,12 @@ import {
 } from '@/types/HealthScribe';
 import { detectEntitiesFromComprehendMedical } from '@/utils/ComprehendMedicalApi';
 
+import LoadingContainer from '../Common/LoadingContainer';
+import ScrollingContainer from '../Common/ScrollingContainer';
 import { HighlightId } from '../types';
 import { RightPanelActions, RightPanelSettings } from './RightPanelComponents';
 import SummarizedConcepts from './SummarizedConcepts';
+import { calculateNereUnits } from './rightPanelUtils';
 import { processSummarizedSegment } from './summarizedConceptsUtils';
 
 type RightPanelProps = {
@@ -83,6 +84,9 @@ export default function RightPanel({
         setExtractingData(false);
     }
 
+    // Calculate the number of CM units (100-character segments) in the clinical document.
+    const clinicalDocumentNereUnits = useMemo(() => calculateNereUnits(clinicalDocument), [clinicalDocument]);
+
     if (jobLoading || clinicalDocument == null) {
         return <LoadingContainer containerTitle="Insights" text="Loading Insights" />;
     } else {
@@ -92,7 +96,9 @@ export default function RightPanel({
                 containerActions={
                     <RightPanelActions
                         hasInsightSections={hasInsightSections}
+                        dataExtracted={extractedHealthData.length > 0}
                         extractingData={extractingData}
+                        clinicalDocumentNereUnits={clinicalDocumentNereUnits}
                         setRightPanelSettingsOpen={setRightPanelSettingsOpen}
                         handleExtractHealthData={handleExtractHealthData}
                     />

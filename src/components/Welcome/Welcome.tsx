@@ -16,10 +16,10 @@ import { useAuthContext } from '@/store/auth';
 
 function Welcome() {
     const navigate = useNavigate();
-    const { user } = useAuthContext();
+    const { isUserAuthenticated } = useAuthContext();
 
     function Content() {
-        if (user) {
+        if (isUserAuthenticated) {
             return (
                 <TextContent>
                     <p>This sample ReactJS-based web app shows the art of the possible in using AWS HealthScribe.</p>
@@ -42,16 +42,25 @@ function Welcome() {
                             <li>Structured medical terms</li>
                         </ul>
                         <li>
-                            Link the above medical terms to concepts in RxNorm, ICD-10-CM, and SNOMED CT using{' '}
+                            Integrate HealthScribe output with{' '}
                             <Link external href="https://aws.amazon.com/comprehend/medical/">
                                 Amazon Comprehend Medical
                             </Link>
-                            .
+                            , allowing you to:
+                            <ul>
+                                <li>
+                                    Infer medical ontologies (RxNorm, ICD-10-CM, and SNOMED CT) from the HealthScribe
+                                    trancript
+                                </li>
+                                <li>
+                                    Detect medical terminologies and infer medical ontologies from the HealthScribe
+                                    insights output
+                                </li>
+                            </ul>
                         </li>
                         <li>
-                            <Link onFollow={() => navigate('/new')}>
-                                Submit your own audio file to AWS HealthScribe.
-                            </Link>
+                            <Link onFollow={() => navigate('/new')}>Submit or record your own audio file</Link> to AWS
+                            HealthScribe.
                         </li>
                         <li>
                             <Link onFollow={() => navigate('/generate')}>Generate a multi-speaker audio file</Link>{' '}

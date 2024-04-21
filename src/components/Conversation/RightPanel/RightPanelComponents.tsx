@@ -9,18 +9,22 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 
 import { useAppSettingsContext } from '@/store/appSettings';
 
-import { EnableComprehendMedicalPopover } from '../Common/ComprehendMedical';
+import { ComprehendMedicalNereCost, EnableComprehendMedicalPopover } from '../Common/ComprehendMedical';
 import styles from './SummarizedConcepts.module.css';
 
 type RightPanelActionsProps = {
     hasInsightSections: boolean;
+    dataExtracted: boolean;
     extractingData: boolean;
+    clinicalDocumentNereUnits: 0 | { [key: string]: number };
     setRightPanelSettingsOpen: React.Dispatch<React.SetStateAction<boolean>>;
     handleExtractHealthData: () => void;
 };
 export function RightPanelActions({
     hasInsightSections,
+    dataExtracted,
     extractingData,
+    clinicalDocumentNereUnits,
     setRightPanelSettingsOpen,
     handleExtractHealthData,
 }: RightPanelActionsProps) {
@@ -35,13 +39,14 @@ export function RightPanelActions({
         <SpaceBetween size={'xs'} alignItems="center" direction={'horizontal'}>
             <Button iconName="settings" variant="icon" onClick={() => setRightPanelSettingsOpen(true)} />
             <Button
-                disabled={!extractHealthDataEnabled}
+                disabled={!extractHealthDataEnabled || dataExtracted}
                 loading={extractingData}
                 onClick={() => handleExtractHealthData()}
             >
                 Extract Health Data
             </Button>
             <EnableComprehendMedicalPopover />
+            <ComprehendMedicalNereCost clinicalDocumentNereUnits={clinicalDocumentNereUnits} />
         </SpaceBetween>
     );
 }
