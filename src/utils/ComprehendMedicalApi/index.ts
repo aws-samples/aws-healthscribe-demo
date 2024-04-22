@@ -1,5 +1,6 @@
 import {
     ComprehendMedicalClient,
+    DetectEntitiesV2Command,
     InferICD10CMCommand,
     InferRxNormCommand,
     InferSNOMEDCTCommand,
@@ -13,6 +14,19 @@ async function getComprehendMedicalClient() {
         region: getConfigRegion(),
         credentials: await getCredentials(),
     });
+}
+
+/**
+ * @description Detect medical entities from Comprehend Medical using DetectEntitiesV2
+ * @param {string} text
+ */
+export async function detectEntitiesFromComprehendMedical(text: string) {
+    const cmClient = await getComprehendMedicalClient();
+    const cmInput = {
+        Text: text,
+    };
+    const cmCmd = new DetectEntitiesV2Command(cmInput);
+    return await cmClient.send(cmCmd);
 }
 
 /**

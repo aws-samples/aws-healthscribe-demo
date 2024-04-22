@@ -3,6 +3,7 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Progress, Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { getCurrentUser } from 'aws-amplify/auth';
 import tk from 'timekeeper';
 
 import { getAmplifyRegion, getCredentials } from '@/utils/Sdk';
@@ -94,12 +95,15 @@ export async function multipartUpload({
     Bucket,
     Key,
     Body,
-    ContentType = 'audio/mpeg',
+    ContentType = 'audio/wav',
     callbackFn,
 }: MultipartUploadProps) {
+    const { username, signInDetails } = await getCurrentUser();
+
     const params = { Bucket: Bucket, Key: Key, Body: Body, ContentType: ContentType };
 
     const s3Client = await getS3Client();
+
     try {
         const s3Upload = new Upload({
             client: s3Client,
@@ -107,6 +111,16 @@ export async function multipartUpload({
             queueSize: 4, // (optional) concurrency
             partSize: 1024 * 1024 * 5, // (optional) size of each part, in bytes, at least 5MB
             leavePartsOnError: false, // (optional) manually handle dropped parts
+            tags: [
+                {
+                    Key: 'uploadUsername',
+                    Value: username || 'error: username not found',
+                },
+                {
+                    Key: 'uploadLoginId',
+                    Value: signInDetails?.loginId || 'error: loginId not found',
+                },
+            ],
         });
 
         s3Upload.on('httpUploadProgress', (progress) => {

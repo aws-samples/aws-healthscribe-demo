@@ -4,9 +4,9 @@ import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 
 import WaveSurfer from 'wavesurfer.js';
 
-import { ITranscript } from '@/types/HealthScribe';
+import { IClinicalInsights, ITranscript } from '@/types/HealthScribe';
 
-import { WordPopoverMemo } from './WordPopover';
+import { WordPopoverTranscript } from './WordPopover';
 
 interface TranscriptSegmentProps {
     script: ITranscript;
@@ -68,7 +68,7 @@ export const TranscriptSegment = memo(function TranscriptSegment({
                 // highlight the word as a clinical entity if word.ClinicalEntity and word.Type exist
                 const isClinicalEntity = !!word.ClinicalEntity && !!word.Type;
                 return (
-                    <WordPopoverMemo
+                    <WordPopoverTranscript
                         key={i}
                         isPunctuation={isPunctuation}
                         highlightWord={highlightWord}
@@ -77,7 +77,7 @@ export const TranscriptSegment = memo(function TranscriptSegment({
                         wordBeginAudioTime={word.BeginAudioTime}
                         audioDuration={audioDuration}
                         word={word.Alternatives[0]}
-                        wordClinicalEntity={word.ClinicalEntity}
+                        wordClinicalEntity={word.ClinicalEntity as IClinicalInsights}
                         audioReady={audioReady}
                         wavesurfer={wavesurfer}
                     />

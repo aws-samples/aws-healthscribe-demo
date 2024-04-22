@@ -1,6 +1,6 @@
-import { IAuraClinicalDocOutputSection, IEvidence } from '@/types/HealthScribe';
-
-import { SECTION_ORDER } from './sectionOrder';
+import { ExtractedHealthData, SegmentExtractedData, SummarySectionEntityMapping } from '@/types/ComprehendMedical';
+import { IAuraClinicalDocOutputSection } from '@/types/HealthScribe';
+import { flattenAndUnique } from '@/utils/array';
 
 /**
  * Remove leading dashes and trims the string
@@ -11,40 +11,74 @@ export function processSummarizedSegment(summarizedSegment: string): string {
 }
 
 /**
- * The PLAN section contains a header in SummarizedSegment, separated by a newline character
- * This helper function returns an object with the header as a key in the Summary object,
- * Instead of an array that is normally returned
+ * Merge HealthScribe output with Comprehend Medical output
+ * @param sections - HealthScribe output sections
+ * @param sectionsWithEntities - Comprehend Medical output sections
+ * @returns SummarySectionEntityMapping[]
  */
-export function processSections(sections: IAuraClinicalDocOutputSection[]) {
-    return sections
-        .map((s) => {
-            if (s.SectionName === 'PLAN') {
-                let currentPlanHeader: string = 'null';
-                const updatedSummary: { [header: string]: IEvidence[] } = {};
-                // iterate over each evidence segement. if there is a string with multiple line breaks, then the
-                // string before the first line break is the section header
-                for (const evidenceSegment of s.Summary) {
-                    const summarizedSegmentObjects = evidenceSegment.SummarizedSegment.trim().split('\n');
-                    if (summarizedSegmentObjects.length > 1) {
-                        currentPlanHeader = summarizedSegmentObjects.shift() as string;
-                        updatedSummary[currentPlanHeader] = [];
-                        updatedSummary[currentPlanHeader].push({
-                            EvidenceLinks: evidenceSegment.EvidenceLinks,
-                            SummarizedSegment: summarizedSegmentObjects.join(''),
-                        });
-                    } else {
-                        if (!Object.keys(updatedSummary).includes(currentPlanHeader))
-                            updatedSummary[currentPlanHeader] = [];
-                        updatedSummary[currentPlanHeader].push(evidenceSegment);
+export function mergeHealthScribeOutputWithComprehendMedicalOutput(
+    sections: IAuraClinicalDocOutputSection[],
+    sectionsWithEntities: ExtractedHealthData[]
+): SummarySectionEntityMapping[] {
+    if (sections.length === 0 || sectionsWithEntities.length === 0) return [];
+
+    const buildSectionsWithExtractedData: SummarySectionEntityMapping[] = [];
+
+    sections.forEach((section) => {
+        const sectionName = section.SectionName;
+        const sectionWithEntities = sectionsWithEntities.find((s) => s.SectionName === sectionName);
+
+        const currentSectionExtractedData: SegmentExtractedData[] = [];
+        section.Summary.forEach((summary, i) => {
+            const segmentExtractedData: SegmentExtractedData = { words: [] };
+            const summarizedSegment = processSummarizedSegment(summary.SummarizedSegment);
+            const summarizedSegmentSplit = summarizedSegment.split(' ');
+            if (typeof sectionWithEntities === 'undefined') return;
+            const segmentEvidence = sectionWithEntities?.ExtractedEntities?.[i]?.Entities || [];
+            segmentExtractedData.words = summarizedSegmentSplit.map((w) => {
+                return { word: w, linkedId: [] };
+            });
+            segmentExtractedData.extractedData = segmentEvidence;
+
+            // offset character map. key: character index, value: array of extractedData ids
+            const offsetIdMap = new Map();
+            segmentExtractedData.extractedData.forEach(({ BeginOffset, EndOffset, Id }) => {
+                if (typeof BeginOffset === 'number' && typeof EndOffset === 'number') {
+                    for (let i = BeginOffset; i <= EndOffset; i++) {
+                        if (!offsetIdMap.has(i)) {
+                            offsetIdMap.set(i, []);
+                        }
+                        offsetIdMap.get(i).push(Id);
                     }
                 }
-                return {
-                    SectionName: 'PLAN',
-                    Summary: updatedSummary,
-                };
-            } else {
-                return s;
+            });
+
+            // iterate over each word by character. if the character appears in the offset map,
+            // find the unique extracted data ids and append it to the word object
+            let charCount = 0;
+            let charCurrent = 0;
+            for (let wordIndex = 0; wordIndex < summarizedSegmentSplit.length; wordIndex++) {
+                const word = summarizedSegmentSplit[wordIndex];
+                const wordLength = word.length;
+                charCount += wordLength + 1;
+                const wordDataIds = [];
+                // iterate from the current character to the current character + word length + 1 (space)
+                while (charCurrent < charCount) {
+                    wordDataIds.push(offsetIdMap.get(charCurrent) || []);
+                    charCurrent++;
+                }
+                segmentExtractedData.words[wordIndex].linkedId = flattenAndUnique(wordDataIds);
+
+                // break out of the loop if there's no more extracted health data
+                if (charCount >= Math.max(...offsetIdMap.keys())) break;
             }
-        })
-        .sort((a, b) => SECTION_ORDER.indexOf(a.SectionName) - SECTION_ORDER.indexOf(b.SectionName) || 1);
+
+            currentSectionExtractedData.push(segmentExtractedData);
+        });
+        buildSectionsWithExtractedData.push({
+            SectionName: sectionName,
+            Summary: currentSectionExtractedData,
+        });
+    });
+    return buildSectionsWithExtractedData;
 }

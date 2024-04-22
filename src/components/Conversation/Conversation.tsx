@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 
 import { useParams } from 'react-router-dom';
 
@@ -9,6 +9,7 @@ import Grid from '@cloudscape-design/components/grid';
 
 import { MedicalScribeJob } from '@aws-sdk/client-transcribe';
 
+import ModalLoader from '@/components/SuspenseLoader/ModalLoader';
 import { useAudio } from '@/hooks/useAudio';
 import { useNotificationsContext } from '@/store/notifications';
 import { IAuraClinicalDocOutput, IAuraTranscriptOutput } from '@/types/HealthScribe';
@@ -18,7 +19,8 @@ import { getObject, getS3Object } from '@/utils/S3Api';
 import LeftPanel from './LeftPanel';
 import RightPanel from './RightPanel';
 import TopPanel from './TopPanel';
-import ViewResults from './ViewResults';
+
+const ViewOutput = lazy(() => import('./ViewOutput'));
 
 export default function Conversation() {
     const { conversationName } = useParams();
@@ -26,7 +28,7 @@ export default function Conversation() {
 
     const [jobLoading, setJobLoading] = useState(true); // Is getHealthScribeJob in progress
     const [jobDetails, setJobDetails] = useState<MedicalScribeJob | null>(null); // HealthScribe job details
-    const [viewResultsModal, setViewResultsModal] = useState<boolean>(false); // Is view results modal open
+    const [showOutputModal, setShowOutputModal] = useState<boolean>(false); // Is view results modal open
 
     const [clinicalDocument, setClinicalDocument] = useState<IAuraClinicalDocOutput | null>(null);
     const [transcriptFile, setTranscriptFile] = useState<IAuraTranscriptOutput | null>(null);
@@ -85,12 +87,15 @@ export default function Conversation() {
 
     return (
         <ContentLayout>
-            <ViewResults
-                visible={viewResultsModal}
-                setVisible={setViewResultsModal}
-                transcriptString={JSON.stringify(transcriptFile || 'Loading...', null, 2)}
-                clinicalDocumentString={JSON.stringify(clinicalDocument || 'Loading...', null, 2)}
-            />
+            {showOutputModal && (
+                <Suspense fallback={<ModalLoader />}>
+                    <ViewOutput
+                        setVisible={setShowOutputModal}
+                        transcriptString={JSON.stringify(transcriptFile || 'Loading...', null, 2)}
+                        clinicalDocumentString={JSON.stringify(clinicalDocument || 'Loading...', null, 2)}
+                    />
+                </Suspense>
+            )}
             <Grid
                 gridDefinition={[
                     { colspan: { default: 12 } },
@@ -107,7 +112,7 @@ export default function Conversation() {
                     setSmallTalkCheck={setSmallTalkCheck}
                     setAudioTime={setAudioTime}
                     setAudioReady={setAudioReady}
-                    setViewResultsModal={setViewResultsModal}
+                    setShowOutputModal={setShowOutputModal}
                 />
                 <LeftPanel
                     jobLoading={jobLoading}

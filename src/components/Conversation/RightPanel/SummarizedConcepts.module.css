@@ -1,8 +1,23 @@
 .summaryList {
-    margin-top: 0;
-    margin-bottom: 0;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    padding-left: 15px;
+    list-style-position: outside;
+}
+
+.summaryListItem {
     padding-top: 2px;
     padding-bottom: 5px;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+.summaryListItemIndent {
+    margin-left: 10px;
+}
+
+.summaryListItemSubHeader {
+    margin-left: -15px;
 }
 
 .summaryListWithSectionHeader {
@@ -10,7 +25,28 @@
 }
 
 .summarizedSegment {
+    display: inline;
     cursor: pointer;
     line-height: normal;
     font-weight: 400;
+}
+
+.extractedHealthDataWord {
+    display: inline;
+}
+
+.sliderContainer {
+    padding-top: 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.slider {
+    appearance: none;
+    width: 90%;
+    height: 8px;
+    border-radius: 70px;
+    border: none;
+    margin-right: 10px;
 }
