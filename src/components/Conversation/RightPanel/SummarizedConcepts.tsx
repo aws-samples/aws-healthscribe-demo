@@ -50,6 +50,13 @@ export default function SummarizedConcepts({
         [sections, extractedHealthData]
     );
 
+    /**
+     * Handles the click event on a summarized segment in the UI.
+     *
+     * @param SummarizedSegment - The text of the summarized segment that was clicked.
+     * @param EvidenceLinks - An array of objects containing the SegmentId for each evidence link associated with the summarized segment.
+     * @returns void
+     */
     function handleSegmentClick(SummarizedSegment: string, EvidenceLinks: { SegmentId: string }[]) {
         let currentIdLocal = currentId;
         if (currentSegment !== SummarizedSegment) {
@@ -89,31 +96,33 @@ export default function SummarizedConcepts({
         }
     }
 
+    const sortedSections = useMemo(() => {
+        return sections.sort(
+            (a, b) => SECTION_ORDER.indexOf(a.SectionName) - SECTION_ORDER.indexOf(b.SectionName) || 1
+        );
+    }, [sections]);
+
     return (
         <>
-            {sections
-                .sort((a, b) => SECTION_ORDER.indexOf(a.SectionName) - SECTION_ORDER.indexOf(b.SectionName) || 1)
-                .map(({ SectionName, Summary }, i) => {
-                    // Match this section name to the Comprehend Medical extracted data. Returns undefined if the section doesn't exist
-                    const sectionExtractedHealthData = sectionsWithExtractedData.find(
-                        (s) => s.SectionName === SectionName
-                    );
-                    return (
-                        <div key={`insightsSection_${i}`}>
-                            <TextContent>
-                                <h3>{toTitleCase(SectionName.replace(/_/g, ' '))}</h3>
-                            </TextContent>
-                            <SummaryListDefault
-                                sectionName={SectionName}
-                                summary={Summary}
-                                summaryExtractedHealthData={sectionExtractedHealthData?.Summary}
-                                acceptableConfidence={acceptableConfidence}
-                                currentSegment={currentSegment}
-                                handleSegmentClick={handleSegmentClick}
-                            />
-                        </div>
-                    );
-                })}
+            {sortedSections.map(({ SectionName, Summary }, i) => {
+                // Match this section name to the Comprehend Medical extracted data. Returns undefined if the section doesn't exist
+                const sectionExtractedHealthData = sectionsWithExtractedData.find((s) => s.SectionName === SectionName);
+                return (
+                    <div key={`insightsSection_${i}`}>
+                        <TextContent>
+                            <h3>{toTitleCase(SectionName.replace(/_/g, ' '))}</h3>
+                        </TextContent>
+                        <SummaryListDefault
+                            sectionName={SectionName}
+                            summary={Summary}
+                            summaryExtractedHealthData={sectionExtractedHealthData?.Summary}
+                            acceptableConfidence={acceptableConfidence}
+                            currentSegment={currentSegment}
+                            handleSegmentClick={handleSegmentClick}
+                        />
+                    </div>
+                );
+            })}
         </>
     );
 }
