@@ -9,8 +9,11 @@ import StatusIndicator from '@cloudscape-design/components/status-indicator';
 
 import { MedicalScribeJobSummary } from '@aws-sdk/client-transcribe';
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 
 import toTitleCase from '@/utils/toTitleCase';
+
+dayjs.extend(duration);
 
 function JobName(healthScribeJob: MedicalScribeJobSummary) {
     const navigate = useNavigate();
@@ -86,9 +89,9 @@ export const columnDefs = [
         id: 'Duration',
         header: 'Duration',
         cell: (e: MedicalScribeJobSummary) =>
-            Number.isNaN(e.CompletionTime!.getDate() - e.CreationTime!.getDate())
-                ? '-'
-                : Math.ceil(e.CompletionTime!.getDate() - e.CreationTime!.getDate()) || '-',
+            typeof e.CompletionTime?.getTime === 'function' && typeof e.StartTime?.getTime === 'function'
+                ? dayjs.duration(e.CompletionTime!.getTime() - e.CreationTime!.getTime()).format('mm:ss')
+                : '-',
         sortingField: 'Duration',
     },
     {
