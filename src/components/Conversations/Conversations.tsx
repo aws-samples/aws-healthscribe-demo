@@ -1,22 +1,27 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useCollection } from '@cloudscape-design/collection-hooks';
 import Button from '@cloudscape-design/components/button';
+import { CollectionPreferencesProps } from '@cloudscape-design/components/collection-preferences';
+import ContentLayout from '@cloudscape-design/components/content-layout';
+import Header from '@cloudscape-design/components/header';
 import Pagination from '@cloudscape-design/components/pagination';
 import Table from '@cloudscape-design/components/table';
 
 import { MedicalScribeJobSummary } from '@aws-sdk/client-transcribe';
 
+import { ConversationsFilter } from '@/components/Conversations/ConversationsFilter';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useNotificationsContext } from '@/store/notifications';
 import { ListHealthScribeJobsProps, listHealthScribeJobs } from '@/utils/HealthScribeApi';
 
-import { TableHeader, TablePreferences } from './ConversationsTableComponents';
+import { ConversationsHeaderActions } from './ConversationsHeaderActions';
 import TableEmptyState from './TableEmptyState';
-import { columnDefs } from './tableColumnDefs';
-import { DEFAULT_PREFERENCES, TablePreferencesDef } from './tablePrefs';
+import { TablePreferences } from './TablePreferences';
+import { columnDefs } from './conversationsColumnDefs';
+import { DEFAULT_PREFERENCES } from './conversationsPrefs';
 
 type MoreHealthScribeJobs = {
     searchFilter?: ListHealthScribeJobsProps;
@@ -25,14 +30,19 @@ type MoreHealthScribeJobs = {
 
 export default function Conversations() {
     const { addFlashMessage } = useNotificationsContext();
+
     const [healthScribeJobs, setHealthScribeJobs] = useState<MedicalScribeJobSummary[]>([]); // HealthScribe jobs from API
     const [moreHealthScribeJobs, setMoreHealthScribeJobs] = useState<MoreHealthScribeJobs>({}); // More HealthScribe jobs from API (NextToken returned)
     const [selectedHealthScribeJob, setSelectedHealthScribeJob] = useState<MedicalScribeJobSummary[] | []>([]); // Selected HealthScribe job
+
     const [tableLoading, setTableLoading] = useState(false); // Loading state for table
-    const [preferences, setPreferences] = useLocalStorage<TablePreferencesDef>(
-        'Conversation-Table-Preferences',
+
+    const [preferences, setPreferences] = useLocalStorage<CollectionPreferencesProps.Preferences>(
+        'Conversations-Table-Preferences',
         DEFAULT_PREFERENCES
     ); // Conversation table preferences
+
+    const [searchParams, setSearchParams] = useState<ListHealthScribeJobsProps>({});
 
     // Header counter for the number of HealthScribe jobs
     const headerCounterText = `(${healthScribeJobs.length}${Object.keys(moreHealthScribeJobs).length > 0 ? '+' : ''})`;
@@ -94,6 +104,11 @@ export default function Conversations() {
         }
     }, [moreHealthScribeJobs]);
 
+    // Refresh healthscribe jobs with search params
+    async function refreshTable() {
+        await listHealthScribeJobsWrapper(searchParams);
+    }
+
     // Table collection
     const { items, actions, collectionProps, paginationProps } = useCollection(healthScribeJobs, {
         filtering: {
@@ -111,46 +126,72 @@ export default function Conversations() {
         selection: {},
     });
 
+    // List conversations initially
+    useEffect(() => {
+        void refreshTable();
+    }, []);
+
     return (
-        <Table
-            {...collectionProps}
-            columnDefinitions={columnDefs}
+        <ContentLayout
+            headerVariant={'high-contrast'}
             header={
-                <TableHeader
-                    selectedHealthScribeJob={selectedHealthScribeJob}
-                    headerCounterText={headerCounterText}
-                    listHealthScribeJobs={listHealthScribeJobsWrapper}
-                />
+                <Header
+                    variant="awsui-h1-sticky"
+                    description="View existing AWS HealthScribe conversations"
+                    counter={headerCounterText}
+                    actions={
+                        <ConversationsHeaderActions
+                            selectedHealthScribeJob={selectedHealthScribeJob}
+                            refreshTable={refreshTable}
+                        />
+                    }
+                >
+                    Conversations
+                </Header>
             }
-            items={items}
-            loading={tableLoading}
-            loadingText="Loading HealthScribe jobs"
-            onSelectionChange={({ detail }) => setSelectedHealthScribeJob(detail.selectedItems)}
-            pagination={
-                <Pagination
-                    {...openEndPaginationProp}
-                    {...paginationProps}
-                    onChange={(event) => {
-                        if (event.detail?.currentPageIndex > paginationProps.pagesCount) {
-                            listHealthScribeJobsWrapper({
-                                ...moreHealthScribeJobs.searchFilter,
-                                NextToken: moreHealthScribeJobs.NextToken,
-                            }).catch(console.error);
-                        }
-                        paginationProps.onChange(event);
-                    }}
-                />
-            }
-            preferences={<TablePreferences preferences={preferences} setPreferences={setPreferences} />}
-            resizableColumns={true}
-            selectedItems={selectedHealthScribeJob}
-            selectionType="single"
-            stickyHeader={true}
-            stripedRows={preferences.stripedRows}
-            trackBy="MedicalScribeJobName"
-            variant="full-page"
-            visibleColumns={preferences.visibleContent}
-            wrapLines={preferences.wrapLines}
-        />
+        >
+            <Table
+                {...collectionProps}
+                columnDefinitions={columnDefs}
+                columnDisplay={preferences.contentDisplay}
+                contentDensity={preferences.contentDensity}
+                filter={
+                    <ConversationsFilter
+                        listHealthScribeJobs={listHealthScribeJobsWrapper}
+                        searchParams={searchParams}
+                        setSearchParams={setSearchParams}
+                    />
+                }
+                items={items}
+                loading={tableLoading}
+                loadingText="Loading HealthScribe jobs"
+                onSelectionChange={({ detail }) => setSelectedHealthScribeJob(detail.selectedItems)}
+                pagination={
+                    <Pagination
+                        {...openEndPaginationProp}
+                        {...paginationProps}
+                        onChange={(event) => {
+                            if (event.detail?.currentPageIndex > paginationProps.pagesCount) {
+                                listHealthScribeJobsWrapper({
+                                    ...moreHealthScribeJobs.searchFilter,
+                                    NextToken: moreHealthScribeJobs.NextToken,
+                                }).catch(console.error);
+                            }
+                            paginationProps.onChange(event);
+                        }}
+                    />
+                }
+                preferences={<TablePreferences preferences={preferences} setPreferences={setPreferences} />}
+                resizableColumns={true}
+                selectedItems={selectedHealthScribeJob}
+                selectionType="single"
+                stickyColumns={preferences.stickyColumns}
+                stickyHeader={true}
+                stripedRows={preferences.stripedRows}
+                trackBy="MedicalScribeJobName"
+                variant="container"
+                wrapLines={preferences.wrapLines}
+            />
+        </ContentLayout>
     );
 }

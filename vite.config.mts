@@ -7,6 +7,7 @@ import { optimizeCssModules } from 'vite-plugin-optimize-css-modules';
 export default defineConfig({
     build: {
         outDir: 'build',
+        target: 'ES2022',
         rollupOptions: {
             external: ['@cloudscape-design/{}-styles/index.css', '@cloudscape-design/{}-styles'],
         },

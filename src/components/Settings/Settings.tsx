@@ -45,6 +45,7 @@ export default function Settings() {
 
     return (
         <ContentLayout
+            headerVariant={'high-contrast'}
             header={
                 <Header variant="h2" description="Settings are saved locally to the browser">
                     Settings

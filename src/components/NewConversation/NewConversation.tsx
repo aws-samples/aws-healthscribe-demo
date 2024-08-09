@@ -223,6 +223,7 @@ export default function NewConversation() {
 
     return (
         <ContentLayout
+            headerVariant={'high-contrast'}
             header={
                 <Header
                     description="Upload your audio file to be processed by AWS HealthScribe"

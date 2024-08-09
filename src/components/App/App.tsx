@@ -54,13 +54,13 @@ export default function App() {
                 <TopNav />
             </div>
             <AppLayout
-                disableContentPaddings={true}
-                navigation={<SideNav activeHref="/" />}
                 breadcrumbs={<Breadcrumbs />}
-                toolsHide={true}
-                notifications={<Flashbar items={flashbarItems} />}
-                content={<div style={{ padding: '0px 20px 0px 20px' }}>{content}</div>}
+                content={content}
                 headerSelector="#appTopNav"
+                headerVariant="high-contrast"
+                navigation={<SideNav />}
+                notifications={<Flashbar items={flashbarItems} />}
+                toolsHide={true}
             />
         </>
     );

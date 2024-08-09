@@ -92,6 +92,7 @@ export default function AudioLineComponent({
                             iconName={isPlaying ? 'close' : 'caret-right-filled'}
                             variant="icon"
                             loading={isProcessing}
+                            disabled={!audioLine.text || !audioLine.speaker}
                             onClick={() => (isPlaying ? audioBufferNode?.stop() : playOneLine(audioLine))}
                         />
                         <Button
