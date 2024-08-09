@@ -2,14 +2,9 @@
 // SPDX-License-Identifier: MIT-0
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
-
 import Box from '@cloudscape-design/components/box';
-import Button from '@cloudscape-design/components/button';
-import ButtonDropdown from '@cloudscape-design/components/button-dropdown';
 import Checkbox from '@cloudscape-design/components/checkbox';
 import Container from '@cloudscape-design/components/container';
-import Header from '@cloudscape-design/components/header';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 
@@ -36,7 +31,6 @@ type TopPanelProps = {
     setSmallTalkCheck: React.Dispatch<React.SetStateAction<boolean>>;
     setAudioTime: React.Dispatch<React.SetStateAction<number>>;
     setAudioReady: React.Dispatch<React.SetStateAction<boolean>>;
-    setShowOutputModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 export default function TopPanel({
     jobLoading,
@@ -47,9 +41,7 @@ export default function TopPanel({
     setSmallTalkCheck,
     setAudioTime,
     setAudioReady,
-    setShowOutputModal,
 }: TopPanelProps) {
-    const navigate = useNavigate();
     const { addFlashMessage } = useNotificationsContext();
     const [wavesurferRegions, setWavesurferRegions] = useState<RegionsPlugin>();
     const [audioLoading, setAudioLoading] = useState<boolean>(true); // is audio file loading
@@ -80,14 +72,18 @@ export default function TopPanel({
         }
     }, [transcriptFile]);
 
+    function checkAudioUrl() {
+        if (!jobDetails?.Media?.MediaFileUri) {
+            throw Error('Unable to find HealthScribe audio URL');
+        }
+    }
+
     // Download audio from S3 and initialize waveform
     useEffect(() => {
         async function getAudio() {
             try {
-                if (!jobDetails?.Media?.MediaFileUri) {
-                    throw Error('Unable to find HealthScribe audio URL');
-                }
-                const s3Object = getS3Object(jobDetails?.Media?.MediaFileUri);
+                checkAudioUrl();
+                const s3Object = getS3Object(jobDetails?.Media?.MediaFileUri as string);
                 const s3PresignedUrl = await getPresignedUrl(s3Object);
 
                 // Initialize Wavesurfer with presigned S3 URL
@@ -197,49 +193,6 @@ export default function TopPanel({
         });
     }, [wavesurfer, smallTalkCheck, smallTalkList, silenceChecked, silencePeaks]);
 
-    function AudioHeader() {
-        async function openUrl(detail: { id: string }) {
-            let jobUrl: string = '';
-            if (detail.id === 'audio') {
-                jobUrl = jobDetails?.Media?.MediaFileUri as string;
-            } else if (detail.id === 'transcript') {
-                jobUrl = jobDetails?.MedicalScribeOutput?.TranscriptFileUri as string;
-            } else if (detail.id === 'summary') {
-                jobUrl = jobDetails?.MedicalScribeOutput?.ClinicalDocumentUri as string;
-            }
-            if (jobUrl) {
-                const presignedUrl = await getPresignedUrl(getS3Object(jobUrl));
-                window.open(presignedUrl, '_blank');
-            }
-        }
-
-        return (
-            <Header
-                variant="h3"
-                actions={
-                    <SpaceBetween direction="horizontal" size="xs">
-                        <ButtonDropdown
-                            items={[
-                                { text: 'Audio', id: 'audio' },
-                                { text: 'Transcript', id: 'transcript' },
-                                { text: 'Summary', id: 'summary' },
-                            ]}
-                            onItemClick={({ detail }) => openUrl(detail)}
-                        >
-                            Download
-                        </ButtonDropdown>
-                        <Button onClick={() => setShowOutputModal(true)}>View HealthScribe Output</Button>
-                        <Button variant="primary" onClick={() => navigate('/conversations')}>
-                            Exit Conversation
-                        </Button>
-                    </SpaceBetween>
-                }
-            >
-                {jobDetails?.MedicalScribeJobName}
-            </Header>
-        );
-    }
-
     function Loading() {
         return (
             <div
@@ -296,7 +249,7 @@ export default function TopPanel({
                 playBackSpeed={playBackSpeed}
                 setPlayBackSpeed={setPlayBackSpeed}
             />
-            <Container header={<AudioHeader />}>
+            <Container>
                 {(jobLoading || audioLoading) && <Loading />}
                 <SegmentControls />
                 <div style={{ height: audioLoading ? 0 : '' }}>

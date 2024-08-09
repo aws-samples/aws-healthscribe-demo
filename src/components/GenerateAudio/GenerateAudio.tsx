@@ -212,6 +212,7 @@ export default function GenerateAudio() {
 
     return (
         <ContentLayout
+            headerVariant={'high-contrast'}
             header={
                 <Header
                     variant="h1"
@@ -236,10 +237,18 @@ export default function GenerateAudio() {
                             >
                                 Load Template
                             </ButtonDropdown>
-                            <Button onClick={() => setAudioLines(DEFAULT_AUDIOLINES)} disabled={isDownloading}>
+                            <Button
+                                onClick={() => setAudioLines(DEFAULT_AUDIOLINES)}
+                                disabled={isDownloading || audioLines === DEFAULT_AUDIOLINES}
+                            >
                                 Reset
                             </Button>
-                            <Button onClick={() => generateAudio()} variant="primary" loading={isDownloading}>
+                            <Button
+                                onClick={() => generateAudio()}
+                                variant="primary"
+                                loading={isDownloading}
+                                disabled={audioLines === DEFAULT_AUDIOLINES}
+                            >
                                 Download
                             </Button>
                         </SpaceBetween>

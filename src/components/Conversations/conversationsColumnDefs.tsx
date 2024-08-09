@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: MIT-0
 import React from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import Link from '@cloudscape-design/components/link';
 import StatusIndicator from '@cloudscape-design/components/status-indicator';
+import TextContent from '@cloudscape-design/components/text-content';
 
 import { MedicalScribeJobSummary } from '@aws-sdk/client-transcribe';
 import dayjs from 'dayjs';
@@ -16,13 +16,13 @@ import toTitleCase from '@/utils/toTitleCase';
 dayjs.extend(duration);
 
 function JobName(healthScribeJob: MedicalScribeJobSummary) {
-    const navigate = useNavigate();
-
     if (healthScribeJob.MedicalScribeJobStatus === 'COMPLETED') {
         return (
-            <Link onFollow={() => navigate(`/conversation/${healthScribeJob.MedicalScribeJobName}`)}>
-                {healthScribeJob.MedicalScribeJobName}
-            </Link>
+            <TextContent>
+                <Link to={`/conversation/${healthScribeJob.MedicalScribeJobName}`}>
+                    {healthScribeJob.MedicalScribeJobName}
+                </Link>
+            </TextContent>
         );
     } else {
         return healthScribeJob.MedicalScribeJobName;

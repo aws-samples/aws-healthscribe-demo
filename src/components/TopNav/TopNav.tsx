@@ -6,13 +6,12 @@ import TopNavigation from '@cloudscape-design/components/top-navigation';
 import { TopNavigationProps } from '@cloudscape-design/components/top-navigation';
 import { Density, Mode, applyDensity, applyMode } from '@cloudscape-design/global-styles';
 
+import Auth from '@/components/Auth';
 import ModalLoader from '@/components/SuspenseLoader/ModalLoader';
 import { useAppThemeContext } from '@/store/appTheme';
 import { useAuthContext } from '@/store/auth';
 
 import './TopNav.css';
-
-const Auth = lazy(() => import('@/components/Auth'));
 
 type TopNavClick = {
     detail: {

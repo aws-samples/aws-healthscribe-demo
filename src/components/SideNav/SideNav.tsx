@@ -2,16 +2,13 @@
 // SPDX-License-Identifier: MIT-0
 import React from 'react';
 
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import SideNavigation from '@cloudscape-design/components/side-navigation';
 import { SideNavigationProps } from '@cloudscape-design/components/side-navigation';
 
-type SideNavProps = {
-    activeHref: string;
-};
-
-export default function SideNav({ activeHref }: SideNavProps) {
+export default function SideNav() {
+    const location = useLocation();
     const navigate = useNavigate();
 
     const sideNavItems: SideNavigationProps.Item[] = [
@@ -60,7 +57,7 @@ export default function SideNav({ activeHref }: SideNavProps) {
 
     return (
         <SideNavigation
-            activeHref={activeHref}
+            activeHref={`/${location.pathname.split('/')[1]}`}
             header={{ text: 'AWS HealthScribe', href: '/' }}
             items={sideNavItems}
             onFollow={(e) => {
