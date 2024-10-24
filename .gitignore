@@ -52,6 +52,15 @@ amplify/mock-data
 amplify/mock-api-resources
 amplify/backend/amplify-meta.json
 amplify/backend/.temp
+amplify/backend/auth
+amplify/backend/awscloudformation
+amplify/backend/custom/addBucketLogging
+amplify/backend/function/addBucketLogging
+amplify/backend/storage/healthScribeDemoStorage
+amplify/backend/types
+amplify/backend/*.json
+amplify/backend/*.lock
+amplify/.config/*.json
 build/
 dist/
 node_modules/
