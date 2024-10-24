@@ -143,7 +143,7 @@ export default function TopNav() {
             <TopNavigation
                 identity={{
                     href: '/',
-                    title: 'Amazon Web Services',
+                    title: 'Raintree AI Scribe POC',
                 }}
                 utilities={navUtils}
             />

@@ -14,32 +14,20 @@ export default function SideNav() {
     const sideNavItems: SideNavigationProps.Item[] = [
         {
             type: 'link',
-            text: 'Conversations',
+            text: 'Appointments',
             href: '/conversations',
         },
         {
             type: 'link',
-            text: 'New Conversation',
+            text: 'New Appointment',
             href: '/new',
-        },
-        { type: 'divider' },
-        {
-            type: 'link',
-            text: 'Generate Audio',
-            href: '/generate',
-        },
-        { type: 'divider' },
-        {
-            type: 'link',
-            text: 'Settings',
-            href: '/settings',
         },
     ];
 
     return (
         <SideNavigation
             activeHref={`/${location.pathname.split('/')[1]}`}
-            header={{ text: 'AWS HealthScribe', href: '/' }}
+            header={{ text: 'Raintree AI Scribe POC', href: '/' }}
             items={sideNavItems}
             onFollow={(e) => {
                 e.preventDefault();
