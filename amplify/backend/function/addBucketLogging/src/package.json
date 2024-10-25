@@ -5,8 +5,8 @@
     "main": "index.js",
     "license": "Apache-2.0",
     "dependencies": {
-        "@aws-sdk/client-s3": "^3.627.0",
-        "axios": "^1.7.3",
-        "axios-retry": "^3.9.1"
+        "@aws-sdk/client-s3": "^3.679.0",
+        "axios": "^1.7.7",
+        "axios-retry": "^4.5.0"
     }
 }

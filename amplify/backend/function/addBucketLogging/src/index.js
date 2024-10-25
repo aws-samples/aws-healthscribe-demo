@@ -11,12 +11,12 @@ const util = require('util');
  */
 exports.handler = async (event, context) => {
     try {
+        console.log('Event', util.inspect(event, false, null, false));
+
         if (event.RequestType === 'Delete') {
             await reply.send(event, context, reply.SUCCESS, {});
             return;
         }
-
-        console.log('Event', util.inspect(event, false, null, false));
 
         const storageBucket = event.ResourceProperties.storageBucket;
         const loggingBucket = event.ResourceProperties.loggingBucket;
