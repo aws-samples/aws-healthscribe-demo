@@ -28,9 +28,17 @@ export default function ScrollingContainer({
     function handleScroll(e: Event) {
         const scrollElement = e.target as HTMLElement;
         const scrollLeftTop = scrollElement.scrollTop > 0;
-        scrollLeftTop ? setShowUpScroll(true) : setShowUpScroll(false);
+        if (scrollLeftTop) {
+            setShowUpScroll(true);
+        } else {
+            setShowUpScroll(false);
+        }
         const scrollAtBottom = scrollElement.scrollHeight - scrollElement.scrollTop === scrollElement.clientHeight;
-        scrollAtBottom ? setShowDownScroll(false) : setShowDownScroll(true);
+        if (scrollAtBottom) {
+            setShowDownScroll(false);
+        } else {
+            setShowDownScroll(true);
+        }
     }
     const debouncedHandleScroll = useDebouncedCallback(handleScroll, 300);
     useScroll(childContainerRef, debouncedHandleScroll);
