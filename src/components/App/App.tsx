@@ -33,7 +33,7 @@ export default function App() {
                 <Routes>
                     <Route index element={<Welcome />} />
                     <Route path="/debug" element={<Debug />} />
-                    <Route path="/conversations" element={<Conversations />} />
+                    <Route path="/appointments" element={<Conversations />} />
                     <Route path="/conversation/:conversationName" element={<Conversation />} />
                     <Route path="/new" element={<NewConversation />} />
                     <Route path="/generate" element={<GenerateAudio />} />

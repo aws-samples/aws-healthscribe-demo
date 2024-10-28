@@ -13,19 +13,26 @@ import duration from 'dayjs/plugin/duration';
 
 import toTitleCase from '@/utils/toTitleCase';
 
+interface MedicalSoapJobSummary extends MedicalScribeJobSummary {
+    firstName?: string;
+    lastName?: string;
+    appointmentDate?: string;
+    appointmentDuration?: string;
+}
+
 dayjs.extend(duration);
 
-function JobName(healthScribeJob: MedicalScribeJobSummary) {
+function JobAppointmentDate(healthScribeJob: MedicalSoapJobSummary) {
     if (healthScribeJob.MedicalScribeJobStatus === 'COMPLETED') {
         return (
             <TextContent>
-                <Link to={`/conversation/${healthScribeJob.MedicalScribeJobName}`}>
-                    {healthScribeJob.MedicalScribeJobName}
+                <Link to={`/appointment/${healthScribeJob.MedicalScribeJobName}`}>
+                    {healthScribeJob.appointmentDate}
                 </Link>
             </TextContent>
         );
     } else {
-        return healthScribeJob.MedicalScribeJobName;
+        return healthScribeJob.appointmentDate;
     }
 }
 
@@ -48,7 +55,7 @@ export const columnDefs = [
     {
         id: 'MedicalScribeJobName',
         header: 'Name',
-        cell: (e: MedicalScribeJobSummary) => JobName(e),
+        cell: (e: MedicalScribeJobSummary) => e.MedicalScribeJobName,
         sortingField: 'MedicalScribeJobName',
         width: 300,
     },
@@ -69,6 +76,30 @@ export const columnDefs = [
         header: 'Expires In',
         cell: (e: MedicalScribeJobSummary) =>
             e.CompletionTime ? dayjs(e.CompletionTime).add(90, 'day').diff(dayjs(), 'day') + ' days' : '-',
+        sortingField: 'CompletionTime',
+    },
+    {
+        id: 'FirstName',
+        header: 'First Name',
+        cell: (e: MedicalSoapJobSummary) => e.firstName,
+        sortingField: 'CompletionTime',
+    },
+    {
+        id: 'LastName',
+        header: 'Last Name',
+        cell: (e: MedicalSoapJobSummary) => e.lastName,
+        sortingField: 'CompletionTime',
+    },
+    {
+        id: 'AppontmentDate',
+        header: 'Appointment',
+        cell: (e: MedicalSoapJobSummary) => JobAppointmentDate(e),
+        sortingField: 'CompletionTime',
+    },
+    {
+        id: 'AppointmnetDuration',
+        header: 'Duration',
+        cell: (e: MedicalSoapJobSummary) => e.appointmentDuration,
         sortingField: 'CompletionTime',
     },
     // objects below here are not shown by default

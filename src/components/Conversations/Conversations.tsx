@@ -15,7 +15,7 @@ import { MedicalScribeJobSummary } from '@aws-sdk/client-transcribe';
 import { ConversationsFilter } from '@/components/Conversations/ConversationsFilter';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useNotificationsContext } from '@/store/notifications';
-import { ListHealthScribeJobsProps, listHealthScribeJobs } from '@/utils/HealthScribeApi';
+import { ListHealthScribeJobsProps, getHealthScribeJob, listHealthScribeJobs } from '@/utils/HealthScribeApi';
 
 import { ConversationsHeaderActions } from './ConversationsHeaderActions';
 import TableEmptyState from './TableEmptyState';
@@ -27,6 +27,13 @@ type MoreHealthScribeJobs = {
     searchFilter?: ListHealthScribeJobsProps;
     NextToken?: string;
 };
+
+interface MedicalSoapJobSummary extends MedicalScribeJobSummary {
+    firstName?: string;
+    lastName?: string;
+    appointmentDate?: string;
+    appointmentDuration?: string;
+}
 
 export default function Conversations() {
     const { addFlashMessage } = useNotificationsContext();
@@ -65,7 +72,37 @@ export default function Conversations() {
                 return;
             }
 
-            const listResults: MedicalScribeJobSummary[] = listHealthScribeJobsRsp.MedicalScribeJobSummaries;
+            let listResults: MedicalSoapJobSummary[] = listHealthScribeJobsRsp.MedicalScribeJobSummaries;
+
+            const jobPromises = listResults.map(async (job) => {
+                const healthSoapJobDetail = await getHealthScribeJob({
+                    MedicalScribeJobName: job.MedicalScribeJobName || '',
+                });
+
+                job.firstName = '';
+                job.lastName = '';
+                job.appointmentDate = '';
+                job.appointmentDuration = '';
+
+                if (healthSoapJobDetail.MedicalScribeJob && healthSoapJobDetail.MedicalScribeJob?.Tags) {
+                    const tags = healthSoapJobDetail.MedicalScribeJob.Tags;
+                    job.firstName = tags.find((t) => t.Key === 'firstName')?.Value || '';
+                    job.lastName = tags.find((t) => t.Key === 'lastName')?.Value || '';
+                    job.appointmentDate = tags.find((t) => t.Key === 'appointment')?.Value || '';
+                    job.appointmentDuration = tags.find((t) => t.Key === 'duration')?.Value || '';
+                }
+            });
+            await Promise.all(jobPromises);
+
+            // Filter listResults based on firstName and lastName
+            if (searchFilter.FirstNameOrLastNameContains) {
+                const filterString = searchFilter.FirstNameOrLastNameContains.toLowerCase();
+                listResults = listResults.filter(
+                    (job) =>
+                        (job.firstName?.toLowerCase() || '').includes(filterString) ||
+                        (job.lastName?.toLowerCase() || '').includes(filterString)
+                );
+            }
 
             // if NextToken is specified, append search results to existing results
             if (processedSearchFilter.NextToken) {
@@ -137,7 +174,7 @@ export default function Conversations() {
             header={
                 <Header
                     variant="awsui-h1-sticky"
-                    description="View existing AWS HealthScribe conversations"
+                    description="View existing appointments"
                     counter={headerCounterText}
                     actions={
                         <ConversationsHeaderActions
@@ -146,7 +183,7 @@ export default function Conversations() {
                         />
                     }
                 >
-                    Conversations
+                    Appointments
                 </Header>
             }
         >
