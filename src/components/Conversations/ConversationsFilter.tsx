@@ -46,9 +46,9 @@ export function ConversationsFilter({ listHealthScribeJobs, setSearchParams, sea
         <Form>
             <Grid gridDefinition={[{ colspan: 5 }, { colspan: 3 }, { colspan: 2 }]}>
                 <Input
-                    placeholder="Job Name"
-                    value={searchParams?.JobNameContains || ''}
-                    onChange={({ detail }) => handleInputChange('JobNameContains', detail.value)}
+                    placeholder="First Name or Last Name"
+                    value={searchParams?.FirstNameOrLastNameContains || ''}
+                    onChange={({ detail }) => handleInputChange('FirstNameOrLastNameContains', detail.value)}
                 />
                 <Select
                     selectedOption={STATUS_SELECTION.find((s) => s.value === searchParams?.Status) || null}

@@ -15,7 +15,7 @@ export default function SideNav() {
         {
             type: 'link',
             text: 'Appointments',
-            href: '/conversations',
+            href: '/appointments',
         },
         {
             type: 'link',

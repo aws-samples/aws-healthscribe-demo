@@ -52,23 +52,19 @@ export const DEFAULT_PREFERENCES: CollectionPreferencesProps.Preferences = {
     pageSize: 20,
     wrapLines: false,
     stripedRows: true,
-    visibleContent: ['MedicalScribeJobName', 'MedicalScribeJobStatus', 'CreationTime', 'ExpiresIn'],
+    visibleContent: ['FirstName', 'LastName', 'AppontmentDate', 'AppointmnetDuration', 'MedicalScribeJobStatus'],
     contentDisplay: [
         {
             id: 'MedicalScribeJobName',
-            visible: true,
-        },
-        {
-            id: 'MedicalScribeJobStatus',
-            visible: true,
+            visible: false,
         },
         {
             id: 'CreationTime',
-            visible: true,
+            visible: false,
         },
         {
             id: 'ExpiresIn',
-            visible: true,
+            visible: false,
         },
         {
             id: 'LanguageCode',
@@ -85,6 +81,26 @@ export const DEFAULT_PREFERENCES: CollectionPreferencesProps.Preferences = {
         {
             id: 'FailureReason',
             visible: false,
+        },
+        {
+            id: 'FirstName',
+            visible: true,
+        },
+        {
+            id: 'LastName',
+            visible: true,
+        },
+        {
+            id: 'AppontmentDate',
+            visible: true,
+        },
+        {
+            id: 'AppointmnetDuration',
+            visible: true,
+        },
+        {
+            id: 'MedicalScribeJobStatus',
+            visible: true,
         },
     ],
     stickyColumns: {
