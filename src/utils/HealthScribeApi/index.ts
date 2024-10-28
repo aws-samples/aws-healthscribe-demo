@@ -23,6 +23,7 @@ export type ListHealthScribeJobsProps = {
     MaxResults?: number;
     NextToken?: string;
     Status?: 'ALL' | 'QUEUED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+    FirstNameOrLastNameContains?: string;
 };
 async function listHealthScribeJobs({
     JobNameContains,

@@ -26,12 +26,12 @@ export default function Breadcrumbs() {
                 href: '/settings',
             },
         ];
-    } else if (pathName === '/conversations') {
+    } else if (pathName === '/appointments') {
         items = [
             ...baseBreadcrumb,
             {
-                text: 'Conversations',
-                href: '/conversations',
+                text: 'Appointments',
+                href: '/appointments',
             },
         ];
     } else if (pathName.startsWith('/conversation/')) {
@@ -39,12 +39,12 @@ export default function Breadcrumbs() {
         items = [
             ...baseBreadcrumb,
             {
-                text: 'Conversations',
-                href: '/conversations',
+                text: 'Appointments',
+                href: '/appointments',
             },
             {
                 text: conversationName,
-                href: `/conversations/${conversationName}`,
+                href: `/appointments/${conversationName}`,
             },
         ];
     } else if (pathName === '/new') {

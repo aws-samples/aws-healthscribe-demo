@@ -13,6 +13,13 @@ import duration from 'dayjs/plugin/duration';
 
 import toTitleCase from '@/utils/toTitleCase';
 
+interface MedicalSoapJobSummary extends MedicalScribeJobSummary {
+    firstName?: string;
+    lastName?: string;
+    appointmentDate?: string;
+    appointmentDuration?: string;
+}
+
 dayjs.extend(duration);
 
 function JobName(healthScribeJob: MedicalScribeJobSummary) {
@@ -69,6 +76,30 @@ export const columnDefs = [
         header: 'Expires In',
         cell: (e: MedicalScribeJobSummary) =>
             e.CompletionTime ? dayjs(e.CompletionTime).add(90, 'day').diff(dayjs(), 'day') + ' days' : '-',
+        sortingField: 'CompletionTime',
+    },
+    {
+        id: 'FirstName',
+        header: 'First Name',
+        cell: (e: MedicalSoapJobSummary) => e.firstName,
+        sortingField: 'CompletionTime',
+    },
+    {
+        id: 'LastName',
+        header: 'Last Name',
+        cell: (e: MedicalSoapJobSummary) => e.lastName,
+        sortingField: 'CompletionTime',
+    },
+    {
+        id: 'AppontmentDate',
+        header: 'Appointment',
+        cell: (e: MedicalSoapJobSummary) => e.appointmentDate,
+        sortingField: 'CompletionTime',
+    },
+    {
+        id: 'AppointmnetDuration',
+        header: 'Duration',
+        cell: (e: MedicalSoapJobSummary) => e.appointmentDuration,
         sortingField: 'CompletionTime',
     },
     // objects below here are not shown by default
