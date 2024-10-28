@@ -20,7 +20,7 @@ export default function WelcomeHeader() {
 
     const getStartedSelectionText = useMemo(() => {
         if (getStartedSelection === 'conversations') {
-            return 'View Conversations';
+            return 'View Appointments';
         } else if (getStartedSelection === 'newConversation') {
             return 'Create Conversation';
         } else if (getStartedSelection === 'generateAudio') {
@@ -65,12 +65,12 @@ export default function WelcomeHeader() {
                                     items={[
                                         {
                                             value: 'conversations',
-                                            label: 'Conversations',
+                                            label: 'Appointments',
                                             description: 'View available conversations',
                                         },
                                         {
                                             value: 'newConversation',
-                                            label: 'New Conversation',
+                                            label: 'New Appointment',
                                             description: 'Record or submit new audio',
                                         },
                                         {

@@ -229,7 +229,7 @@ export default function NewConversation() {
                     description="Upload your audio file to be processed by AWS HealthScribe"
                     variant="awsui-h1-sticky"
                 >
-                    New Conversation
+                    New Appointment
                 </Header>
             }
         >
