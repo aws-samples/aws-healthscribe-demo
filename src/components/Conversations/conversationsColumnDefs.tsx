@@ -22,17 +22,17 @@ interface MedicalSoapJobSummary extends MedicalScribeJobSummary {
 
 dayjs.extend(duration);
 
-function JobName(healthScribeJob: MedicalScribeJobSummary) {
+function JobAppointmentDate(healthScribeJob: MedicalSoapJobSummary) {
     if (healthScribeJob.MedicalScribeJobStatus === 'COMPLETED') {
         return (
             <TextContent>
-                <Link to={`/conversation/${healthScribeJob.MedicalScribeJobName}`}>
-                    {healthScribeJob.MedicalScribeJobName}
+                <Link to={`/appointment/${healthScribeJob.MedicalScribeJobName}`}>
+                    {healthScribeJob.appointmentDate}
                 </Link>
             </TextContent>
         );
     } else {
-        return healthScribeJob.MedicalScribeJobName;
+        return healthScribeJob.appointmentDate;
     }
 }
 
@@ -55,7 +55,7 @@ export const columnDefs = [
     {
         id: 'MedicalScribeJobName',
         header: 'Name',
-        cell: (e: MedicalScribeJobSummary) => JobName(e),
+        cell: (e: MedicalScribeJobSummary) => e.MedicalScribeJobName,
         sortingField: 'MedicalScribeJobName',
         width: 300,
     },
@@ -93,7 +93,7 @@ export const columnDefs = [
     {
         id: 'AppontmentDate',
         header: 'Appointment',
-        cell: (e: MedicalSoapJobSummary) => e.appointmentDate,
+        cell: (e: MedicalSoapJobSummary) => JobAppointmentDate(e),
         sortingField: 'CompletionTime',
     },
     {
