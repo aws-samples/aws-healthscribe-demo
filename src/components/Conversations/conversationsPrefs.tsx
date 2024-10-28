@@ -52,7 +52,6 @@ export const DEFAULT_PREFERENCES: CollectionPreferencesProps.Preferences = {
     pageSize: 20,
     wrapLines: false,
     stripedRows: true,
-    //visibleContent: ['MedicalScribeJobName', 'MedicalScribeJobStatus', 'CreationTime', 'ExpiresIn'],
     visibleContent: ['FirstName', 'LastName', 'AppontmentDate', 'AppointmnetDuration', 'MedicalScribeJobStatus'],
     contentDisplay: [
         {
