@@ -80,27 +80,16 @@ export default function Conversations() {
                 });
 
                 job.firstName = '';
-                if (healthSoapJobDetail.MedicalScribeJob && healthSoapJobDetail.MedicalScribeJob?.Tags) {
-                    job.firstName =
-                        healthSoapJobDetail.MedicalScribeJob?.Tags?.find((t) => t.Key === 'firstName')?.Value || '';
-                }
-
                 job.lastName = '';
-                if (healthSoapJobDetail.MedicalScribeJob && healthSoapJobDetail.MedicalScribeJob?.Tags) {
-                    job.lastName =
-                        healthSoapJobDetail.MedicalScribeJob?.Tags?.find((t) => t.Key === 'lastName')?.Value || '';
-                }
-
                 job.appointmentDate = '';
-                if (healthSoapJobDetail.MedicalScribeJob && healthSoapJobDetail.MedicalScribeJob?.Tags) {
-                    job.appointmentDate =
-                        healthSoapJobDetail.MedicalScribeJob?.Tags?.find((t) => t.Key === 'appointment')?.Value || '';
-                }
-
                 job.appointmentDuration = '';
+
                 if (healthSoapJobDetail.MedicalScribeJob && healthSoapJobDetail.MedicalScribeJob?.Tags) {
-                    job.appointmentDuration =
-                        healthSoapJobDetail.MedicalScribeJob?.Tags?.find((t) => t.Key === 'duration')?.Value || '';
+                    const tags = healthSoapJobDetail.MedicalScribeJob.Tags;
+                    job.firstName = tags.find((t) => t.Key === 'firstName')?.Value || '';
+                    job.lastName = tags.find((t) => t.Key === 'lastName')?.Value || '';
+                    job.appointmentDate = tags.find((t) => t.Key === 'appointment')?.Value || '';
+                    job.appointmentDuration = tags.find((t) => t.Key === 'duration')?.Value || '';
                 }
             });
             await Promise.all(jobPromises);
