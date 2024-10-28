@@ -21,24 +21,19 @@ storage using [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/).
 
 <!-- TOC -->
 
--   [AWS HealthScribe Demo](#aws-healthscribe-demo)
-    -   [Deployment](#deployment)
-        -   [Automatic Deployment](#automatic-deployment)
-        -   [Semi-Automatic Deployment via AWS CodeCommit](#semi-automatic-deployment-via-aws-codecommit)
-    -   [Security Considerations](#security-considerations)
-        -   [Disable User Sign Ups](#disable-user-sign-ups)
-        -   [Encryption At Rest and In Transit](#encryption-at-rest-and-in-transit)
-        -   [Access Logging](#access-logging)
-    -   [Usage](#usage)
-    -   [Architecture](#architecture)
-    -   [Cleanup](#cleanup)
-    -   [FAQ](#faq)
-        -   [The public sample repo has been updated. How do I update my local deployment to the latest code?](#the-public-sample-repo-has-been-updated-how-do-i-update-my-local-deployment-to-the-latest-code)
-        -   [Can I use this UI with existing AWS HealthScribe jobs?](#can-i-use-this-ui-with-existing-aws-healthscribe-jobs)
-        -   [Can I deploy this demo from a private repository?](#can-i-deploy-this-demo-from-a-private-repository)
-    -   [Security](#security)
-    -   [License](#license)
-    <!-- TOC -->
+-   [Deployment](#deployment)
+    -   [Automatic Deployment](#automatic-deployment)
+    -   [Semi-Automatic Deployment via AWS CodeCommit](#semi-automatic-deployment-via-aws-codecommit)
+-   [Security Considerations](#security-considerations)
+    -   [Disable User Sign Ups](#disable-user-sign-ups)
+    -   [Encryption At Rest and In Transit](#encryption-at-rest-and-in-transit)
+    -   [Access Logging](#access-logging)
+-   [Usage](#usage)
+-   [Architecture](#architecture)
+-   [Cleanup](#cleanup)
+-   [FAQ](#faq)
+-   [Security](#security)
+-   [License](#license)
 
 ## Deployment
 
@@ -46,10 +41,10 @@ storage using [Amazon Simple Storage Service (S3)](https://aws.amazon.com/s3/).
 
 This method uses AWS Amplify hosting to build, deploy, and serve the web app. You must have a GitHub account.
 
-[![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/aws-samples/aws-healthscribe-demo)
+[![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://us-east-1.console.aws.amazon.com/amplify/home?region=us-east-1#/deploy?repo=https://github.com/aws-samples/aws-healthscribe-demo)
 
 -   Select the link above.
--   Ensure you are in a region where AWS HealthScribe is available. See the [AWS HealthScribe region table](https://aws.amazon.com/healthscribe/pricing/) for more information.
+-   Ensure you are in a region where AWS HealthScribe is available. See the [AWS HealthScribe region table](https://aws.amazon.com/healthscribe/pricing/) for more information. **The demo will not work if deployed to another region. As of October 2024, AWS HealthScribe is available in Virginia (us-east-1).**
 -   On the _Welcome to Amplify Hosting_ page, Select _Connect to GitHub_.
 -   This redirects you to GitHub for authentication, after which you are redirected back to AWS Amplify.
 -   In the _Select service role_ dropdown, select a service role that allows Amplify to deploy the app. If none exist,
