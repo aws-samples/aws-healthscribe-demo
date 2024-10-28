@@ -4,9 +4,8 @@
 }
 
 .playerControl {
-    position: fixed;
-    bottom: 1%;
-    right: 1%;
+    position: 'relative';
+    top: 20%;
     z-index: 100;
 }
 

@@ -115,22 +115,7 @@ export default function AudioControls({
             <div className={styles.playerControlInline}>{buttons}</div>
         ) : (
             <div className={styles.playerControl}>
-                <Container>
-                    <div className={styles.closeButton}>
-                        <Button
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setShowControls(false);
-                            }}
-                            variant="icon"
-                            iconName="close"
-                        />
-                    </div>
-                    <div className={styles.ctrlHeading}>
-                        <Box variant="h4">Audio Controls</Box>
-                    </div>
-                    {buttons}
-                </Container>
+                <Container>{buttons}</Container>
             </div>
         );
     } else {
