@@ -82,25 +82,25 @@ export const columnDefs = [
         id: 'FirstName',
         header: 'First Name',
         cell: (e: MedicalSoapJobSummary) => e.firstName,
-        sortingField: 'CompletionTime',
+        sortingField: 'firstName',
     },
     {
         id: 'LastName',
         header: 'Last Name',
         cell: (e: MedicalSoapJobSummary) => e.lastName,
-        sortingField: 'CompletionTime',
+        sortingField: 'lastName',
     },
     {
         id: 'AppontmentDate',
         header: 'Appointment',
         cell: (e: MedicalSoapJobSummary) => JobAppointmentDate(e),
-        sortingField: 'CompletionTime',
+        sortingField: 'appointmentDate',
     },
     {
         id: 'AppointmnetDuration',
         header: 'Duration',
         cell: (e: MedicalSoapJobSummary) => e.appointmentDuration,
-        sortingField: 'CompletionTime',
+        sortingField: 'appointmentDuration',
     },
     // objects below here are not shown by default
     {
