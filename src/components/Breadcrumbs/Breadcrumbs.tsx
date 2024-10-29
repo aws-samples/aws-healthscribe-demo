@@ -34,7 +34,7 @@ export default function Breadcrumbs() {
                 href: '/appointments',
             },
         ];
-    } else if (pathName.startsWith('/conversation/')) {
+    } else if (pathName.startsWith('/appointment/')) {
         const conversationName = pathName.split('/')[2];
         items = [
             ...baseBreadcrumb,

@@ -3,7 +3,6 @@
 import React from 'react';
 
 // Cloudscape
-import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import Container from '@cloudscape-design/components/container';
 import Icon from '@cloudscape-design/components/icon';
