@@ -7,7 +7,7 @@ import Box from '@cloudscape-design/components/box';
 type TableEmptyStateProps = {
     title: string;
     subtitle: string;
-    action?: JSX.Element;
+    action?: React.ReactElement;
 };
 
 export default function TableEmptyState({ title, subtitle, action }: TableEmptyStateProps) {

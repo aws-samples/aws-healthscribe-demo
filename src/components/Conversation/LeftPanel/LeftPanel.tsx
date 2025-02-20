@@ -1,30 +1,24 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
-import { Dispatch, MutableRefObject, SetStateAction, useEffect, useState } from 'react';
+import React, { RefObject } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import * as awsui from '@cloudscape-design/design-tokens';
 import Grid from '@cloudscape-design/components/grid';
 
-import has from 'lodash/has';
-import keyBy from 'lodash/keyBy';
-import keys from 'lodash/keys';
-import pickBy from 'lodash/pickBy';
-import slice from 'lodash/slice';
-import takeWhile from 'lodash/takeWhile';
-import values from 'lodash/values';
 import { toast } from 'react-hot-toast';
 import WaveSurfer from 'wavesurfer.js';
 
 import LoadingContainer from '@/components/Conversation/Common/LoadingContainer';
 import ScrollingContainer from '@/components/Conversation/Common/ScrollingContainer';
 import {
-    IAuraTranscriptOutput,
-    IClinicalInsights,
-    ITranscript,
-    ITranscriptItems,
-    ITranscriptSegments,
-} from '@/types/HealthScribe';
+    IClinicalInsight,
+    IHealthScribeTranscript,
+    IProcessedItem,
+    IProcessedTranscript,
+    ITranscriptItem,
+    ITranscriptSegment,
+} from '@/types/HealthScribeTranscript';
 import toTitleCase from '@/utils/toTitleCase';
 
 import { HighlightId } from '../types';
@@ -35,10 +29,10 @@ const TRANSCRIPT_SPACING = '10px';
 
 type LeftPanelProps = {
     jobLoading: boolean;
-    transcriptFile: IAuraTranscriptOutput | null;
+    transcript: IHealthScribeTranscript | undefined;
     highlightId: HighlightId;
     setHighlightId: Dispatch<SetStateAction<HighlightId>>;
-    wavesurfer: MutableRefObject<WaveSurfer | undefined>;
+    wavesurfer: RefObject<WaveSurfer | undefined>;
     smallTalkCheck: boolean;
     audioTime: number;
     setAudioTime: Dispatch<SetStateAction<number>>;
@@ -47,7 +41,7 @@ type LeftPanelProps = {
 
 export default function LeftPanel({
     jobLoading,
-    transcriptFile,
+    transcript,
     highlightId,
     setHighlightId,
     wavesurfer,
@@ -57,30 +51,36 @@ export default function LeftPanel({
     audioReady,
 }: LeftPanelProps) {
     const [multiSpeakers, setMultiSpeakers] = useState<string[]>([]); // whether there are multiple speakers
-    const [transcript, setTranscript] = useState<ITranscript[]>([]); // transcript (and useless comment)
+    const [processedTranscript, setProcessedTranscript] = useState<IProcessedTranscript[]>([]); // transcript (and useless comment)
 
     useEffect(() => {
-        if (jobLoading || transcriptFile == null) return;
+        if (jobLoading || transcript == null) return;
 
         setMultiSpeakers([]);
 
-        const transcriptItems: ITranscriptItems[] = transcriptFile!.Conversation?.TranscriptItems;
-        const transcriptSegments: ITranscriptSegments[] = transcriptFile!.Conversation?.TranscriptSegments;
-        const transcriptInsights: IClinicalInsights[] = transcriptFile.Conversation?.ClinicalInsights;
+        const transcriptInsights: IClinicalInsight[] = transcript!.Conversation?.ClinicalInsights;
+        const transcriptSegments: ITranscriptSegment[] = transcript!.Conversation?.TranscriptSegments;
+        const transcriptItems: ITranscriptItem[] = transcript!.Conversation?.TranscriptItems;
 
-        let words = transcriptItems;
+        let words: IProcessedItem[] = transcriptItems;
         const transcriptMod = [];
 
         // Iterate through transcriptSegments, pull words until EndAudioTime is reached for the first time
         for (const segment of transcriptSegments) {
-            const wordArray = takeWhile(words, (val) => {
-                return val.EndAudioTime <= segment.EndAudioTime;
-            });
+            const endIndex = words.findIndex((val) => val.EndAudioTime > segment.EndAudioTime);
+            const wordArray = endIndex === -1 ? words : words.slice(0, endIndex);
             transcriptMod.push({ ...segment, Words: wordArray });
-            words = slice(words, wordArray.length);
+            words = words.slice(wordArray.length);
         }
 
-        const segmentDict = keyBy(transcriptMod, 'SegmentId');
+        // Create a dictionary of segments indexed by SegmentId
+        const segmentDict = transcriptMod.reduce(
+            (acc, segment) => {
+                acc[segment.SegmentId] = segment;
+                return acc;
+            },
+            {} as { [key: string]: (typeof transcriptMod)[0] }
+        );
 
         // Determine if there's multiple speakers (>2)
         const transcriptSpeakers = [...new Set(transcriptSegments.map((s) => s.ParticipantDetails.ParticipantRole))];
@@ -102,19 +102,27 @@ export default function LeftPanel({
             for (const span of insight.Spans) {
                 let currentStartIndex = 0;
                 // build a segmentDic index of word positions (string[]) for each insight
-                const dIndexes = keys(
-                    pickBy(segmentDict[span.SegmentId].Words, ({ Alternatives }) => {
+                // TODO: In the streaming result, alternatives does not exist
+                const filteredWords = Object.entries(segmentDict[span.SegmentId].Words).filter(
+                    ([, { Alternatives }]) => {
                         const copyIndex = currentStartIndex;
 
-                        if (Alternatives[0].Content.length === 1 && !/^[a-zA-Z]+$/.test(Alternatives[0].Content[0])) {
+                        if (
+                            typeof Alternatives !== 'undefined' &&
+                            Alternatives.length > 0 &&
+                            Alternatives[0].Content?.length === 1 &&
+                            !/^[a-zA-Z]+$/.test(Alternatives[0].Content[0])
+                        ) {
                             currentStartIndex += Alternatives[0].Content.length;
                         } else {
-                            currentStartIndex += Alternatives[0].Content.length + 1;
+                            currentStartIndex += (Alternatives?.[0].Content || '0').length + 1;
                         }
 
                         return span.BeginCharacterOffset <= copyIndex && span.EndCharacterOffset >= copyIndex;
-                    })
+                    }
                 );
+                const dIndexes = filteredWords.map(([index]) => index);
+
                 // update insightRef with insightId: beginAudioTime for each insight
                 // update the relevant segmentDict word array with the insight
                 for (const detected of dIndexes) {
@@ -125,21 +133,8 @@ export default function LeftPanel({
                             case 'ClinicalEntity': {
                                 segmentDict[span.SegmentId].Words[index].ClinicalEntity = insight;
 
-                                if (
-                                    !has(insightRef, segmentDict[span.SegmentId].Words[index].ClinicalEntity.InsightId)
-                                ) {
-                                    insightRef[segmentDict[span.SegmentId].Words[index].ClinicalEntity.InsightId] =
-                                        segmentDict[span.SegmentId].Words[index].BeginAudioTime;
-                                }
-                                break;
-                            }
-                            case 'ClinicalPhrase': {
-                                segmentDict[span.SegmentId].Words[index].ClinicalPhrase = insight;
-
-                                if (
-                                    !has(insightRef, segmentDict[span.SegmentId].Words[index].ClinicalPhrase.InsightId)
-                                ) {
-                                    insightRef[segmentDict[span.SegmentId].Words[index].ClinicalPhrase.InsightId] =
+                                if (!(insight.InsightId in insightRef)) {
+                                    insightRef[insight.InsightId] =
                                         segmentDict[span.SegmentId].Words[index].BeginAudioTime;
                                 }
                                 break;
@@ -154,8 +149,8 @@ export default function LeftPanel({
             }
         }
 
-        setTranscript(values(segmentDict));
-    }, [jobLoading, transcriptFile]);
+        setProcessedTranscript(Object.values(segmentDict));
+    }, [jobLoading, transcript]);
 
     // Extract the part of the transcript to highlight
     useEffect(() => {
@@ -168,7 +163,7 @@ export default function LeftPanel({
 
         // Reset highlightID - no segements will be highlighted
         if (highlightId.selectedSegmentId) {
-            const transcriptHighlightAll = transcript
+            const transcriptHighlightAll = processedTranscript
                 .filter((t) => highlightId.allSegmentIds.includes(t.SegmentId))
                 ?.map((h) => {
                     return { SegmentId: h.SegmentId, BeginAudioTime: h.BeginAudioTime, EndAudioTime: h.EndAudioTime };
@@ -190,15 +185,15 @@ export default function LeftPanel({
         }
     }, [highlightId, transcript, audioReady, setAudioTime]);
 
-    if (jobLoading || transcriptFile == null) {
+    if (jobLoading || transcript == null) {
         return <LoadingContainer containerTitle="Transcript" text="Loading Transcript" />;
     } else {
         return (
             <ScrollingContainer containerTitle="Transcript">
-                {transcript.map((script, key) => {
+                {processedTranscript.map((script, key) => {
                     const newSpeaker =
                         script.ParticipantDetails.ParticipantRole !==
-                        transcript[key - 1]?.ParticipantDetails.ParticipantRole;
+                        processedTranscript[key - 1]?.ParticipantDetails.ParticipantRole;
                     const speakerName = script.ParticipantDetails.ParticipantRole.split('_')[0];
                     const speakerNameFormatted = multiSpeakers.includes(speakerName)
                         ? `${toTitleCase(speakerName)} ${
@@ -220,13 +215,14 @@ export default function LeftPanel({
                                         paddingTop: newSpeaker && key > 0 ? TRANSCRIPT_SPACING : '',
                                         fontWeight: 'bold',
                                         fontSize: multiSpeakers ? '14px' : '16px',
+                                        ...{
+                                            color:
+                                                ['OTHER', 'SMALL_TALK'].includes(script.SectionDetails.SectionName) &&
+                                                smallTalkCheck
+                                                    ? awsui.colorTextStatusInactive
+                                                    : '',
+                                        },
                                     }}
-                                    className={
-                                        ['OTHER', 'SMALL_TALK'].includes(script.SectionDetails.SectionName) &&
-                                        smallTalkCheck
-                                            ? styles.disabled
-                                            : ''
-                                    }
                                 >
                                     {newSpeaker && (
                                         <div className={`${styles.row} ${styles.hidescrollbar}`}>

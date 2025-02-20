@@ -1,4 +1,4 @@
-export const SECTION_ORDER = [
+export const SOAP_SECTION_ORDER = [
     'CHIEF_COMPLIANT',
     'HISTORY_OF_PRESENT_ILLNESS',
     'PAST_MEDICAL_HISTORY',
@@ -10,3 +10,5 @@ export const SECTION_ORDER = [
     'ASSESSMENT',
     'PLAN',
 ];
+
+export const GIRPP_SECTION_ORDER = ['GOAL', 'INTERVENTION', 'RESPONSE', 'PROGRESS', 'PLAN'];

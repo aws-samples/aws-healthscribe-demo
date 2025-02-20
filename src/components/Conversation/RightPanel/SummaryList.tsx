@@ -4,7 +4,7 @@ import * as awsui from '@cloudscape-design/design-tokens';
 import Box from '@cloudscape-design/components/box';
 
 import { SegmentExtractedData } from '@/types/ComprehendMedical';
-import { IEvidence } from '@/types/HealthScribe';
+import { ISummaryItem } from '@/types/HealthScribeSummary';
 
 import styles from './SummarizedConcepts.module.css';
 import { ExtractedHealthDataWord } from './SummaryListComponents';
@@ -18,22 +18,22 @@ function NoEntities() {
     );
 }
 
-type SummaryListDefaultProps = {
+type SummaryListProps = {
     sectionName: string;
-    summary: IEvidence[];
+    summary: ISummaryItem[];
     summaryExtractedHealthData?: SegmentExtractedData[];
     acceptableConfidence: number;
     currentSegment: string;
     handleSegmentClick: (SummarizedSegment: string, EvidenceLinks: { SegmentId: string }[]) => void;
 };
-export function SummaryListDefault({
+export function SummaryList({
     sectionName,
     summary,
     summaryExtractedHealthData,
     acceptableConfidence,
     currentSegment = '',
     handleSegmentClick,
-}: SummaryListDefaultProps) {
+}: SummaryListProps) {
     if (summary.length) {
         return (
             <ul className={styles.summaryList}>

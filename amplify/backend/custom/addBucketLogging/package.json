@@ -8,13 +8,13 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {
-        "@aws-amplify/cli-extensibility-helper": "^3.0.34",
+        "@aws-amplify/cli-extensibility-helper": "^3.0.37",
         "constructs": "^10.4.2"
     },
     "devDependencies": {
-        "typescript": "^5.6.3"
+        "typescript": "^5.8.3"
     },
     "resolutions": {
-        "micromatch": "^4.0.8"
+        "aws-cdk-lib": "^2.188.0"
     }
 }

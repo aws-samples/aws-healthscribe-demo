@@ -4,34 +4,36 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import Container from '@cloudscape-design/components/container';
 import ContentLayout from '@cloudscape-design/components/content-layout';
 import Form from '@cloudscape-design/components/form';
 import FormField from '@cloudscape-design/components/form-field';
 import Header from '@cloudscape-design/components/header';
-import Popover from '@cloudscape-design/components/popover';
 import RadioGroup from '@cloudscape-design/components/radio-group';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
-import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import TokenGroup from '@cloudscape-design/components/token-group';
 
-import { MedicalScribeParticipantRole, StartMedicalScribeJobRequest } from '@aws-sdk/client-transcribe';
+import {
+    ClinicalNoteGenerationSettings,
+    MedicalScribeNoteTemplate,
+    MedicalScribeParticipantRole,
+    StartMedicalScribeJobRequest,
+} from '@aws-sdk/client-transcribe';
 import { Progress } from '@aws-sdk/lib-storage';
 import dayjs from 'dayjs';
 
 import { useS3 } from '@/hooks/useS3';
 import { useNotificationsContext } from '@/store/notifications';
 import { startMedicalScribeJob } from '@/utils/HealthScribeApi';
-import { multipartUpload } from '@/utils/S3Api';
+import { fileUpload } from '@/utils/S3Api';
 import sleep from '@/utils/sleep';
 
 import amplifyCustom from '../../aws-custom.json';
 import AudioRecorder from './AudioRecorder';
 import { AudioDropzone } from './Dropzone';
-import { AudioDetailSettings, AudioIdentificationType, InputName } from './FormComponents';
+import { AudioDetailSettings, AudioIdentificationType, InputName, NoteType } from './FormComponents';
 import styles from './NewConversation.module.css';
 import { verifyJobParams } from './formUtils';
 import { AudioDetails, AudioSelection } from './types';
@@ -43,6 +45,7 @@ export default function NewConversation() {
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // is job submitting
     const [formError, setFormError] = useState<string | React.ReactElement[]>('');
     const [jobName, setJobName] = useState<string>(''); // form - job name
+    const [noteType, setNoteType] = useState<MedicalScribeNoteTemplate>('HISTORY_AND_PHYSICAL'); // form - note type
     const [audioSelection, setAudioSelection] = useState<AudioSelection>('speakerPartitioning'); // form - audio selection
     // form - audio details
     const [audioDetails, setAudioDetails] = useState<AudioDetails>({
@@ -53,10 +56,10 @@ export default function NewConversation() {
             channel1: 'CLINICIAN',
         },
     });
-    const [filePath, setFilePath] = useState<File>(); // only one file is allowd from react-dropzone. NOT an array
+    const [filePath, setFilePath] = useState<File>(); // only one file is allowed from react-dropzone. NOT an array
     const [outputBucket, getUploadMetadata] = useS3(); // outputBucket is the Amplify bucket, and uploadMetadata contains uuid4
 
-    const [submissionMode, setSubmissionMode] = useState<string>('uploadRecording'); // to hide or show the live recorder
+    const [submissionMode, setSubmissionMode] = useState<string>('uploadAudio'); // to hide or show the live recorder
     const [recordedAudio, setRecordedAudio] = useState<File | undefined>(); // audio file recorded via live recorder
 
     // Set array for TokenGroup items
@@ -75,10 +78,9 @@ export default function NewConversation() {
      * @description Callback function used by the lib-storage SDK Upload function. Updates the progress bar
      *              with the status of the upload
      * @param loaded {number} number of bytes uploaded
-     * @param part {number} number of the part that was uploaded
      * @param total {number} total number of bytes to be uploaded
      */
-    function s3UploadCallback({ loaded, part, total }: Progress) {
+    function s3UploadCallback({ loaded, total }: Progress) {
         // Last 1% is for submitting to the HealthScribe API
         const value = Math.round(((loaded || 1) / (total || 100)) * 99);
         const loadedMb = Math.round((loaded || 1) / 1024 / 1024);
@@ -86,7 +88,7 @@ export default function NewConversation() {
         updateProgressBar({
             id: `New HealthScribe Job: ${jobName}`,
             value: value,
-            description: `Uploaded part ${part}, ${loadedMb}MB / ${totalMb}MB`,
+            description: `Uploaded ${loadedMb}MB / ${totalMb}MB`,
         });
     }
 
@@ -98,16 +100,25 @@ export default function NewConversation() {
         setIsSubmitting(true);
         setFormError('');
 
+        const clinicalNoteGenerationSettings: ClinicalNoteGenerationSettings = {
+            NoteTemplate: noteType,
+        };
+
         // build job params with StartMedicalScribeJob request syntax
-        const audioParams =
+        const jobSettings =
             audioSelection === 'speakerPartitioning'
                 ? {
                       Settings: {
+                          ClinicalNoteGenerationSettings: clinicalNoteGenerationSettings,
                           MaxSpeakerLabels: audioDetails.speakerPartitioning.maxSpeakers,
                           ShowSpeakerLabels: true,
                       },
                   }
                 : {
+                      Settings: {
+                          ChannelIdentification: true,
+                          ClinicalNoteGenerationSettings: clinicalNoteGenerationSettings,
+                      },
                       ChannelDefinitions: [
                           {
                               ChannelId: 0,
@@ -122,9 +133,6 @@ export default function NewConversation() {
                                       : ('CLINICIAN' as MedicalScribeParticipantRole),
                           },
                       ],
-                      Settings: {
-                          ChannelIdentification: true,
-                      },
                   };
 
         const uploadLocation = getUploadMetadata();
@@ -140,7 +148,7 @@ export default function NewConversation() {
             Media: {
                 MediaFileUri: `s3://${s3Location.Bucket}/${s3Location.Key}`,
             },
-            ...audioParams,
+            ...jobSettings,
         };
 
         const verifyParamResults = verifyJobParams(jobParams);
@@ -161,7 +169,7 @@ export default function NewConversation() {
         });
 
         try {
-            await multipartUpload({
+            await fileUpload({
                 ...s3Location,
                 Body: filePath as File,
                 ContentType: filePath?.type,
@@ -260,6 +268,7 @@ export default function NewConversation() {
                     >
                         <SpaceBetween direction="vertical" size="xl">
                             <InputName jobName={jobName} setJobName={setJobName} />
+                            <NoteType noteType={noteType} setNoteType={setNoteType} />
                             <AudioIdentificationType
                                 audioSelection={audioSelection}
                                 setAudioSelection={setAudioSelection}
@@ -269,26 +278,7 @@ export default function NewConversation() {
                                 audioDetails={audioDetails}
                                 setAudioDetails={setAudioDetails}
                             />
-                            <FormField
-                                label={
-                                    <SpaceBetween direction="horizontal" size="xs">
-                                        <div>Session Recording Type</div>
-                                        <Box
-                                            display="inline-block"
-                                            color="text-status-info"
-                                            fontSize="body-s"
-                                            fontWeight="bold"
-                                        >
-                                            <Popover
-                                                header="Live Recording"
-                                                content="The audio file will be submitted to AWS HealthScribe after the recording is complete. Please position your device or microphone so it can capture all conversation participants."
-                                            >
-                                                <StatusIndicator type="info">New</StatusIndicator>
-                                            </Popover>
-                                        </Box>
-                                    </SpaceBetween>
-                                }
-                            >
+                            <FormField label="Audio source">
                                 <SpaceBetween direction="vertical" size="xl">
                                     <div className={styles.submissionModeRadio}>
                                         <RadioGroup
@@ -296,16 +286,16 @@ export default function NewConversation() {
                                             onChange={({ detail }) => setSubmissionMode(detail.value)}
                                             value={submissionMode}
                                             items={[
-                                                { value: 'uploadRecording', label: 'Upload Recording' },
-                                                { value: 'liveRecording', label: 'Live Recording' },
+                                                { value: 'uploadAudio', label: 'Upload Audio' },
+                                                { value: 'liveRecording', label: 'Live Record' },
                                             ]}
                                         />
                                     </div>
                                     {submissionMode === 'liveRecording' ? (
                                         <>
                                             <FormField
-                                                label="Live Recording"
-                                                description="Note: You may only record one live recording at a time."
+                                                label="Record"
+                                                description="The audio file will be submitted to AWS HealthScribe after the recording is complete. Please position your device or microphone so it can capture all conversation participants."
                                             ></FormField>
                                             <AudioRecorder setRecordedAudio={setRecordedAudio} />
                                         </>

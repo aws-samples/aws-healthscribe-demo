@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { RefObject, useEffect, useMemo, useState } from 'react';
 
 import TextContent from '@cloudscape-design/components/text-content';
 
@@ -8,24 +8,25 @@ import toast from 'react-hot-toast';
 import WaveSurfer from 'wavesurfer.js';
 
 import { ExtractedHealthData, SummarySectionEntityMapping } from '@/types/ComprehendMedical';
-import { IAuraClinicalDocOutputSection, ITranscriptSegments } from '@/types/HealthScribe';
+import { ISection } from '@/types/HealthScribeSummary';
+import { ITranscriptSegment } from '@/types/HealthScribeTranscript';
 import toTitleCase from '@/utils/toTitleCase';
 
 import { HighlightId } from '../types';
-import { SummaryListDefault } from './SummaryList';
-import { SECTION_ORDER } from './sectionOrder';
+import { SummaryList } from './SummaryList';
+import { GIRPP_SECTION_ORDER, SOAP_SECTION_ORDER } from './sectionOrder';
 import { mergeHealthScribeOutputWithComprehendMedicalOutput } from './summarizedConceptsUtils';
 
 type SummarizedConceptsProps = {
-    sections: IAuraClinicalDocOutputSection[];
+    sections: ISection[];
     extractedHealthData: ExtractedHealthData[];
     acceptableConfidence: number;
     highlightId: HighlightId;
     setHighlightId: React.Dispatch<React.SetStateAction<HighlightId>>;
     segmentById: {
-        [key: string]: ITranscriptSegments;
+        [key: string]: ITranscriptSegment;
     };
-    wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
+    wavesurfer: RefObject<WaveSurfer | undefined>;
 };
 
 export default function SummarizedConcepts({
@@ -97,10 +98,16 @@ export default function SummarizedConcepts({
     }
 
     const sortedSections = useMemo(() => {
+        const SECTION_ORDER =
+            typeof sections.find((s) => s.SectionName === 'CHIEF_COMPLIANT') !== 'undefined'
+                ? SOAP_SECTION_ORDER
+                : GIRPP_SECTION_ORDER;
         return sections.sort(
             (a, b) => SECTION_ORDER.indexOf(a.SectionName) - SECTION_ORDER.indexOf(b.SectionName) || 1
         );
     }, [sections]);
+
+    console.debug('sortedSections', sections, sortedSections);
 
     return (
         <>
@@ -112,7 +119,7 @@ export default function SummarizedConcepts({
                         <TextContent>
                             <h3>{toTitleCase(SectionName.replace(/_/g, ' '))}</h3>
                         </TextContent>
-                        <SummaryListDefault
+                        <SummaryList
                             sectionName={SectionName}
                             summary={Summary}
                             summaryExtractedHealthData={sectionExtractedHealthData?.Summary}

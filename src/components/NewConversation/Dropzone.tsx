@@ -25,7 +25,7 @@ function validateFile(f: FileWithPath) {
 
 type AudioDropZoneProps = {
     setFilePath: React.Dispatch<React.SetStateAction<File | undefined>>;
-    setFormError: React.Dispatch<React.SetStateAction<string | JSX.Element[]>>;
+    setFormError: React.Dispatch<React.SetStateAction<string | React.ReactElement[]>>;
 };
 
 export const AudioDropzone = memo(function AudioDropzone({ setFilePath, setFormError }: AudioDropZoneProps) {

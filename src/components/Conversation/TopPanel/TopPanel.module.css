@@ -1,7 +1,7 @@
-.alignment {
+.segmentControls {
     display: flex;
     align-items: center;
-    min-height: 40px;
+    min-height: 25px;
 }
 
 .minWidthDropdown > div {

@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
+import React, { RefObject } from 'react';
 
 // Cloudscape
 import Box from '@cloudscape-design/components/box';
@@ -16,7 +16,7 @@ import styles from './AudioControls.module.css';
 const PLAYBACK_SPEEDS: number[] = [0.5, 1, 1.2, 1.5, 2];
 
 type AudioControlsProps = {
-    wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
+    wavesurfer: RefObject<WaveSurfer | undefined>;
     showControls: boolean;
     audioLoading: boolean;
     setShowControls: React.Dispatch<React.SetStateAction<boolean>>;

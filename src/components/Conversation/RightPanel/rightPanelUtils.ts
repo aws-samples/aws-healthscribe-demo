@@ -1,7 +1,8 @@
-import { processSummarizedSegment } from '@/components/Conversation/RightPanel/summarizedConceptsUtils';
-import { IAuraClinicalDocOutput } from '@/types/HealthScribe';
+import { IHealthScribeSummary } from '@/types/HealthScribeSummary';
 
-export function calculateNereUnits(clinicalDocument: IAuraClinicalDocOutput | null) {
+import { processSummarizedSegment } from './summarizedConceptsUtils';
+
+export function calculateNereUnits(clinicalDocument: IHealthScribeSummary | undefined) {
     if (!clinicalDocument) return 0;
     const eachSegment = clinicalDocument.ClinicalDocumentation.Sections.reduce((acc, { Summary }) => {
         return (

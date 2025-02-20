@@ -1,5 +1,5 @@
 import { ExtractedHealthData, SegmentExtractedData, SummarySectionEntityMapping } from '@/types/ComprehendMedical';
-import { IAuraClinicalDocOutputSection } from '@/types/HealthScribe';
+import { ISection } from '@/types/HealthScribeSummary';
 import { flattenAndUnique } from '@/utils/array';
 
 /**
@@ -17,7 +17,7 @@ export function processSummarizedSegment(summarizedSegment: string): string {
  * @returns SummarySectionEntityMapping[]
  */
 export function mergeHealthScribeOutputWithComprehendMedicalOutput(
-    sections: IAuraClinicalDocOutputSection[],
+    sections: ISection[],
     sectionsWithEntities: ExtractedHealthData[]
 ): SummarySectionEntityMapping[] {
     if (sections.length === 0 || sectionsWithEntities.length === 0) return [];

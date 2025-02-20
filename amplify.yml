@@ -1,22 +1,22 @@
 version: 1
 backend:
-  phases:
-    build:
-      commands:
-        - amplifyPush --simple
+    phases:
+        build:
+            commands:
+                - amplifyPush --simple
 frontend:
-  phases:
-    preBuild:
-      commands:
-        - nvm use 18
-        - yarn install
-    build:
-      commands:
-        - yarn run build
-  artifacts:
-    baseDirectory: build
-    files:
-      - '**/*'
-  cache:
-    paths:
-      - node_modules/**/*
+    phases:
+        preBuild:
+            commands:
+                - nvm use 20
+                - yarn install
+        build:
+            commands:
+                - yarn run build
+    artifacts:
+        baseDirectory: build
+        files:
+            - '**/*'
+    cache:
+        paths:
+            - node_modules/**/*

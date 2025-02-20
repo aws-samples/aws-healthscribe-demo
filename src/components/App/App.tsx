@@ -59,6 +59,7 @@ export default function App() {
                 headerSelector="#appTopNav"
                 headerVariant="high-contrast"
                 navigation={<SideNav />}
+                navigationHide={!isUserAuthenticated}
                 notifications={<Flashbar items={flashbarItems} />}
                 toolsHide={true}
             />

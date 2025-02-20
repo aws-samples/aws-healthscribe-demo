@@ -34,7 +34,7 @@ export default function Debug() {
     }
 
     return (
-        <ContentLayout header={<Header variant="h1">Debug</Header>}>
+        <ContentLayout headerVariant={'high-contrast'} header={<Header variant="h1">Debug</Header>}>
             <Container>
                 <SpaceBetween direction="horizontal" size="m">
                     <Button onClick={() => listJobs()}>List HealthScribe Jobs</Button>

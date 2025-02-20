@@ -12,7 +12,8 @@ import { MedicalScribeJob } from '@aws-sdk/client-transcribe';
 import ModalLoader from '@/components/SuspenseLoader/ModalLoader';
 import { useAudio } from '@/hooks/useAudio';
 import { useNotificationsContext } from '@/store/notifications';
-import { IAuraClinicalDocOutput, IAuraTranscriptOutput } from '@/types/HealthScribe';
+import { IHealthScribeSummary } from '@/types/HealthScribeSummary';
+import { IHealthScribeTranscript } from '@/types/HealthScribeTranscript';
 import { getHealthScribeJob } from '@/utils/HealthScribeApi';
 import { getObject, getS3Object } from '@/utils/S3Api';
 
@@ -31,8 +32,9 @@ export default function Conversation() {
     const [jobDetails, setJobDetails] = useState<MedicalScribeJob | null>(null); // HealthScribe job details
     const [showOutputModal, setShowOutputModal] = useState<boolean>(false); // Is view results modal open
 
-    const [clinicalDocument, setClinicalDocument] = useState<IAuraClinicalDocOutput | null>(null);
-    const [transcriptFile, setTranscriptFile] = useState<IAuraTranscriptOutput | null>(null);
+    // Outputs - transcript and summary. Set after stream is in a completed status
+    const [transcript, setTranscript] = useState<IHealthScribeTranscript>();
+    const [summary, setSummary] = useState<IHealthScribeSummary>();
 
     const [
         wavesurfer,
@@ -58,15 +60,15 @@ export default function Conversation() {
                     setJobDetails(medicalScribeJob);
                 }
 
-                // Get Clinical Document from result S3 URL
-                const clinicalDocumentUri = medicalScribeJob.MedicalScribeOutput?.ClinicalDocumentUri;
-                const clinicalDocumentRsp = await getObject(getS3Object(clinicalDocumentUri || ''));
-                setClinicalDocument(JSON.parse((await clinicalDocumentRsp?.Body?.transformToString()) || ''));
-
                 // Get Transcript File from result S3 URL
                 const transcriptFileUri = medicalScribeJob.MedicalScribeOutput?.TranscriptFileUri;
                 const transcriptFileRsp = await getObject(getS3Object(transcriptFileUri || ''));
-                setTranscriptFile(JSON.parse((await transcriptFileRsp?.Body?.transformToString()) || ''));
+                setTranscript(JSON.parse((await transcriptFileRsp?.Body?.transformToString()) || ''));
+
+                // Get Clinical Document from result S3 URL
+                const clinicalDocumentUri = medicalScribeJob.MedicalScribeOutput?.ClinicalDocumentUri;
+                const clinicalDocumentRsp = await getObject(getS3Object(clinicalDocumentUri || ''));
+                setSummary(JSON.parse((await clinicalDocumentRsp?.Body?.transformToString()) || ''));
             } catch (e) {
                 setJobDetails(null);
                 setJobLoading(false);
@@ -95,8 +97,8 @@ export default function Conversation() {
                 <Suspense fallback={<ModalLoader />}>
                     <ViewOutput
                         setVisible={setShowOutputModal}
-                        transcriptString={JSON.stringify(transcriptFile || 'Loading...', null, 2)}
-                        clinicalDocumentString={JSON.stringify(clinicalDocument || 'Loading...', null, 2)}
+                        transcriptString={JSON.stringify(transcript || 'Loading...', null, 2)}
+                        clinicalDocumentString={JSON.stringify(summary || 'Loading...', null, 2)}
                     />
                 </Suspense>
             )}
@@ -110,7 +112,7 @@ export default function Conversation() {
                 <TopPanel
                     jobLoading={jobLoading}
                     jobDetails={jobDetails}
-                    transcriptFile={transcriptFile}
+                    transcript={transcript}
                     wavesurfer={wavesurfer}
                     smallTalkCheck={smallTalkCheck}
                     setSmallTalkCheck={setSmallTalkCheck}
@@ -119,7 +121,7 @@ export default function Conversation() {
                 />
                 <LeftPanel
                     jobLoading={jobLoading}
-                    transcriptFile={transcriptFile}
+                    transcript={transcript}
                     highlightId={highlightId}
                     setHighlightId={setHighlightId}
                     wavesurfer={wavesurfer}
@@ -130,8 +132,8 @@ export default function Conversation() {
                 />
                 <RightPanel
                     jobLoading={jobLoading}
-                    clinicalDocument={clinicalDocument}
-                    transcriptFile={transcriptFile}
+                    summary={summary}
+                    transcript={transcript}
                     highlightId={highlightId}
                     setHighlightId={setHighlightId}
                     wavesurfer={wavesurfer}

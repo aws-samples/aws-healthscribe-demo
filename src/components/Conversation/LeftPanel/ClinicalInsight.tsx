@@ -3,14 +3,14 @@ import React, { memo, useMemo } from 'react';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 
 import ValueWithLabel from '@/components/Common/ValueWithLabel';
-import { OntologyLinking } from '@/components/Conversation/Common/OntologyLinking';
-import { IClinicalInsights } from '@/types/HealthScribe';
+import { IClinicalInsight } from '@/types/HealthScribeTranscript';
 import toTitleCase from '@/utils/toTitleCase';
 
+import { OntologyLinking } from '../Common/OntologyLinking';
 import ClinicalInsightsAttributesTable from './ClinicalInsightAttributesTable';
 
 type ClinicalInsightProps = {
-    wordClinicalEntity: IClinicalInsights;
+    wordClinicalEntity: IClinicalInsight;
 };
 function ClinicalInsight({ wordClinicalEntity }: ClinicalInsightProps) {
     const hasClinicalInsights = useMemo(() => {
@@ -18,7 +18,7 @@ function ClinicalInsight({ wordClinicalEntity }: ClinicalInsightProps) {
     }, [wordClinicalEntity]);
 
     if (hasClinicalInsights) {
-        const clinicalInsight = wordClinicalEntity as IClinicalInsights;
+        const clinicalInsight = wordClinicalEntity as IClinicalInsight;
         return (
             <SpaceBetween size="m" direction="vertical">
                 <div>

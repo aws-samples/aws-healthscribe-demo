@@ -1,13 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import Box from '@cloudscape-design/components/box';
 import FormField from '@cloudscape-design/components/form-field';
 import Grid from '@cloudscape-design/components/grid';
 import Input from '@cloudscape-design/components/input';
+import Link from '@cloudscape-design/components/link';
+import Popover from '@cloudscape-design/components/popover';
 import RadioGroup from '@cloudscape-design/components/radio-group';
+import Select from '@cloudscape-design/components/select';
+import SpaceBetween from '@cloudscape-design/components/space-between';
+import StatusIndicator from '@cloudscape-design/components/status-indicator';
 import TextContent from '@cloudscape-design/components/text-content';
+
+import { MedicalScribeNoteTemplate } from '@aws-sdk/client-transcribe';
 
 import styles from './NewConversation.module.css';
 import { AudioDetails, AudioSelection } from './types';
@@ -27,6 +34,52 @@ export function InputName({ jobName, setJobName }: InputNameProps) {
     );
 }
 
+type NoteTypeProps = {
+    noteType: MedicalScribeNoteTemplate;
+    setNoteType: React.Dispatch<React.SetStateAction<MedicalScribeNoteTemplate>>;
+};
+export function NoteType({ noteType, setNoteType }: NoteTypeProps) {
+    const NOTE_TYPES = [
+        { label: 'SOAP (Subjective, Objective, Assessment, Plan)', value: 'HISTORY_AND_PHYSICAL' },
+        { label: 'GIRPP (Goal, Intervention, Response, Progress, Plan)', value: 'GIRPP' },
+    ];
+
+    const selectedOption = useMemo(() => NOTE_TYPES.find((n) => n.value === noteType) || NOTE_TYPES[0], [noteType]);
+
+    return (
+        <FormField
+            label={
+                <SpaceBetween direction="horizontal" size="xs">
+                    <div>Note type</div>
+                    <Popover
+                        header="Introducing GIRPP notes"
+                        content={
+                            <>
+                                AWS HealthScribe now supports GIRPP note template for behavioral health.{' '}
+                                <Link
+                                    external
+                                    href="https://aws.amazon.com/about-aws/whats-new/2025/02/aws-healthscribe-girpp-note-template-behavioral-health/"
+                                    variant="primary"
+                                >
+                                    Learn more
+                                </Link>
+                            </>
+                        }
+                    >
+                        <StatusIndicator type="info">New</StatusIndicator>
+                    </Popover>
+                </SpaceBetween>
+            }
+        >
+            <Select
+                selectedOption={selectedOption}
+                onChange={({ detail }) => setNoteType(detail.selectedOption.value as MedicalScribeNoteTemplate)}
+                options={NOTE_TYPES}
+            />
+        </FormField>
+    );
+}
+
 type AudioIdentificationTypeProps = {
     audioSelection: AudioSelection;
     setAudioSelection: React.Dispatch<React.SetStateAction<AudioSelection>>;
@@ -34,7 +87,7 @@ type AudioIdentificationTypeProps = {
 export function AudioIdentificationType({ audioSelection, setAudioSelection }: AudioIdentificationTypeProps) {
     return (
         <FormField
-            label="Audio identification type"
+            label="Audio identification"
             description="Choose to split multi-channel audio into separate channels for transcription, or partition speakers in the input audio."
         >
             <div>

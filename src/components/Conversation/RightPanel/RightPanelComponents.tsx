@@ -1,16 +1,15 @@
 import React, { useMemo } from 'react';
 
-import * as awsui from '@cloudscape-design/design-tokens';
 import Box from '@cloudscape-design/components/box';
 import Button from '@cloudscape-design/components/button';
 import FormField from '@cloudscape-design/components/form-field';
 import Modal from '@cloudscape-design/components/modal';
+import Slider from '@cloudscape-design/components/slider';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 
 import { useAppSettingsContext } from '@/store/appSettings';
 
 import { ComprehendMedicalNereCost, EnableComprehendMedicalPopover } from '../Common/ComprehendMedical';
-import styles from './SummarizedConcepts.module.css';
 
 type RightPanelActionsProps = {
     hasInsightSections: boolean;
@@ -28,7 +27,8 @@ export function RightPanelActions({
     setRightPanelSettingsOpen,
     handleExtractHealthData,
 }: RightPanelActionsProps) {
-    const { comprehendMedicalEnabled } = useAppSettingsContext();
+    const { appSettings } = useAppSettingsContext();
+    const comprehendMedicalEnabled = useMemo(() => appSettings['app.comprehendMedicalEnabled'], [appSettings]);
 
     const extractHealthDataEnabled = useMemo(
         () => hasInsightSections && comprehendMedicalEnabled,
@@ -90,19 +90,12 @@ export function RightPanelSettings({
                 label="Comprehend Medical Confidence Score Threshold"
                 description="Extracted medical entities with confidence scores lower than this are not shown."
             >
-                <div className={styles.sliderContainer}>
-                    <input
-                        className={styles.slider}
-                        style={{ background: awsui.colorBackgroundButtonNormalActive }}
-                        type="range"
-                        step={1}
-                        min={0}
-                        max={99}
-                        value={acceptableConfidence}
-                        onChange={(e) => setAcceptableConfidence(parseInt(e.target.value))}
-                    />
-                    <div>{acceptableConfidence}%</div>
-                </div>
+                <Slider
+                    onChange={({ detail }) => setAcceptableConfidence(detail.value)}
+                    value={acceptableConfidence}
+                    max={99}
+                    min={0}
+                />
             </FormField>
         </Modal>
     );

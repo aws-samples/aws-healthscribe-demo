@@ -4,16 +4,16 @@ import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 
 import WaveSurfer from 'wavesurfer.js';
 
-import { IClinicalInsights, ITranscript } from '@/types/HealthScribe';
+import { IClinicalInsight, IProcessedTranscript } from '@/types/HealthScribeTranscript';
 
 import { WordPopoverTranscript } from './WordPopover';
 
 interface TranscriptSegmentProps {
-    script: ITranscript;
+    script: IProcessedTranscript;
     smallTalkCheck: boolean;
     audioTime: number;
     audioReady: boolean;
-    wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
+    wavesurfer: React.RefObject<WaveSurfer | undefined>;
 }
 
 export const TranscriptSegment = memo(function TranscriptSegment({
@@ -67,6 +67,9 @@ export const TranscriptSegment = memo(function TranscriptSegment({
                     audioTime > word.BeginAudioTime && audioTime < word.EndAudioTime && !isPunctuation;
                 // highlight the word as a clinical entity if word.ClinicalEntity and word.Type exist
                 const isClinicalEntity = !!word.ClinicalEntity && !!word.Type;
+
+                if (!word.Alternatives?.[0]) return false;
+
                 return (
                     <WordPopoverTranscript
                         key={i}
@@ -77,7 +80,7 @@ export const TranscriptSegment = memo(function TranscriptSegment({
                         wordBeginAudioTime={word.BeginAudioTime}
                         audioDuration={audioDuration}
                         word={word.Alternatives[0]}
-                        wordClinicalEntity={word.ClinicalEntity as IClinicalInsights}
+                        wordClinicalEntity={word.ClinicalEntity as IClinicalInsight}
                         audioReady={audioReady}
                         wavesurfer={wavesurfer}
                     />
