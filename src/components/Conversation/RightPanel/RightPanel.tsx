@@ -1,18 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useMemo, useState } from 'react';
+import React, { RefObject, useCallback, useMemo, useState } from 'react';
 
 import { DetectEntitiesV2Response } from '@aws-sdk/client-comprehendmedical';
 import WaveSurfer from 'wavesurfer.js';
 
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { ExtractedHealthData } from '@/types/ComprehendMedical';
-import {
-    IAuraClinicalDocOutput,
-    IAuraClinicalDocOutputSection,
-    IAuraTranscriptOutput,
-    ITranscriptSegments,
-} from '@/types/HealthScribe';
+import { IHealthScribeSummary, ISection } from '@/types/HealthScribeSummary';
+import { IHealthScribeTranscript, ITranscriptSegment } from '@/types/HealthScribeTranscript';
 import { detectEntitiesFromComprehendMedical } from '@/utils/ComprehendMedicalApi';
 
 import LoadingContainer from '../Common/LoadingContainer';
@@ -25,17 +21,17 @@ import { processSummarizedSegment } from './summarizedConceptsUtils';
 
 type RightPanelProps = {
     jobLoading: boolean;
-    clinicalDocument: IAuraClinicalDocOutput | null;
-    transcriptFile: IAuraTranscriptOutput | null;
+    summary: IHealthScribeSummary | undefined;
+    transcript: IHealthScribeTranscript | undefined;
     highlightId: HighlightId;
     setHighlightId: React.Dispatch<React.SetStateAction<HighlightId>>;
-    wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
+    wavesurfer: RefObject<WaveSurfer | undefined>;
 };
 
 export default function RightPanel({
     jobLoading,
-    clinicalDocument,
-    transcriptFile,
+    summary,
+    transcript,
     highlightId,
     setHighlightId,
     wavesurfer,
@@ -48,24 +44,24 @@ export default function RightPanel({
         75.0
     );
 
-    const segmentById: { [key: string]: ITranscriptSegments } = useMemo(() => {
-        if (transcriptFile == null) return {};
-        return transcriptFile.Conversation.TranscriptSegments.reduce((acc, seg) => {
+    const segmentById: { [key: string]: ITranscriptSegment } = useMemo(() => {
+        if (transcript == null) return {};
+        return transcript.Conversation.TranscriptSegments.reduce((acc, seg) => {
             return { ...acc, [seg.SegmentId]: seg };
         }, {});
-    }, [transcriptFile]);
+    }, [transcript]);
 
     const hasInsightSections: boolean = useMemo(() => {
-        if (typeof clinicalDocument?.ClinicalDocumentation?.Sections === 'undefined') return false;
-        return clinicalDocument?.ClinicalDocumentation?.Sections?.length > 0;
-    }, [clinicalDocument]);
+        if (typeof summary?.ClinicalDocumentation?.Sections === 'undefined') return false;
+        return summary?.ClinicalDocumentation?.Sections?.length > 0;
+    }, [summary]);
 
-    async function handleExtractHealthData() {
-        if (!Array.isArray(clinicalDocument?.ClinicalDocumentation?.Sections)) return;
+    const handleExtractHealthData = useCallback(async () => {
+        if (!Array.isArray(summary?.ClinicalDocumentation?.Sections)) return;
         setExtractingData(true);
 
         const buildExtractedHealthData = [];
-        for (const section of clinicalDocument.ClinicalDocumentation.Sections) {
+        for (const section of summary.ClinicalDocumentation.Sections) {
             const sectionEntities: DetectEntitiesV2Response[] = [];
             for (const summary of section.Summary) {
                 const summarizedSegment = processSummarizedSegment(summary.SummarizedSegment);
@@ -82,12 +78,12 @@ export default function RightPanel({
         setExtractedHealthData(buildExtractedHealthData);
 
         setExtractingData(false);
-    }
+    }, [summary, setExtractingData, setExtractedHealthData]);
 
     // Calculate the number of CM units (100-character segments) in the clinical document.
-    const clinicalDocumentNereUnits = useMemo(() => calculateNereUnits(clinicalDocument), [clinicalDocument]);
+    const clinicalDocumentNereUnits = useMemo(() => calculateNereUnits(summary), [summary]);
 
-    if (jobLoading || clinicalDocument == null) {
+    if (jobLoading || summary == null) {
         return <LoadingContainer containerTitle="Insights" text="Loading Insights" />;
     } else {
         return (
@@ -111,7 +107,7 @@ export default function RightPanel({
                     setAcceptableConfidence={setAcceptableConfidence}
                 />
                 <SummarizedConcepts
-                    sections={clinicalDocument.ClinicalDocumentation.Sections as IAuraClinicalDocOutputSection[]}
+                    sections={summary.ClinicalDocumentation.Sections as ISection[]}
                     extractedHealthData={extractedHealthData}
                     acceptableConfidence={acceptableConfidence}
                     highlightId={highlightId}

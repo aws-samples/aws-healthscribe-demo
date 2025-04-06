@@ -7,7 +7,7 @@ import WaveSurfer from 'wavesurfer.js';
 import { HighlightId } from '@/components/Conversation/types';
 
 export function useAudio() {
-    const wavesurfer = useRef<WaveSurfer>();
+    const wavesurfer = useRef<WaveSurfer>(undefined);
     const [audioReady, setAudioReady] = useState<boolean>(false); // is wavesurfer ready with audio loaded
     const [audioTime, setAudioTime] = useState<number>(0); // Current audio time
     const [smallTalkCheck, setSmallTalkCheck] = useState<boolean>(false); // show/hide small talk

@@ -1,54 +1,54 @@
 name: Yarn Audit
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  type-check:
-    name: Yarn Audit Checks
-    runs-on: ubuntu-latest
+    type-check:
+        name: Yarn Audit Checks
+        runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
+        defaults:
+            run:
+                shell: bash
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/Hydrogen'
-          cache: 'yarn'
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 'lts/Hydrogen'
+                  cache: 'yarn'
 
-      - name: Yarn Audit
-        run: |
-          FAILED=0
+            - name: Yarn Audit
+              run: |
+                  FAILED=0
 
-          for d in `find . -type f -name package.json ! -path "*/node_modules/*" ! -path "*/cdk.out/*" ! -path "*/#current-cloud-backend/*"`; do
-            fileDir=$(dirname $d)
+                  for d in `find . -type f -name package.json ! -path "*/node_modules/*" ! -path "*/cdk.out/*" ! -path "*/#current-cloud-backend/*"`; do
+                    fileDir=$(dirname $d)
 
-            if [ -f "${fileDir}/package-lock.json" ]; then
-              echo "------------- ${d} -------------"
-              npm --prefix `dirname $d` audit
-              RESULT=${PIPESTATUS[0]}
-              if [ $RESULT -ne 0 ]; then FAILED=1; fi
+                    if [ -f "${fileDir}/package-lock.json" ]; then
+                      echo "------------- ${d} -------------"
+                      npm --prefix `dirname $d` audit
+                      RESULT=${PIPESTATUS[0]}
+                      if [ $RESULT -ne 0 ]; then FAILED=1; fi
 
-            elif [ -f "${fileDir}/yarn.lock" ]; then
-              echo "------------- ${d} -------------"
-              yarn --cwd `dirname $d` audit 2>&1 | grep -v 'No license field'
-              RESULT=${PIPESTATUS[0]}
-              if [ $RESULT -ne 0 ]; then FAILED=1; fi
-            fi
-          done
-          
-          if [ $FAILED -eq 1 ]; then exit 1; fi
+                    elif [ -f "${fileDir}/yarn.lock" ]; then
+                      echo "------------- ${d} -------------"
+                      yarn --cwd `dirname $d` audit 2>&1 | grep -v 'No license field'
+                      RESULT=${PIPESTATUS[0]}
+                      if [ $RESULT -ne 0 ]; then FAILED=1; fi
+                    fi
+                  done
+
+                  if [ $FAILED -eq 1 ]; then exit 1; fi

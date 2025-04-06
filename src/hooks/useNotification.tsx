@@ -10,7 +10,7 @@ import dayjs from 'dayjs';
 export type AddFlashMessageProps = {
     id: string;
     header: string;
-    content: string | JSX.Element;
+    content: string | React.ReactElement;
     type?: 'success' | 'error' | 'warning' | 'info';
     dismissible?: boolean;
     otherParams?: null | object;

@@ -6,7 +6,7 @@ export type ExtractedHealthData = {
     ExtractedEntities: DetectEntitiesV2Response[];
 };
 
-// Segmentwith Comprehend Medical output in a HealthScribe insights section
+// Segment with Comprehend Medical output in a HealthScribe insights section
 export type SegmentExtractedData = {
     words: { word: string; linkedId: number[] }[];
     extractedData?: Entity[];

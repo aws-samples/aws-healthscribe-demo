@@ -1,54 +1,54 @@
 name: UI Tests
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
-  type-check:
-    name: UI TypeScript Check
-    runs-on: ubuntu-latest
+    type-check:
+        name: UI TypeScript Check
+        runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./src
+        defaults:
+            run:
+                working-directory: ./src
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/Hydrogen'
-          cache: 'yarn'
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 'lts/Iron'
+                  cache: 'yarn'
 
-      - name: Install Dependencies
-        run: yarn install --immutable --immutable-cache --check-cache
+            - name: Install Dependencies
+              run: yarn install --immutable --immutable-cache --check-cache
 
-      - name: Mock aws-custom.json
-        run: |
-          cat > ./aws-custom.json << EOF
-          {
-            "healthScribeServiceRole": "arn:aws:iam::0123456789012:role/healthScribeServiceRole"
-          }
-          EOF
+            - name: Mock aws-custom.json
+              run: |
+                  cat > ./aws-custom.json << EOF
+                  {
+                    "healthScribeServiceRole": "arn:aws:iam::0123456789012:role/healthScribeServiceRole"
+                  }
+                  EOF
 
-      - name: Mock amplifyconfiguration.json
-        run: |
-          cat > ./amplifyconfiguration.json << EOF
-          {
-            "aws_project_region": "us-east-1",
-            "aws_user_files_s3_bucket": "s3bucket",
-          }
-          EOF
+            - name: Mock amplifyconfiguration.json
+              run: |
+                  cat > ./amplifyconfiguration.json << EOF
+                  {
+                    "aws_project_region": "us-east-1",
+                    "aws_user_files_s3_bucket": "s3bucket",
+                  }
+                  EOF
 
-      - name: Type Check
-        run: yarn run type-check
+            - name: Type Check
+              run: yarn run type-check

@@ -1,13 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
 
 const AMPLIFY_META_PATH = './amplify/backend/amplify-meta.json';
 const AWS_CUSTOM_PATH = './src/aws-custom.json';
-// const AWS_EXPORTS_PATH = './src/aws-exports.js';
-// const TEAM_PROVIDER_INFO_PATH = './amplify/team-provider-info.json';
 
 /**
  * @param data { { amplify: { environment: { envName: string, projectPath: string, defaultEditor: string }, command: string, subCommand: string, argv: string[] } } }

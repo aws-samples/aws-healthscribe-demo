@@ -4,7 +4,11 @@ import React, { useLocation, useNavigate } from 'react-router-dom';
 
 import BreadcrumbGroup, { BreadcrumbGroupProps } from '@cloudscape-design/components/breadcrumb-group';
 
+import { useAuthContext } from '@/store/auth';
+
 export default function Breadcrumbs() {
+    const { isUserAuthenticated } = useAuthContext();
+
     const location = useLocation();
     const navigate = useNavigate();
     let items: BreadcrumbGroupProps.Item[] = [];
@@ -65,13 +69,17 @@ export default function Breadcrumbs() {
         ];
     }
 
-    return (
-        <BreadcrumbGroup
-            items={items}
-            onFollow={(event) => {
-                event.preventDefault();
-                navigate(event.detail.href, { relative: 'route' });
-            }}
-        />
-    );
+    if (isUserAuthenticated) {
+        return (
+            <BreadcrumbGroup
+                items={items}
+                onFollow={(event) => {
+                    event.preventDefault();
+                    navigate(event.detail.href, { relative: 'route' });
+                }}
+            />
+        );
+    } else {
+        return false;
+    }
 }

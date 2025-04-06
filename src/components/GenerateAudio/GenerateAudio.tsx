@@ -11,7 +11,7 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 
 import Crunker from 'crunker';
 import dayjs from 'dayjs';
-import { Reorder } from 'framer-motion';
+import { Reorder } from 'motion/react';
 
 import { useNotificationsContext } from '@/store/notifications';
 import { PollyPhrase, getAudioBlobFromPolly } from '@/utils/PollyApi';

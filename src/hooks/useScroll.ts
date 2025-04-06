@@ -1,6 +1,6 @@
-import { MutableRefObject, useEffect } from 'react';
+import { RefObject, useEffect } from 'react';
 
-export function useScroll(element: MutableRefObject<null | HTMLElement>, handleScroll: (e: Event) => void) {
+export function useScroll(element: RefObject<null | HTMLElement>, handleScroll: (e: Event) => void) {
     if (element == null) return;
 
     useEffect(() => {

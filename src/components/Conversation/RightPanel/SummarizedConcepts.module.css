@@ -34,19 +34,3 @@
 .extractedHealthDataWord {
     display: inline;
 }
-
-.sliderContainer {
-    padding-top: 5px;
-    width: 100%;
-    display: flex;
-    align-items: center;
-}
-
-.slider {
-    appearance: none;
-    width: 90%;
-    height: 8px;
-    border-radius: 70px;
-    border: none;
-    margin-right: 10px;
-}

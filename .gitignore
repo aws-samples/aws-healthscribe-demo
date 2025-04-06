@@ -27,6 +27,8 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+/*toolbag
+/.*Agent
 
 # VSCode
 .vscode
@@ -43,6 +45,10 @@ src/aws-custom.json
 
 # Webstorm
 .idea
+
+*.spec.md
+.cspell
+cspell.json
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend

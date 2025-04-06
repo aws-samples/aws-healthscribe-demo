@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import Button from '@cloudscape-design/components/button';
 
@@ -28,7 +28,9 @@ type OntologyLinkingProps = {
 };
 
 export function OntologyLinking({ category, type, text }: OntologyLinkingProps) {
-    const { comprehendMedicalEnabled } = useAppSettingsContext();
+    const { appSettings } = useAppSettingsContext();
+    const comprehendMedicalEnabled = useMemo(() => appSettings['app.comprehendMedicalEnabled'], [appSettings]);
+
     const [inferredData, setInferredData] = React.useState<InferredDataType>({
         icd10cm: false,
         rxnorm: false,

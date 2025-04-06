@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 import WaveSurfer from 'wavesurfer.js';
 
 import ValueWithLabel from '@/components/Common/ValueWithLabel';
-import { IClinicalInsights, IWordAlternative } from '@/types/HealthScribe';
+import { IClinicalInsight, ITranscriptWordBatch } from '@/types/HealthScribeTranscript';
 
 import ClinicalInsight from './ClinicalInsight';
 
@@ -23,10 +23,10 @@ type PopOverCompProps = {
     isClinicalEntity?: boolean;
     wordBeginAudioTime?: number;
     audioDuration?: number;
-    word: IWordAlternative;
-    wordClinicalEntity?: IClinicalInsights;
+    word: ITranscriptWordBatch;
+    wordClinicalEntity?: IClinicalInsight;
     audioReady?: boolean;
-    wavesurfer?: React.MutableRefObject<WaveSurfer | undefined>;
+    wavesurfer?: React.RefObject<WaveSurfer | undefined>;
 };
 
 function WordPopover({

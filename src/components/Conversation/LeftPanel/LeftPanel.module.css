@@ -7,10 +7,6 @@
     display: none; /* Safari and Chrome browsers */
 }
 
-.disabled {
-    color: #9d9d9de1 !important;
-}
-
 .row {
     white-space: nowrap !important;
     overflow: scroll !important;

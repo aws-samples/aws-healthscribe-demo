@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { RefObject, useEffect, useMemo, useState } from 'react';
 
 import Box from '@cloudscape-design/components/box';
 import Checkbox from '@cloudscape-design/components/checkbox';
@@ -9,12 +9,11 @@ import SpaceBetween from '@cloudscape-design/components/space-between';
 import Spinner from '@cloudscape-design/components/spinner';
 
 import { MedicalScribeJob } from '@aws-sdk/client-transcribe';
-import reduce from 'lodash/reduce';
 import WaveSurfer from 'wavesurfer.js';
 import RegionsPlugin from 'wavesurfer.js/dist/plugins/regions';
 
 import { useNotificationsContext } from '@/store/notifications';
-import { IAuraTranscriptOutput } from '@/types/HealthScribe';
+import { IHealthScribeTranscript } from '@/types/HealthScribeTranscript';
 import { getPresignedUrl, getS3Object } from '@/utils/S3Api';
 
 import AudioControls from '../../Common/AudioControls';
@@ -25,8 +24,8 @@ import { extractRegions } from './extractRegions';
 type TopPanelProps = {
     jobLoading: boolean;
     jobDetails: MedicalScribeJob | null;
-    transcriptFile: IAuraTranscriptOutput | null;
-    wavesurfer: React.MutableRefObject<WaveSurfer | undefined>;
+    transcript: IHealthScribeTranscript | undefined;
+    wavesurfer: RefObject<WaveSurfer | undefined>;
     smallTalkCheck: boolean;
     setSmallTalkCheck: React.Dispatch<React.SetStateAction<boolean>>;
     setAudioTime: React.Dispatch<React.SetStateAction<number>>;
@@ -35,7 +34,7 @@ type TopPanelProps = {
 export default function TopPanel({
     jobLoading,
     jobDetails,
-    transcriptFile,
+    transcript,
     wavesurfer,
     smallTalkCheck,
     setSmallTalkCheck,
@@ -57,8 +56,8 @@ export default function TopPanel({
 
     // Get small talk from HealthScribe transcript
     const smallTalkList: SmallTalkList = useMemo(() => {
-        if (!transcriptFile) return [];
-        const transcriptSegments = transcriptFile!.Conversation.TranscriptSegments;
+        if (!transcript) return [];
+        const transcriptSegments = transcript!.Conversation.TranscriptSegments;
         if (transcriptSegments.length > 0) {
             const stList = [];
             for (const { SectionDetails, BeginAudioTime, EndAudioTime } of transcriptSegments) {
@@ -70,7 +69,7 @@ export default function TopPanel({
         } else {
             return [];
         }
-    }, [transcriptFile]);
+    }, [transcript]);
 
     function checkAudioUrl() {
         if (!jobDetails?.Media?.MediaFileUri) {
@@ -105,22 +104,16 @@ export default function TopPanel({
                     const audioDuration = wavesurfer.current!.getDuration();
                     // Manage silences
                     const sPeaks = wavesurfer.current!.exportPeaks();
-                    const silenceTotal = reduce(
-                        extractRegions(sPeaks[0], audioDuration),
-                        (sum, { start, end }) => {
-                            return sum + end - start;
-                        },
+                    const silenceTotal = extractRegions(sPeaks[0], audioDuration).reduce(
+                        (sum, { start, end }) => sum + end - start,
                         0
                     );
                     setSilencePeaks(sPeaks[0]);
                     setSilencePercent(silenceTotal / audioDuration);
 
                     // Manage smalltalk
-                    const timeSmallTalk = reduce(
-                        smallTalkList,
-                        (sum, { EndAudioTime, BeginAudioTime }) => {
-                            return sum + (EndAudioTime - BeginAudioTime);
-                        },
+                    const timeSmallTalk = smallTalkList.reduce(
+                        (sum, { EndAudioTime, BeginAudioTime }) => sum + (EndAudioTime - BeginAudioTime),
                         0
                     );
                     setSmallTalkPercent(timeSmallTalk / audioDuration);
@@ -214,25 +207,17 @@ export default function TopPanel({
     function SegmentControls() {
         if (!jobLoading && !audioLoading) {
             return (
-                <SpaceBetween size={'xl'} direction="horizontal">
-                    <Box>
-                        <SpaceBetween size={'s'} direction="horizontal">
-                            <div className={styles.alignment}>
-                                <Box variant="awsui-key-label">Remove</Box>
-                            </div>
-                            <div className={styles.alignment}>
-                                <Checkbox checked={smallTalkCheck} onChange={() => setSmallTalkCheck(!smallTalkCheck)}>
-                                    Small Talk (<i>{Math.ceil(smallTalkPercent * 100)}%</i>)
-                                </Checkbox>
-                            </div>
-                            <div className={styles.alignment}>
-                                <Checkbox checked={silenceChecked} onChange={() => setSilenceChecked(!silenceChecked)}>
-                                    Silences (<i>{Math.ceil(silencePercent * 100)}%</i>)
-                                </Checkbox>
-                            </div>
-                        </SpaceBetween>
-                    </Box>
-                </SpaceBetween>
+                <div className={styles.segmentControls}>
+                    <SpaceBetween size={'s'} direction="horizontal">
+                        <Box variant="awsui-key-label">Remove</Box>
+                        <Checkbox checked={smallTalkCheck} onChange={() => setSmallTalkCheck(!smallTalkCheck)}>
+                            Small Talk (<i>{Math.ceil(smallTalkPercent * 100)}%</i>)
+                        </Checkbox>
+                        <Checkbox checked={silenceChecked} onChange={() => setSilenceChecked(!silenceChecked)}>
+                            Silences (<i>{Math.ceil(silencePercent * 100)}%</i>)
+                        </Checkbox>
+                    </SpaceBetween>
+                </div>
             );
         }
     }

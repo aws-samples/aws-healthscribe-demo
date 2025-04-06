@@ -17,7 +17,6 @@ export type AmplifyDependentResourcesAttributes = {
             Region: 'string';
         };
     };
-
     function: {
         addBucketLogging: {
             Arn: 'string';

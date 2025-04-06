@@ -5,11 +5,11 @@ import ExpandableSection from '@cloudscape-design/components/expandable-section'
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import Table from '@cloudscape-design/components/table';
 
-import { IClinicalInsightAttribute } from '@/types/HealthScribe';
+import { IAttribute } from '@/types/HealthScribeTranscript';
 import toTitleCase from '@/utils/toTitleCase';
 
 type ClinicalInsightsAttributesTableProps = {
-    attributes: IClinicalInsightAttribute[];
+    attributes: IAttribute[];
 };
 export default function ClinicalInsightsAttributesTable({ attributes }: ClinicalInsightsAttributesTableProps) {
     return (

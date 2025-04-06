@@ -1,9 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { Progress, Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getCurrentUser } from 'aws-amplify/auth';
+import { uploadData } from 'aws-amplify/storage';
 import tk from 'timekeeper';
 
 import { getAmplifyRegion, getCredentials } from '@/utils/Sdk';
@@ -89,50 +89,44 @@ type MultipartUploadProps = {
     Key: string;
     Body: File;
     ContentType?: string;
-    callbackFn?: (progress: Progress) => void;
+    callbackFn?: (progress: { loaded: number; total: number | undefined }) => void;
 };
-export async function multipartUpload({
-    Bucket,
-    Key,
-    Body,
-    ContentType = 'audio/wav',
-    callbackFn,
-}: MultipartUploadProps) {
+
+/**
+ * Upload a file to S3 using Amplify Storage
+ * @param param0 Upload parameters including the file and optional callback
+ * @returns Result from the upload operation
+ */
+export async function fileUpload({ Key, Body, ContentType = 'audio/wav', callbackFn }: MultipartUploadProps) {
     const { username, signInDetails } = await getCurrentUser();
 
-    const params = { Bucket: Bucket, Key: Key, Body: Body, ContentType: ContentType };
-
-    const s3Client = await getS3Client();
-
     try {
-        const s3Upload = new Upload({
-            client: s3Client,
-            params: params,
-            queueSize: 4, // (optional) concurrency
-            partSize: 1024 * 1024 * 5, // (optional) size of each part, in bytes, at least 5MB
-            leavePartsOnError: false, // (optional) manually handle dropped parts
-            tags: [
-                {
-                    Key: 'uploadUsername',
-                    Value: username || 'error: username not found',
+        return await uploadData({
+            path: Key,
+            data: Body,
+            options: {
+                contentType: ContentType,
+                metadata: {
+                    uploadUsername: username || 'error: username not found',
+                    uploadLoginId: signInDetails?.loginId || 'error: loginId not found',
                 },
-                {
-                    Key: 'uploadLoginId',
-                    Value: signInDetails?.loginId || 'error: loginId not found',
+                onProgress: ({ transferredBytes, totalBytes }) => {
+                    if (callbackFn) {
+                        callbackFn({
+                            loaded: transferredBytes,
+                            total: totalBytes,
+                        });
+                    } else {
+                        console.debug('S3 upload progress: ', {
+                            loaded: transferredBytes,
+                            total: totalBytes,
+                        });
+                    }
                 },
-            ],
-        });
-
-        s3Upload.on('httpUploadProgress', (progress) => {
-            if (callbackFn) {
-                callbackFn(progress);
-            } else {
-                console.debug('S3 upload progress: ', progress);
-            }
-        });
-        return await s3Upload.done();
+            },
+        }).result;
     } catch (e: unknown) {
         const err = e as Error;
-        throw new Error(`Error in S3 multipart upload: ${err.message}`);
+        throw new Error(`Error in S3 upload: ${err.message}`);
     }
 }

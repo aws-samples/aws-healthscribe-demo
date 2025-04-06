@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -11,8 +11,10 @@ import ValueWithLabel from '@/components/Common/ValueWithLabel';
 import { useAppSettingsContext } from '@/store/appSettings';
 
 export function EnableComprehendMedicalPopover() {
-    const { comprehendMedicalEnabled } = useAppSettingsContext();
+    const { appSettings } = useAppSettingsContext();
     const navigate = useNavigate();
+
+    const comprehendMedicalEnabled = useMemo(() => appSettings['app.comprehendMedicalEnabled'], [appSettings]);
 
     if (!comprehendMedicalEnabled) {
         return (
@@ -54,7 +56,9 @@ type ComprehendMedicalNereCostProps = {
     clinicalDocumentNereUnits: 0 | { [key: string]: number };
 };
 export function ComprehendMedicalNereCost({ clinicalDocumentNereUnits }: ComprehendMedicalNereCostProps) {
-    const { comprehendMedicalEnabled } = useAppSettingsContext();
+    const { appSettings } = useAppSettingsContext();
+    const comprehendMedicalEnabled = useMemo(() => appSettings['app.comprehendMedicalEnabled'], [appSettings]);
+
     if (comprehendMedicalEnabled && clinicalDocumentNereUnits !== 0) {
         return (
             <Popover
