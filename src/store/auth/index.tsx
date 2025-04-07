@@ -4,9 +4,9 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import { Amplify } from 'aws-amplify';
 import { AuthUser } from 'aws-amplify/auth';
 
-import config from '@/amplifyconfiguration.json';
+import amplifyOutputs from '@/../amplify_outputs.json';
 
-Amplify.configure(config);
+Amplify.configure(amplifyOutputs);
 
 type AuthContextType = {
     isUserAuthenticated: boolean;

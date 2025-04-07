@@ -24,13 +24,13 @@ import {
 import { Progress } from '@aws-sdk/lib-storage';
 import dayjs from 'dayjs';
 
+import amplifyOutputs from '@/../amplify_outputs.json';
 import { useS3 } from '@/hooks/useS3';
 import { useNotificationsContext } from '@/store/notifications';
 import { startMedicalScribeJob } from '@/utils/HealthScribeApi';
 import { fileUpload } from '@/utils/S3Api';
 import sleep from '@/utils/sleep';
 
-import amplifyCustom from '../../aws-custom.json';
 import AudioRecorder from './AudioRecorder';
 import { AudioDropzone } from './Dropzone';
 import { AudioDetailSettings, AudioIdentificationType, InputName, NoteType } from './FormComponents';
@@ -143,7 +143,7 @@ export default function NewConversation() {
 
         const jobParams: StartMedicalScribeJobRequest = {
             MedicalScribeJobName: jobName,
-            DataAccessRoleArn: amplifyCustom.healthScribeServiceRole,
+            DataAccessRoleArn: amplifyOutputs.custom.hsServiceRoleArn,
             OutputBucketName: outputBucket,
             Media: {
                 MediaFileUri: `s3://${s3Location.Bucket}/${s3Location.Key}`,

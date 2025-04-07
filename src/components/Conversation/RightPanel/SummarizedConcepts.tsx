@@ -107,8 +107,6 @@ export default function SummarizedConcepts({
         );
     }, [sections]);
 
-    console.debug('sortedSections', sections, sortedSections);
-
     return (
         <>
             {sortedSections.map(({ SectionName, Summary }, i) => {

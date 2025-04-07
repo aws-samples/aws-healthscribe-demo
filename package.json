@@ -1,14 +1,19 @@
 {
     "name": "aws-healthscribe-demo",
     "version": "1.0.0",
+    "license": "MIT",
     "scripts": {
-        "dev": "vite",
         "build": "tsc && vite build",
-        "serve": "vite preview",
+        "dev": "vite",
+        "lint": "yarn lint:format && yarn lint:fix ",
         "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --format visualstudio --quiet --fix --ignore-path ./.gitignore",
         "lint:format": "prettier --log-level warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
-        "lint": "yarn lint:format && yarn lint:fix ",
+        "serve": "vite preview",
         "type-check": "tsc"
+    },
+    "pre-commit": "lint",
+    "resolutions": {
+        "cross-spawn": "^7.0.6"
     },
     "dependencies": {
         "@aws-amplify/ui-react": "^6.10.0",
@@ -19,7 +24,7 @@
         "@aws-sdk/lib-storage": "^3.782.0",
         "@aws-sdk/s3-request-presigner": "^3.782.0",
         "@cloudscape-design/collection-hooks": "^1.0.68",
-        "@cloudscape-design/components": "^3.0.938",
+        "@cloudscape-design/components": "^3.0.939",
         "@cloudscape-design/design-tokens": "^3.0.53",
         "@cloudscape-design/global-styles": "^1.0.39",
         "ace-builds": "^1.39.1",
@@ -39,29 +44,31 @@
         "wavesurfer.js": "7.9.4"
     },
     "devDependencies": {
+        "@aws-amplify/backend": "^1.15.0",
+        "@aws-amplify/backend-cli": "^1.6.0",
         "@trivago/prettier-plugin-sort-imports": "^5.2.2",
         "@types/node": "^22.14.0",
         "@types/react": "^19.1.0",
         "@types/react-dom": "^19.1.1",
         "@types/uuid4": "^2.0.3",
         "@types/wavesurfer.js": "^6.0.12",
-        "@typescript-eslint/eslint-plugin": "^8.29.0",
-        "@typescript-eslint/parser": "^8.29.0",
+        "@typescript-eslint/eslint-plugin": "^8.29.1",
+        "@typescript-eslint/parser": "^8.29.1",
         "@vitejs/plugin-react": "^4.3.4",
+        "aws-cdk": "^2.1007.0",
+        "aws-cdk-lib": "^2.188.0",
+        "constructs": "^10.4.2",
+        "esbuild": "^0.25.2",
         "eslint": "^8.57.1",
         "eslint-config-prettier": "^10.1.1",
         "eslint-plugin-prettier": "^5.2.6",
         "eslint-plugin-react": "^7.37.5",
         "pre-commit": "^1.2.2",
         "prettier": "^3.5.3",
+        "tsx": "^4.19.3",
         "typescript": "^5.8.3",
         "vite": "^6.2.5",
         "vite-plugin-optimize-css-modules": "^1.2.0"
     },
-    "resolutions": {
-        "cross-spawn": "^7.0.6"
-    },
-    "pre-commit": "lint",
-    "license": "MIT",
     "packageManager": "yarn@1.22.22"
 }
