@@ -16,10 +16,6 @@ jobs:
         name: UI TypeScript Check
         runs-on: ubuntu-latest
 
-        defaults:
-            run:
-                working-directory: ./src
-
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -33,20 +29,20 @@ jobs:
             - name: Install Dependencies
               run: yarn install --immutable --immutable-cache --check-cache
 
-            - name: Mock aws-custom.json
+            - name: Mock amplify_outputs.json
               run: |
-                  cat > ./aws-custom.json << EOF
+                  cat > ./amplify_outputs.json << EOF
                   {
-                    "healthScribeServiceRole": "arn:aws:iam::0123456789012:role/healthScribeServiceRole"
-                  }
-                  EOF
-
-            - name: Mock amplifyconfiguration.json
-              run: |
-                  cat > ./amplifyconfiguration.json << EOF
-                  {
-                    "aws_project_region": "us-east-1",
-                    "aws_user_files_s3_bucket": "s3bucket",
+                      "auth": {
+                          "aws_region": "us-east-1",
+                      },
+                      "storage": {
+                          "aws_region": "us-east-1",
+                          "bucket_name": "s3Bucket"
+                      },
+                      "custom": {
+                          "hsServiceRoleArn": "arn:aws:iam::0123456789012:role/healthScribeServiceRole"
+                      }
                   }
                   EOF
 
